@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class Student extends React.Component {
+export default class Assignment extends React.Component {
   constructor() {
     super()
     this.state = {
@@ -15,7 +15,7 @@ export default class Student extends React.Component {
     } else {
 
       return (
-        <div id={this.props.id} onClick={this.props.retrieveAssignments} style={{ 'height': 10 + 'vh', 'width': 10 + 'vw' }}>
+        <div id={this.props.id} style={{ 'height': 10 + 'vh', 'width': 10 + 'vw' }}>
           {this.props.children}
         </div>
       )
