@@ -10,11 +10,15 @@ class App extends React.Component {
     this.state = {
       classes : '',
       students: '',
-      assignments: ''
+      assignments: '',
+      activeClass: '',
+      newStudent: ''
     };
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
     this.retrieveAssignments = this.retrieveAssignments.bind(this);
+    this.addStudent = this.addStudent.bind(this);
+    this.handleStudentInput = this.handleStudentInput.bind(this);
   }
 
   componentDidMount() {
@@ -35,7 +39,7 @@ class App extends React.Component {
       method: "GET"
     })
       .then(data => data.json())
-      .then(responseObj => this.setState({ 'students': responseObj.data }));
+      .then(responseObj => this.setState({ 'activeClass': id ,'students': responseObj.data }));
   }
 
   retrieveAssignments(event) {
@@ -47,7 +51,33 @@ class App extends React.Component {
       .then(responseObj => this.setState({ 'assignments': responseObj.data }));
   }
 
+  addStudent(event) {
+    event.preventDefault();
+    const name = this.state.newStudent;
+    const class_id = this.state.activeClass;
+    console.log('name: ',name);
+    console.log('class_id: ',class_id);
+    fetch("/api/addstudent", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name: this.state.newStudent,
+        class_id: this.state.activeClass
+      })
+    })
+      .then(data => data.json())
+      .then(responseObj => console.log('response: ',responseObj));
+  }
+
+  handleStudentInput(event) {
+    this.setState({'newStudent' : event.target.value})
+  }
+
   render() {
+    console.log(this.state.newStudent);
     if (!this.state.classes) {
       return false
     }
@@ -79,6 +109,9 @@ class App extends React.Component {
         <React.Fragment>
         {allClasses}
         {allStudents}
+        <form onSubmit={this.addStudent}>
+            <input type="text" value={this.state.value} onChange={this.handleStudentInput} style={{ 'height': 10 + 'vh', 'width': 10 + 'vw' }}></input>
+        </form>
         </React.Fragment>
       );
     }
