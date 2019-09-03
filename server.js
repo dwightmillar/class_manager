@@ -36,8 +36,23 @@ server.get('/api/getclasses', function (request, response) {
 
 server.get('/api/getstudents', function (request, response) {
   db.connect(function () {
-    const class_id = request._parsedUrl.query;
-    const query = "SELECT * FROM `students` WHERE " + class_id;
+    const id = request._parsedUrl.query;
+    const query = "SELECT * FROM `students` WHERE " + id;
+    db.query(query, function (error, data, fields) {
+      if (!error) {
+        response.send({
+          success: true,
+          data
+        });
+      }
+    });
+  })
+});
+
+server.get('/api/getassignments', function (request, response) {
+  db.connect(function () {
+    const id = request._parsedUrl.query;
+    const query = "SELECT * FROM `assignments` WHERE " + id;
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
