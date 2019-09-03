@@ -36,7 +36,8 @@ server.get('/api/getclasses', function (request, response) {
 
 server.get('/api/getstudents', function (request, response) {
   db.connect(function () {
-    const query = "SELECT * FROM `students`";
+    const class_id = request._parsedUrl.query;
+    const query = "SELECT * FROM `students` WHERE " + class_id;
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
