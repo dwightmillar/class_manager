@@ -26,8 +26,10 @@ class App extends React.Component {
       .then(responseObj => this.setState({'classes': responseObj.data}));
   }
 
-  retrieveStudents() {
-    fetch("/api/getstudents", {
+  retrieveStudents(event) {
+    const id = event.target.id;
+    console.log("id: ",id);
+    fetch("/api/getstudents?class_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -40,7 +42,7 @@ class App extends React.Component {
     } else {
       var classData = this.state.classes;
       var allClasses = classData.map(
-        newClass => <Class key={newClass.id} retrieveStudents={this.retrieveStudents} students={this.state.students}>{newClass.title}</Class>
+        newClass => <Class key={newClass.id} id={newClass.id} retrieveStudents={this.retrieveStudents} students={this.state.students}>{newClass.title}</Class>
       )
 
       if (this.state.students){
@@ -48,7 +50,6 @@ class App extends React.Component {
         var allStudents = studentData.map(
           newStudent => <Student key={newStudent.id}>{newStudent.name}</Student>
         )
-        console.log(allStudents);
       }
 
       return (
