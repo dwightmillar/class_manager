@@ -24,5 +24,16 @@ module.exports = {
       template: "./src/index.html",
       filename: "./index.html"
     })
-  ]
-};
+  ],
+  devtool: 'source-map',
+  devServer: {
+    host: 'localhost',
+    port: 3000,
+    historyApiFallback: true,
+    watchContentBase: true,
+    stats: 'minimal',
+    proxy: {
+      '/api': 'http://localhost:3001'
+    }
+  }
+}
