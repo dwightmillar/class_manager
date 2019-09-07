@@ -29,9 +29,6 @@ export default class Student extends React.Component {
     if (!this.props.data) {
       return false
     }
-
-    console.log(this.props.data);
-
     var allAssignments = this.props.data.map(
       assignment =>
         <div id={assignment.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.retrieveAssignments}>
