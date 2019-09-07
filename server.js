@@ -38,6 +38,7 @@ server.get('/api/getstudents', function (request, response) {
   db.connect(function () {
     const id = request._parsedUrl.query;
     const query = "SELECT * FROM `students` WHERE " + id;
+    console.log('query: ',query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
@@ -53,6 +54,7 @@ server.get('/api/getassignments', function (request, response) {
   db.connect(function () {
     const id = request._parsedUrl.query;
     const query = "SELECT * FROM `assignments` WHERE " + id;
+    console.log('query: ', query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
