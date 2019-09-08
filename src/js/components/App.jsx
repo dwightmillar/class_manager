@@ -17,7 +17,9 @@ class App extends React.Component {
       viewingStudent: 0,
       newStudent: '',
       newStudentID: '',
+      newClassID: '',
       newAssignment: '',
+      newClass: '',
       maxPoints: 0,
       studentScores: {},
       studentAverages: {}
@@ -25,13 +27,18 @@ class App extends React.Component {
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
     this.retrieveAssignments = this.retrieveAssignments.bind(this);
+
     this.addStudent = this.addStudent.bind(this);
     this.addAssignment = this.addAssignment.bind(this);
+    this.addClass = this.addClass.bind(this);
+
     this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
+    this.handleClassInput = this.handleClassInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
     this.handleStudentGradeAverage = this.handleStudentGradeAverage.bind(this);
+
     this.viewStudent = this.viewStudent.bind(this);
     this.viewClass = this.viewClass.bind(this);
     this.viewAssignmentInput = this.viewAssignmentInput.bind(this);
@@ -98,9 +105,29 @@ class App extends React.Component {
     this.setState({ view: 'assignmentinput'});
   }
 
+  addClass (event) {
+    event.preventDefault();
+    fetch("/api/addclass", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name: this.state.newClass,
+      })
+    })
+      .then(data => data.json())
+      .then(responseObj => {
+        console.log(responseObj.data.insertId);
+        const newClassObj = [{ 'id': responseObj.data.insertId, 'title': this.state.newClass }];
+        console.log(newClassObj);
+        this.setState({ 'classes': this.state.classes.concat(newClassObj) , 'newClass': ''})
+    });
+  }
+
   addStudent(event) {
     event.preventDefault();
-    let newID = null;
     fetch("/api/addstudent", {
       headers: {
         'Accept': 'application/json',
@@ -145,6 +172,10 @@ class App extends React.Component {
       .catch(error => console.log(error))
 
     this.setState({ view: 'class', newAssignment: '', maxPoints: '', studentScores: {}})
+  }
+
+  handleClassInput(event) {
+    this.setState({'newClass' : event.target.value})
   }
 
   handleStudentInput(event) {
@@ -194,7 +225,7 @@ class App extends React.Component {
       <div>
         <Class view={this.state.view} classNames={this.state.classes} studentData={this.state.students} retrieveStudents={this.retrieveStudents} viewStudent={this.viewStudent}
         viewAssignmentInput={this.viewAssignmentInput} handleStudentInput={this.handleStudentInput} studentName={this.state.newStudent} addStudent={this.addStudent}
-        studentAverages={this.state.studentAverages}/>
+        studentAverages={this.state.studentAverages} handleClassInput={this.handleClassInput} className={this.state.newClass} addClass={this.addClass}/>
 
         <Student view={this.state.view} name={this.state.viewingStudent} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
 

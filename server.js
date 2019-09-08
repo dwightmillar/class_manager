@@ -69,7 +69,6 @@ server.get('/api/getassignments', function (request, response) {
 server.post('/api/addstudent', function (request, response) {
   db.connect(function () {
     const query = "INSERT INTO students (name, class_id) VALUES (\"" + request.body.name + "\"," + request.body['class_id'] + ")";
-    console.log('query: ',query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
@@ -87,7 +86,20 @@ server.post('/api/addassignment', function (request, response) {
                       (title, score, totalpoints, student_id)
                     VALUES
                       ${request.body.scores}`;
-    console.log('query: ', query);
+    db.query(query, function (error, data, fields) {
+      if (!error) {
+        response.send({
+          success: true,
+          data
+        });
+      }
+    });
+  })
+});
+
+server.post('/api/addclass', function (request, response) {
+  db.connect(function () {
+    const query = `INSERT INTO classes(title) VALUES (${request.body.name})`
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
