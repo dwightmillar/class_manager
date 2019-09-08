@@ -4,8 +4,19 @@ export default class Class extends React.Component {
   constructor() {
     super();
     this.state = {
-      classAverage: 0
+      classAverage: '',
+      newTab: ''
     }
+    this.createNewTab = this.createNewTab.bind(this);
+  }
+
+  createNewTab() {
+    this.setState({
+      newTab:
+      <form onSubmit={this.props.addClass}>
+        <input type="text" onChange={this.props.handleClassInput}></input>
+      </form>
+    })
   }
 
   render() {
@@ -43,7 +54,9 @@ export default class Class extends React.Component {
     return (
       <React.Fragment>
         <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
+          <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
           {allClasses}
+          {this.state.newTab}
         </div>
         <div style={{ width: 100 + '%', height: 60 + 'px' }}>
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>

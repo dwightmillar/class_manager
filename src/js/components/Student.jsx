@@ -42,7 +42,7 @@ export default class Student extends React.Component {
 
         <div style={{ width: 100 + '%', height: 60 + 'px' }}>
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            {this.props.name}'s Grades:
+            {this.props.name}'s Grades: {this.props.average}%
           </div>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
