@@ -20,7 +20,7 @@ class App extends React.Component {
       newClassID: '',
       newAssignment: '',
       newClass: '',
-      maxPoints: 0,
+      maxPoints: '',
       studentScores: {},
       studentAverages: {}
     };
@@ -98,7 +98,8 @@ class App extends React.Component {
     )[0];
     this.retrieveAssignments(id);
     this.setState({ view: 'student',
-                    'viewingStudent': student.name });
+                    'viewingStudent': student.name,
+                    'viewingStudentAverage': this.state.studentAverages[id] });
   }
 
   viewAssignmentInput() {
@@ -227,7 +228,7 @@ class App extends React.Component {
         viewAssignmentInput={this.viewAssignmentInput} handleStudentInput={this.handleStudentInput} studentName={this.state.newStudent} addStudent={this.addStudent}
         studentAverages={this.state.studentAverages} handleClassInput={this.handleClassInput} className={this.state.newClass} addClass={this.addClass}/>
 
-        <Student view={this.state.view} name={this.state.viewingStudent} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
+        <Student view={this.state.view} name={this.state.viewingStudent} average={this.state.viewingStudentAverage} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
 
         <AssignmentInput view={this.state.view} studentData={this.state.students} newAssignment={this.state.newAssignment} handleAssignmentInput={this.handleAssignmentInput}
         maxPoints={this.state.maxPoints} scores={this.state.studentScores} handleMaxPointsInput={this.handleMaxPointsInput} handleScoreInput={this.handleScoreInput}

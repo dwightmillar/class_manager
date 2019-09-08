@@ -38,7 +38,6 @@ server.get('/api/getstudents', function (request, response) {
   db.connect(function () {
     const id = request._parsedUrl.query;
     const query = "SELECT * FROM `students` WHERE " + id;
-    console.log('query: ',query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
@@ -54,7 +53,6 @@ server.get('/api/getassignments', function (request, response) {
   db.connect(function () {
     const id = request._parsedUrl.query;
     const query = "SELECT * FROM `assignments` WHERE " + id;
-    console.log('query: ', query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
@@ -99,7 +97,9 @@ server.post('/api/addassignment', function (request, response) {
 
 server.post('/api/addclass', function (request, response) {
   db.connect(function () {
-    const query = `INSERT INTO classes(title) VALUES (${request.body.name})`
+    const title = JSON.stringify(request.body.name);
+    const query = `INSERT INTO classes(title) VALUES (${title})`;
+    console.log('query: ',query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
