@@ -1,22 +1,26 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { useAsync } from 'react-async';
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
-import Assignment from "./Assignment.jsx";
+import AssignmentInput from "./AssignmentInput.jsx";
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      classes : '',
-      students: '',
+      view : 'class',
+      classes : [],
+      students: [],
       assignments: '',
-      activeClass: '',
+      viewingClass: 1,
+      viewingStudent: 0,
       newStudent: '',
       newStudentID: '',
       newAssignment: '',
-      maxPoints: '',
-      studentScores: {}
+      maxPoints: 0,
+      studentScores: {},
+      studentAverages: {}
     };
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
@@ -27,10 +31,15 @@ class App extends React.Component {
     this.handleStudentInput = this.handleStudentInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
+    this.handleStudentGradeAverage = this.handleStudentGradeAverage.bind(this);
+    this.viewStudent = this.viewStudent.bind(this);
+    this.viewClass = this.viewClass.bind(this);
+    this.viewAssignmentInput = this.viewAssignmentInput.bind(this);
   }
 
   componentDidMount() {
     this.retrieveClasses();
+    this.retrieveStudents(1);
   }
 
   retrieveClasses() {
@@ -42,21 +51,51 @@ class App extends React.Component {
   }
 
   retrieveStudents(event) {
-    const id = event.target.id;
+    if (event.target){
+      var id = event.target.id;
+    } else {
+      id = event;
+    }
     fetch("/api/getstudents?class_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
-      .then(responseObj => this.setState({ 'activeClass': id ,'students': responseObj.data }));
+      .then(students => {
+        students.data.map(
+          student => this.retrieveAssignments(student.id)
+        );
+        this.setState({ 'viewingClass': id, 'students': students.data })
+      });
+
   }
 
-  retrieveAssignments(event) {
-    const id = event.target.id;
-    fetch("/api/getassignments?id=" + id, {
+  retrieveAssignments(id) {
+    fetch("/api/getassignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
-      .then(responseObj => this.setState({ 'assignments': responseObj.data }));
+      .then(responseObj => {
+        this.setState({ 'assignments': responseObj.data });
+        this.handleStudentGradeAverage(id, responseObj.data);
+      });
+  }
+
+  viewClass() {
+    this.setState({ view: 'class', assignments: '' });
+  }
+
+  viewStudent(event) {
+    const id = event.target.parentElement.id;
+    const student = this.state.students.filter(
+      student => student.id == id
+    )[0];
+    this.retrieveAssignments(id);
+    this.setState({ view: 'student',
+                    'viewingStudent': student.name });
+  }
+
+  viewAssignmentInput() {
+    this.setState({ view: 'assignmentinput'});
   }
 
   addStudent(event) {
@@ -70,12 +109,13 @@ class App extends React.Component {
       method: "POST",
       body: JSON.stringify({
         name: this.state.newStudent,
-        class_id: this.state.activeClass
+        class_id: this.state.viewingClass
       })
     })
       .then(data => data.json())
       .then(responseObj => this.setState({ 'newStudentID': responseObj.data.insertId}));
-    const newStudentObj = [{'class_id': this.state.activeClass, 'id': this.state.newStudentID, 'name': this.state.newStudent}];
+
+    const newStudentObj = [{'class_id': this.state.viewingClass, 'id': this.state.newStudentID, 'name': this.state.newStudent}];
     this.setState({'students': this.state.students.concat(newStudentObj)});
     this.setState({'newStudent': '', 'newStudentID': ''})
   }
@@ -100,16 +140,11 @@ class App extends React.Component {
         scores: scores
       })
     })
-      .then(handleErrors)
-      .then(response => console.log("ok"))
-      .catch(error => console.log(error));
-  }
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.log(error))
 
-  handleErrors(response) {
-    if(!response.ok) {
-      throw Error(response.statusText);
-    }
-    return response;
+    this.setState({ view: 'class', newAssignment: '', maxPoints: '', studentScores: {}})
   }
 
   handleStudentInput(event) {
@@ -133,59 +168,44 @@ class App extends React.Component {
     this.setState({ studentScores: student});
   }
 
-  render() {
-    if (!this.state.classes) {
-      return false
-    }
+  handleStudentGradeAverage(id, data) {
+    let studentAverage = this.state.studentAverages;
+    let totalPointsScored = 0;
+    let totalPointsPossible = 0;
+    let average = 0;
 
-    if (this.state.assignments) {
-      var assignmentData = this.state.assignments;
-      var studentAssignments = assignmentData.map(
-        newAssignment => <Assignment key={newAssignment.id} id={newAssignment.id}>{newAssignment.title}</Assignment>
-      )
-      return (
-        <React.Fragment>
-          {studentAssignments}
-        </React.Fragment>
-      )
-    } else {
-      var classData = this.state.classes;
-      var allClasses = classData.map(
-        newClass => <Class key={newClass.id} id={newClass.id} retrieveStudents={this.retrieveStudents}>{newClass.title}</Class>
-      )
-
-      if (this.state.students){
-        var studentData = this.state.students;
-        var allStudents = studentData.map(
-          newStudent => <Student key={newStudent.id} id={newStudent.id}
-                                  score={this.state.studentScores[newStudent.id]}
-                                  maxPoints={this.state.maxPoints}
-                                  handleMaxPointsInput={this.handleMaxPointsInput}
-                                  handleScore={this.handleScoreInput}
-                                  retrieveAssignments={this.retrieveAssignments}>
-                                  {newStudent.name}
-                        </Student>
-        )
+    data.forEach(
+      grade => {
+        totalPointsScored += grade.score;
+        totalPointsPossible += grade.totalpoints;
       }
+    )
 
-      return (
-        <React.Fragment>
-          <div>
-            <input type="text" value={this.state.newAssignment} onChange={this.handleAssignmentInput} placeholder="Assignment Title" style={{ 'height': 10 + 'vh', 'width': 10 + 'vw' }}></input>
-          </div>
-            {allClasses}
-          <div>
-            {allStudents}
-            <button type="submit" onClick={this.addAssignment}>Submit</button>
-          </div>
-          <form onSubmit={this.addStudent}>
-              <input type="text" value={this.state.newStudent} onChange={this.handleStudentInput} placeholder="Add Student" style={{ 'height': 10 + 'vh', 'width': 10 + 'vw' }}></input>
-          </form>
-        </React.Fragment>
-      );
+    if(totalPointsPossible !== 0){
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
     }
+    studentAverage[id] = average;
+
+    this.setState({ studentAverages: studentAverage})
+  }
+
+  render() {
+    return(
+      <div>
+        <Class view={this.state.view} classNames={this.state.classes} studentData={this.state.students} retrieveStudents={this.retrieveStudents} viewStudent={this.viewStudent}
+        viewAssignmentInput={this.viewAssignmentInput} handleStudentInput={this.handleStudentInput} studentName={this.state.newStudent} addStudent={this.addStudent}
+        studentAverages={this.state.studentAverages}/>
+
+        <Student view={this.state.view} name={this.state.viewingStudent} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
+
+        <AssignmentInput view={this.state.view} studentData={this.state.students} newAssignment={this.state.newAssignment} handleAssignmentInput={this.handleAssignmentInput}
+        maxPoints={this.state.maxPoints} scores={this.state.studentScores} handleMaxPointsInput={this.handleMaxPointsInput} handleScoreInput={this.handleScoreInput}
+        addAssignment={this.addAssignment}/>
+      </div>
+    )
   }
 }
+
 
 const wrapper = document.getElementById("root");
 wrapper ? ReactDOM.render(<App />, wrapper) : false;
