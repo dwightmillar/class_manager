@@ -31,9 +31,13 @@ export default class Student extends React.Component {
     }
     var allAssignments = this.props.data.map(
       assignment =>
-        <div id={assignment.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.retrieveAssignments}>
+        <div id={assignment.id} style={{ display: 'flex', flexDirection: 'row' }}>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{assignment.title}</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{assignment.score}/{assignment.totalpoints}</div>
+          {/* <div style={{ width: 50 + '%', height: 100 + '%' }}> */}
+          <input id={assignment.id} type="text" style={{ zIndex: 1,display: 'inline-block', width: 3 + '%', height: 20 + 'px' }} value={this.props.updatedScores[assignment.id]} onChange={this.props.handleUpdateScore} placeholder={assignment.score}>
+            </input>
+            /{assignment.totalpoints}
+          {/* </div> */}
         </div>
     )
 

@@ -111,5 +111,33 @@ server.post('/api/addclass', function (request, response) {
   })
 });
 
+server.patch('/api/updatescore', function (request, response) {
+  db.connect(function () {
+    const scores = request.body.scores;
+    console.log(scores);
+    let formattedScores = '';
+    let affectedIDs = '';
+
+    for (assignmentID in scores) {
+     formattedScores += `WHEN ${assignmentID} THEN ${scores[assignmentID]} `;
+     affectedIDs += `${assignmentID}, `;
+    }
+
+    affectedIDs = affectedIDs.slice(0, -2);
+
+    const query = `UPDATE assignments SET score = CASE id ${formattedScores} END WHERE id IN (${affectedIDs})`;
+    console.log(query);
+
+    db.query(query, function (error, data, fields) {
+      if(!error) {
+        response.send({
+          success: true,
+          data
+        })
+      }
+    })
+  })
+})
+
 
 server.listen(3001, function () { console.log('server is listening on port 3001') });
