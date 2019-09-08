@@ -13,11 +13,12 @@ class App extends React.Component {
       classes : [],
       students: [],
       assignments: '',
-      activeClass: 1,
+      viewingClass: 1,
+      viewingStudent: 0,
       newStudent: '',
       newStudentID: '',
       newAssignment: '',
-      maxPoints: '',
+      maxPoints: 0,
       studentScores: {},
       studentAverages: {}
     };
@@ -63,7 +64,7 @@ class App extends React.Component {
         students.data.map(
           student => this.retrieveAssignments(student.id)
         );
-        this.setState({ 'activeClass': id, 'students': students.data })
+        this.setState({ 'viewingClass': id, 'students': students.data })
       });
 
   }
@@ -85,8 +86,12 @@ class App extends React.Component {
 
   viewStudent(event) {
     const id = event.target.parentElement.id;
+    const student = this.state.students.filter(
+      student => student.id == id
+    )[0];
     this.retrieveAssignments(id);
-    this.setState({ view: 'student' });
+    this.setState({ view: 'student',
+                    'viewingStudent': student.name });
   }
 
   viewAssignmentInput() {
@@ -104,13 +109,13 @@ class App extends React.Component {
       method: "POST",
       body: JSON.stringify({
         name: this.state.newStudent,
-        class_id: this.state.activeClass
+        class_id: this.state.viewingClass
       })
     })
       .then(data => data.json())
       .then(responseObj => this.setState({ 'newStudentID': responseObj.data.insertId}));
 
-    const newStudentObj = [{'class_id': this.state.activeClass, 'id': this.state.newStudentID, 'name': this.state.newStudent}];
+    const newStudentObj = [{'class_id': this.state.viewingClass, 'id': this.state.newStudentID, 'name': this.state.newStudent}];
     this.setState({'students': this.state.students.concat(newStudentObj)});
     this.setState({'newStudent': '', 'newStudentID': ''})
   }
@@ -191,7 +196,7 @@ class App extends React.Component {
         viewAssignmentInput={this.viewAssignmentInput} handleStudentInput={this.handleStudentInput} studentName={this.state.newStudent} addStudent={this.addStudent}
         studentAverages={this.state.studentAverages}/>
 
-        <Student view={this.state.view} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
+        <Student view={this.state.view} name={this.state.viewingStudent} data={this.state.assignments} retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass}/>
 
         <AssignmentInput view={this.state.view} studentData={this.state.students} newAssignment={this.state.newAssignment} handleAssignmentInput={this.handleAssignmentInput}
         maxPoints={this.state.maxPoints} scores={this.state.studentScores} handleMaxPointsInput={this.handleMaxPointsInput} handleScoreInput={this.handleScoreInput}
