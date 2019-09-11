@@ -1,21 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
+function Home() {
+  return <div>Hello, from Home!</div>;
+}
+
+function About() {
+  return <div>Hello, from About!</div>;
+}
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      view : 'class',
-      viewingClass: 1,
-      viewingStudent: 0,
-
-      classes : [],
-      students: [],
-      assignments: '',
 
       newStudent: '',
       newStudentID: '',
@@ -31,7 +32,6 @@ class App extends React.Component {
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
-    this.retrieveStudents = this.retrieveStudents.bind(this);
     this.retrieveAssignments = this.retrieveAssignments.bind(this);
 
     this.addStudent = this.addStudent.bind(this);
@@ -54,7 +54,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.retrieveClasses();
-    this.retrieveStudents(1);
   }
 
   retrieveClasses() {
@@ -254,19 +253,22 @@ class App extends React.Component {
   }
 
   render() {
+
+    const Display = ({ match }) => {
+      return (
+        <React.Fragment>
+          <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
+          <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+          <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+        </React.Fragment>
+      )
+    }
+
     return(
-      <React.Fragment>
-        <Class view={this.state.view} classNames={this.state.classes} studentData={this.state.students} retrieveStudents={this.retrieveStudents} viewStudent={this.viewStudent}
-        viewAssignmentInput={this.viewAssignmentInput} handleStudentInput={this.handleStudentInput} studentName={this.state.newStudent} addStudent={this.addStudent}
-        studentAverages={this.state.studentAverages} handleClassInput={this.handleClassInput} className={this.state.newClass} addClass={this.addClass}/>
-
-        <Student view={this.state.view} name={this.state.viewingStudent} average={this.state.viewingStudentAverage} data={this.state.assignments}
-          retrieveAssignments={this.retrieveAssignments} viewClass={this.viewClass} handleUpdateScore={this.handleUpdateScore} updatedScores={this.state.updatedScores}/>
-
-        <AssignmentInput view={this.state.view} studentData={this.state.students} newAssignment={this.state.newAssignment} handleAssignmentInput={this.handleAssignmentInput}
-        maxPoints={this.state.maxPoints} scores={this.state.studentScores} handleMaxPointsInput={this.handleMaxPointsInput} handleScoreInput={this.handleScoreInput}
-        addAssignment={this.addAssignment}/>
-      </React.Fragment>
+      <div>
+        <Route exact path="/" component={Home} />
+        <Route path="/:classID" component={Display}/>
+      </div>
     )
   }
 }

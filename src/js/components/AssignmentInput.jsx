@@ -1,4 +1,6 @@
 import React from "react";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+
 
 export default class Assignment extends React.Component {
   constructor() {
@@ -8,10 +10,10 @@ export default class Assignment extends React.Component {
 
 
   render() {
-    if (this.props.view !== 'assignmentinput') {
-      return false
-    }
-    console.log(this.props.scores);
+    // if (this.props.view !== 'assignmentinput') {
+    //   return false
+    // }
+    // console.log(this.props.scores);
 
     var allStudents = this.props.studentData.map(
       student =>
