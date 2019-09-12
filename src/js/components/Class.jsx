@@ -22,14 +22,16 @@ export default class Class extends React.Component {
   }
 
   retrieveStudents() {
-    let id = this.props.match.url.slice(1);
-    fetch("/api/getstudents?class_id=" + id, {
+    const class_id = this.props.match.url.slice(1);
+    fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(students => {
+        students.data.map(
+          student => this.retrieveAssignments(student.id)
+        );
         this.setState({ 'students': students.data })
-        this.retrieveAssignments(id)
       });
   }
 
@@ -38,9 +40,9 @@ export default class Class extends React.Component {
       method: "GET"
     })
       .then(data => data.json())
-      .then(responseObj => {
-        this.setState({ 'assignments': responseObj.data });
-        this.handleStudentGradeAverage(id, responseObj.data);
+      .then(assignments => {
+        this.setState({ 'assignments': assignments.data });
+        this.handleStudentGradeAverage(id, assignments.data);
       });
   }
 
