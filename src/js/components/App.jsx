@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
@@ -273,4 +274,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default withRouter(App);

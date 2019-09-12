@@ -15,10 +15,20 @@ export default class Class extends React.Component {
     }
     this.createNewTab = this.createNewTab.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
+    this.retrieveClasses = this.retrieveClasses.bind(this);
   }
 
   componentDidMount() {
+    this.retrieveClasses();
     this.retrieveStudents();
+  }
+
+  retrieveClasses() {
+    fetch("/api/getclasses", {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(responseObj => this.setState({ 'classes': responseObj.data }));
   }
 
   retrieveStudents() {
@@ -100,7 +110,7 @@ export default class Class extends React.Component {
     )
 
     var allClasses = this.state.classes.map(
-      Class =>  <Link to={`/class_${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
+      Class =>  <Link to={`/${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
                   {Class.title}
                 </Link>
     )
