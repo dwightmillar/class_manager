@@ -18,6 +18,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
+      classes: [],
 
       newStudent: '',
       newStudentID: '',
@@ -25,15 +26,10 @@ class App extends React.Component {
       newAssignment: '',
       newClass: '',
 
-      updatedScores: {},
-
       maxPoints: '',
-      studentScores: {},
-      studentAverages: {}
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
-    this.retrieveAssignments = this.retrieveAssignments.bind(this);
 
     this.addStudent = this.addStudent.bind(this);
     this.addAssignment = this.addAssignment.bind(this);
@@ -44,13 +40,6 @@ class App extends React.Component {
     this.handleClassInput = this.handleClassInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
-    this.handleStudentGradeAverage = this.handleStudentGradeAverage.bind(this);
-
-    this.handleUpdateScore = this.handleUpdateScore.bind(this);
-
-    this.viewStudent = this.viewStudent.bind(this);
-    this.viewClass = this.viewClass.bind(this);
-    this.viewAssignmentInput = this.viewAssignmentInput.bind(this);
   }
 
   componentDidMount() {
@@ -62,71 +51,7 @@ class App extends React.Component {
       method: "GET"
     })
       .then(data => data.json())
-      .then(responseObj => this.setState({'classes': responseObj.data}));
-  }
-
-  updateAssignmentScore() {
-    const scores = this.state.updatedScores;
-    fetch("/api/updatescore", {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        scores: scores
-      })
-    })
-  }
-
-  retrieveStudents(event) {
-    if (event.target){
-      var id = event.target.id;
-    } else {
-      id = event;
-    }
-    fetch("/api/getstudents?class_id=" + id, {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(students => {
-        students.data.map(
-          student => this.retrieveAssignments(student.id)
-        );
-        this.setState({ 'viewingClass': id, 'students': students.data })
-      });
-
-  }
-
-  retrieveAssignments(id) {
-    fetch("/api/getassignments?student_id=" + id, {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(responseObj => {
-        this.setState({ 'assignments': responseObj.data });
-        this.handleStudentGradeAverage(id, responseObj.data);
-      });
-  }
-
-  viewClass() {
-    this.updateAssignmentScore();
-    this.setState({ view: 'class', assignments: '' });
-  }
-
-  viewStudent(event) {
-    const id = event.target.parentElement.id;
-    const student = this.state.students.filter(
-      student => student.id == id
-    )[0];
-    this.retrieveAssignments(id);
-    this.setState({ view: 'student',
-                    'viewingStudent': student.name,
-                    'viewingStudentAverage': this.state.studentAverages[id] });
-  }
-
-  viewAssignmentInput() {
-    this.setState({ view: 'assignmentinput'});
+      .then(classes => this.setState({ 'classes': classes.data }));
   }
 
   addClass (event) {
@@ -223,41 +148,21 @@ class App extends React.Component {
     this.setState({ studentScores: student});
   }
 
-  handleUpdateScore(event) {
-    const studentID = event.target.id;
-    let student = this.state.studentScores;
-    const studentScore = parseInt(event.target.value);
-    student[studentID] = studentScore;
-
-    this.setState({ updatedScores: student });
-  }
-
-  handleStudentGradeAverage(id, data) {
-    let studentAverage = this.state.studentAverages;
-    let totalPointsScored = 0;
-    let totalPointsPossible = 0;
-    let average = 0;
-
-    data.forEach(
-      grade => {
-        totalPointsScored += grade.score;
-        totalPointsPossible += grade.totalpoints;
-      }
-    )
-
-    if(totalPointsPossible !== 0){
-      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
-    }
-    studentAverage[id] = average;
-
-    this.setState({ studentAverages: studentAverage})
-  }
-
   render() {
+    var allClasses = this.state.classes.map(
+      Class =>  <Link to={`/${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
+                  {Class.title}
+                </Link>
+    )
 
     const Display = ({ match }) => {
       return (
         <React.Fragment>
+          <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
+            <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
+            {allClasses}
+            {this.state.newTab}
+          </div>
           <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
           <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
           <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />

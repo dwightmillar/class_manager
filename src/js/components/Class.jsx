@@ -10,25 +10,14 @@ export default class Class extends React.Component {
       studentAverages: {},
       newTab: '',
       students: [],
-      assignments: [],
-      classes: []
+      assignments: []
     }
     this.createNewTab = this.createNewTab.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
-    this.retrieveClasses = this.retrieveClasses.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveClasses();
     this.retrieveStudents();
-  }
-
-  retrieveClasses() {
-    fetch("/api/getclasses", {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(responseObj => this.setState({ 'classes': responseObj.data }));
   }
 
   retrieveStudents() {
@@ -103,26 +92,14 @@ export default class Class extends React.Component {
 
     var allStudents = this.state.students.map(
       student =>
-        <div id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
+        <Link to={this.props.match.url + `/${student.id}`} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
-        </div>
+        </Link>
     )
-
-    var allClasses = this.state.classes.map(
-      Class =>  <Link to={`/${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
-                  {Class.title}
-                </Link>
-    )
-
 
     return (
       <React.Fragment>
-        <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
-          <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
-          {allClasses}
-          {this.state.newTab}
-        </div>
         <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
             Class Average: {classAverage}%
@@ -130,7 +107,7 @@ export default class Class extends React.Component {
           <button style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }} onClick={this.props.viewAssignmentInput}>
             <Link to="/input">
               Input Assignment
-          </Link>
+            </Link>
           </button>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
