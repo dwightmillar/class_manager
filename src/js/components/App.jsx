@@ -24,15 +24,14 @@ class App extends React.Component {
       newStudentID: '',
       newClassID: '',
       newAssignment: '',
-      newClass: '',
+      // newClass: '',
+      // newTab: '',
 
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
-
+    this.createNewTab = this.createNewTab.bind(this);
     this.addClass = this.addClass.bind(this);
-
-    this.handleClassInput = this.handleClassInput.bind(this);
   }
 
   componentDidMount() {
@@ -49,6 +48,8 @@ class App extends React.Component {
 
   addClass (event) {
     event.preventDefault();
+    const title = event.target.children[0].value;
+    event.target.children[0].value = '';
     fetch("/api/addclass", {
       headers: {
         'Accept': 'application/json',
@@ -56,21 +57,31 @@ class App extends React.Component {
       },
       method: "POST",
       body: JSON.stringify({
-        name: this.state.newClass,
+        name: title,
       })
     })
       .then(data => data.json())
       .then(responseObj => {
-        console.log(responseObj.data.insertId);
-        const newClassObj = [{ 'id': responseObj.data.insertId, 'title': this.state.newClass }];
+        const newClassObj = [{ 'id': responseObj.data.insertId, 'title': title }];
         console.log(newClassObj);
-        this.setState({ 'classes': this.state.classes.concat(newClassObj) , 'newClass': ''})
+        this.setState({ 'classes': this.state.classes.concat(newClassObj)})
     });
   }
 
-  handleClassInput(event) {
-    this.setState({'newClass' : event.target.value})
+  createNewTab() {
+    if(this.state.newTab) {
+      this.setState({ newTab: ''});
+    } else {
+      this.setState({
+        newTab:
+          <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
+            <input type="text"></input>
+          </form>
+      })
+    }
   }
+
+
 
   render() {
     var allClasses = this.state.classes.map(
@@ -85,7 +96,10 @@ class App extends React.Component {
           <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
             <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
             {allClasses}
-            {this.state.newTab}
+            {/* {this.state.newTab} */}
+            <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
+              <input type="text"></input>
+            </form>
           </div>
           <Switch>
             <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />

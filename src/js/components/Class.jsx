@@ -9,11 +9,9 @@ export default class Class extends React.Component {
       classAverage: '',
       newStudent: '',
       studentAverages: {},
-      newTab: '',
       students: [],
       assignments: []
     }
-    this.createNewTab = this.createNewTab.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
     this.addStudent = this.addStudent.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
@@ -98,15 +96,6 @@ export default class Class extends React.Component {
 
   handleStudentInput(event) {
     this.setState({ 'newStudent': event.target.value })
-  }
-
-  createNewTab() {
-    this.setState({
-      newTab:
-      <form onSubmit={this.props.addClass}>
-        <input type="text" onChange={this.props.handleClassInput}></input>
-      </form>
-    })
   }
 
   render() {
