@@ -63,14 +63,19 @@ export default class Class extends React.Component {
       })
     })
       .then(data => data.json())
-      .then(responseObj =>{
-         console.log(responseObj);
-         this.setState({ 'newStudentID': responseObj.data.insertId
-        })});
+      .then(newStudent => {
+        this.setState({
+          'newStudentID': newStudent.data.insertId
+        });
+        this.addStudentDirect(class_id);
+      });
+  }
 
-    const newStudentObj = [{ 'class_id': this.state.viewingClass, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
+  addStudentDirect(class_id) {
+    const newStudentObj = [{ 'class_id': class_id, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
     this.setState({ 'students': this.state.students.concat(newStudentObj) });
-    this.setState({ 'newStudent': '', 'newStudentID': '' })
+    this.handleStudentGradeAverage(this.state.newStudentID, []);
+    this.setState({ 'newStudent': '', 'newStudentID': '' });
   }
 
   handleStudentGradeAverage(id, data) {
@@ -79,16 +84,19 @@ export default class Class extends React.Component {
     let totalPointsPossible = 0;
     let average = 0;
 
-    data.forEach(
-      grade => {
-        totalPointsScored += grade.score;
-        totalPointsPossible += grade.totalpoints;
-      }
-    )
+    if (data.length > 0) {
+      data.forEach(
+        grade => {
+          totalPointsScored += grade.score;
+          totalPointsPossible += grade.totalpoints;
+        }
+      )
+    }
 
     if (totalPointsPossible !== 0) {
       average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
     }
+
     studentAverage[id] = average;
 
     this.setState({ studentAverages: studentAverage })
@@ -110,35 +118,53 @@ export default class Class extends React.Component {
         }
       }
     )
-    classAverage = (classAverage / averageIndex).toFixed(2);
+
+    if(!averageIndex) {
+      classAverage = 'N/A';
+    } else {
+      classAverage = (classAverage / averageIndex).toFixed(2) + '%';
+    }
 
 
     var allStudents = this.state.students.map(
-      student =>
-        <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
-        </Link>
+      student => {
+        if(this.state.studentAverages[student.id]) {
+          return (
+            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
+            </Link>
+          )
+        } else {
+          return (
+            <div key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>N/A</div>
+            </div>
+          )
+        }
+      }
     )
 
     return (
       <React.Fragment>
         <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            Class Average: {classAverage}%
+            Class Average: {classAverage}
         </div>
-          <button style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }} onClick={this.props.viewAssignmentInput}>
-            <Link to={this.props.match.url + "/input"}>
+
+            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }}>
+            <button onClick={this.props.viewAssignmentInput}>
               Input Assignment
+            </button>
             </Link>
-          </button>
           <div style={{ display: 'flex', flexDirection: 'row' }}>
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
           </div>
           {allStudents}
           <form onSubmit={this.addStudent}>
-            <input type="text" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+            <input type="text" placeholder="Add student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
           </form>
         </div>
       </React.Fragment>

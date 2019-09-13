@@ -56,7 +56,6 @@ export default class Assignment extends React.Component {
       student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id})`
     ).toString();
 
-    console.log(scores);
     fetch("/api/addassignment", {
       headers: {
         'Accept': 'application/json',
@@ -71,7 +70,7 @@ export default class Assignment extends React.Component {
       .then(data => console.log(data))
       .catch(error => console.log(error))
 
-    this.setState({ view: 'class', newAssignment: '', maxPoints: '', scores: {} })
+    // this.setState({ view: 'class', newAssignment: '', maxPoints: '', scores: {} })
   }
 
 
@@ -90,6 +89,7 @@ export default class Assignment extends React.Component {
       )
     }
 
+    const previousPageURL = "/" + this.props.match.url.split("/")[1];
 
     return (
       <React.Fragment>
@@ -104,9 +104,11 @@ export default class Assignment extends React.Component {
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Score</div>
           </div>
           {allStudents}
-          <button style={{ width: 7 + '%', height: 30 + 'px', marginLeft: 50 + '%' }} onClick={this.addAssignment}>
-            Submit
-          </button>
+          <Link to={previousPageURL} style={{ width: 20 + '%', height: 60 + 'px' }}>
+            <button onClick={this.addAssignment}>
+              Submit
+            </button>
+          </Link>
         </div>
       </React.Fragment>
     )

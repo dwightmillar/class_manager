@@ -24,13 +24,9 @@ class App extends React.Component {
       newStudentID: '',
       newClassID: '',
       newAssignment: '',
-      // newClass: '',
-      // newTab: '',
-
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
-    this.createNewTab = this.createNewTab.bind(this);
     this.addClass = this.addClass.bind(this);
   }
 
@@ -68,19 +64,6 @@ class App extends React.Component {
     });
   }
 
-  createNewTab() {
-    if(this.state.newTab) {
-      this.setState({ newTab: ''});
-    } else {
-      this.setState({
-        newTab:
-          <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
-            <input type="text"></input>
-          </form>
-      })
-    }
-  }
-
 
 
   render() {
@@ -98,7 +81,7 @@ class App extends React.Component {
             {allClasses}
             {/* {this.state.newTab} */}
             <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
-              <input type="text"></input>
+              <input type="text" placeholder="Add class"></input>
             </form>
           </div>
           <Switch>

@@ -5,12 +5,14 @@ export default class Student extends React.Component {
   constructor() {
     super()
     this.state = {
+      name: '',
       assignments: [],
       studentAverage: 0,
       studentScores: {},
       updatedScores: {}
     }
 
+    this.retrieveName = this.retrieveName.bind(this);
     this.retrieveAssignments = this.retrieveAssignments.bind(this);
     this.handleUpdateScore = this.handleUpdateScore.bind(this);
     this.updateAssignmentScore = this.updateAssignmentScore.bind(this);
@@ -18,6 +20,16 @@ export default class Student extends React.Component {
 
   componentDidMount() {
     this.retrieveAssignments();
+    this.retrieveName();
+  }
+
+  retrieveName() {
+    const student_id = this.props.match.url.slice(3);
+    fetch("/api/getstudents?id=" + student_id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(student => this.setState({name: student.data[0].name}));
   }
 
   retrieveAssignments() {
