@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 // import { match } from "minimatch";
 
 export default class Class extends React.Component {
@@ -92,7 +92,7 @@ export default class Class extends React.Component {
 
     var allStudents = this.state.students.map(
       student =>
-        <Link to={this.props.match.url + `/${student.id}`} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
+        <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
         </Link>
@@ -105,7 +105,7 @@ export default class Class extends React.Component {
             Class Average: {classAverage}%
         </div>
           <button style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }} onClick={this.props.viewAssignmentInput}>
-            <Link to="/input">
+            <Link to={this.props.match.url + "/input"}>
               Input Assignment
             </Link>
           </button>

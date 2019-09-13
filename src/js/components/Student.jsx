@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 
 export default class Student extends React.Component {
   constructor() {
@@ -36,7 +36,6 @@ export default class Student extends React.Component {
     let studentAverage = 0;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
-    let average = 0;
 
     data.forEach(
       grade => {
@@ -63,17 +62,20 @@ export default class Student extends React.Component {
 
   updateAssignmentScore() {
     const scores = this.state.updatedScores;
-    console.log(scores);
-    fetch("/api/updatescore", {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        scores: scores
+    if (scores !== {}) {
+      fetch("/api/updatescore", {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          scores: scores
+        })
       })
-    })
+      .then(data => data.json())
+      .then(response => console.log(response));
+    }
   }
 
 
@@ -84,7 +86,7 @@ export default class Student extends React.Component {
 
     var allAssignments = this.state.assignments.map(
       assignment =>
-        <div id={assignment.id} style={{ display: 'flex', flexDirection: 'row' }}>
+        <div key={assignment.id} style={{ display: 'flex', flexDirection: 'row' }}>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>{assignment.title}</div>
           <div style={{ width: 50 + '%', height: 100 + '%' }}>
           <input id={assignment.id} type="text" style={{ zIndex: 1,display: 'inline-block', width: 3 + '%', height: 20 + 'px' }} value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}>

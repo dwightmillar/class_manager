@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 
 import Class from "./Class.jsx";
@@ -26,20 +26,15 @@ class App extends React.Component {
       newAssignment: '',
       newClass: '',
 
-      maxPoints: '',
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
 
     this.addStudent = this.addStudent.bind(this);
-    this.addAssignment = this.addAssignment.bind(this);
     this.addClass = this.addClass.bind(this);
 
-    this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
     this.handleClassInput = this.handleClassInput.bind(this);
-    this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
-    this.handleScoreInput = this.handleScoreInput.bind(this);
   }
 
   componentDidMount() {
@@ -96,33 +91,6 @@ class App extends React.Component {
     this.setState({'newStudent': '', 'newStudentID': ''})
   }
 
-  addAssignment(event) {
-    event.preventDefault();
-    const title = this.state.newAssignment;
-    const totalpoints = this.state.maxPoints;
-    const studentScores = this.state.studentScores;
-    let scores = this.state.students.map(
-      student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id})`
-    ).toString();
-
-    console.log(scores);
-    fetch("/api/addassignment", {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: "POST",
-      body: JSON.stringify({
-        scores: scores
-      })
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.log(error))
-
-    this.setState({ view: 'class', newAssignment: '', maxPoints: '', studentScores: {}})
-  }
-
   handleClassInput(event) {
     this.setState({'newClass' : event.target.value})
   }
@@ -131,26 +99,9 @@ class App extends React.Component {
     this.setState({'newStudent' : event.target.value})
   }
 
-  handleAssignmentInput(event) {
-    this.setState({ 'newAssignment': event.target.value })
-  }
-
-  handleMaxPointsInput(event) {
-    this.setState({ 'maxPoints': event.target.value })
-  }
-
-  handleScoreInput(event) {
-    const studentID = event.target.id;
-    let student = this.state.studentScores;
-    const studentScore = parseInt(event.target.value);
-    student[studentID] = studentScore;
-
-    this.setState({ studentScores: student});
-  }
-
   render() {
     var allClasses = this.state.classes.map(
-      Class =>  <Link to={`/${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
+      Class =>  <Link to={`/${Class.id}`} key={Class.id} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
                   {Class.title}
                 </Link>
     )
@@ -163,9 +114,11 @@ class App extends React.Component {
             {allClasses}
             {this.state.newTab}
           </div>
-          <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
-          <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
-          <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+          <Switch>
+            <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
+            <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+            <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+          </Switch>
         </React.Fragment>
       )
     }
