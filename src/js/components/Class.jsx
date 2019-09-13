@@ -7,6 +7,7 @@ export default class Class extends React.Component {
     super();
     this.state = {
       classAverage: '',
+      newStudent: '',
       studentAverages: {},
       newTab: '',
       students: [],
@@ -14,6 +15,8 @@ export default class Class extends React.Component {
     }
     this.createNewTab = this.createNewTab.bind(this);
     this.retrieveStudents = this.retrieveStudents.bind(this);
+    this.addStudent = this.addStudent.bind(this);
+    this.handleStudentInput = this.handleStudentInput.bind(this);
   }
 
   componentDidMount() {
@@ -45,6 +48,33 @@ export default class Class extends React.Component {
       });
   }
 
+  addStudent(event) {
+    event.preventDefault();
+
+    const class_id = this.props.match.url.slice(1);
+
+    fetch("/api/addstudent", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name: this.state.newStudent,
+        class_id: class_id
+      })
+    })
+      .then(data => data.json())
+      .then(responseObj =>{
+         console.log(responseObj);
+         this.setState({ 'newStudentID': responseObj.data.insertId
+        })});
+
+    const newStudentObj = [{ 'class_id': this.state.viewingClass, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
+    this.setState({ 'students': this.state.students.concat(newStudentObj) });
+    this.setState({ 'newStudent': '', 'newStudentID': '' })
+  }
+
   handleStudentGradeAverage(id, data) {
     let studentAverage = this.state.studentAverages;
     let totalPointsScored = 0;
@@ -64,6 +94,10 @@ export default class Class extends React.Component {
     studentAverage[id] = average;
 
     this.setState({ studentAverages: studentAverage })
+  }
+
+  handleStudentInput(event) {
+    this.setState({ 'newStudent': event.target.value })
   }
 
   createNewTab() {
@@ -114,8 +148,8 @@ export default class Class extends React.Component {
             <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
           </div>
           {allStudents}
-          <form onSubmit={this.props.addStudent}>
-            <input type="text" value={this.props.studentName} onChange={this.props.handleStudentInput}></input>
+          <form onSubmit={this.addStudent}>
+            <input type="text" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
           </form>
         </div>
       </React.Fragment>

@@ -30,10 +30,8 @@ class App extends React.Component {
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
 
-    this.addStudent = this.addStudent.bind(this);
     this.addClass = this.addClass.bind(this);
 
-    this.handleStudentInput = this.handleStudentInput.bind(this);
     this.handleClassInput = this.handleClassInput.bind(this);
   }
 
@@ -70,33 +68,8 @@ class App extends React.Component {
     });
   }
 
-  addStudent(event) {
-    event.preventDefault();
-    fetch("/api/addstudent", {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: "POST",
-      body: JSON.stringify({
-        name: this.state.newStudent,
-        class_id: this.state.viewingClass
-      })
-    })
-      .then(data => data.json())
-      .then(responseObj => this.setState({ 'newStudentID': responseObj.data.insertId}));
-
-    const newStudentObj = [{'class_id': this.state.viewingClass, 'id': this.state.newStudentID, 'name': this.state.newStudent}];
-    this.setState({'students': this.state.students.concat(newStudentObj)});
-    this.setState({'newStudent': '', 'newStudentID': ''})
-  }
-
   handleClassInput(event) {
     this.setState({'newClass' : event.target.value})
-  }
-
-  handleStudentInput(event) {
-    this.setState({'newStudent' : event.target.value})
   }
 
   render() {
