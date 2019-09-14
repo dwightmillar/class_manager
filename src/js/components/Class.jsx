@@ -1,100 +1,173 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { match } from "minimatch";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+// import { match } from "minimatch";
 
 export default class Class extends React.Component {
   constructor() {
     super();
     this.state = {
       classAverage: '',
-      newTab: ''
+      newStudent: '',
+      studentAverages: {},
+      students: [],
+      assignments: []
     }
-    this.createNewTab = this.createNewTab.bind(this);
-    this.students = this.students.bind(this);
-    this.home = this.home.bind(this);
+    this.retrieveStudents = this.retrieveStudents.bind(this);
+    this.addStudent = this.addStudent.bind(this);
+    this.handleStudentInput = this.handleStudentInput.bind(this);
   }
 
-  createNewTab() {
-    this.setState({
-      newTab:
-      <form onSubmit={this.props.addClass}>
-        <input type="text" onChange={this.props.handleClassInput}></input>
-      </form>
+  componentDidMount() {
+    this.retrieveStudents();
+  }
+
+  retrieveStudents() {
+    const class_id = this.props.match.url.slice(1);
+    fetch("/api/getstudents?class_id=" + class_id, {
+      method: "GET"
     })
+      .then(data => data.json())
+      .then(students => {
+        students.data.map(
+          student => this.retrieveAssignments(student.id)
+        );
+        this.setState({ 'students': students.data })
+      });
   }
 
-  home(props) {
-    return (
-      <div>TEST</div>
-    )
+  retrieveAssignments(id) {
+    fetch("/api/getassignments?student_id=" + id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(assignments => {
+        this.setState({ 'assignments': assignments.data });
+        this.handleStudentGradeAverage(id, assignments.data);
+      });
   }
 
-  students(props) {
-    console.log(props);
+  addStudent(event) {
+    event.preventDefault();
+
+    const class_id = this.props.match.url.slice(1);
+
+    fetch("/api/addstudent", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name: this.state.newStudent,
+        class_id: class_id
+      })
+    })
+      .then(data => data.json())
+      .then(newStudent => {
+        this.setState({
+          'newStudentID': newStudent.data.insertId
+        });
+        this.addStudentDirect(class_id);
+      });
+  }
+
+  addStudentDirect(class_id) {
+    const newStudentObj = [{ 'class_id': class_id, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
+    this.setState({ 'students': this.state.students.concat(newStudentObj) });
+    this.handleStudentGradeAverage(this.state.newStudentID, []);
+    this.setState({ 'newStudent': '', 'newStudentID': '' });
+  }
+
+  handleStudentGradeAverage(id, data) {
+    let studentAverage = this.state.studentAverages;
+    let totalPointsScored = 0;
+    let totalPointsPossible = 0;
+    let average = 0;
+
+    if (data.length > 0) {
+      data.forEach(
+        grade => {
+          totalPointsScored += grade.score;
+          totalPointsPossible += grade.totalpoints;
+        }
+      )
+    }
+
+    if (totalPointsPossible !== 0) {
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    }
+
+    studentAverage[id] = average;
+
+    this.setState({ studentAverages: studentAverage })
+  }
+
+  handleStudentInput(event) {
+    this.setState({ 'newStudent': event.target.value })
+  }
+
+  render() {
     var classAverage = 0;
     var averageIndex = 0;
 
-    this.props.studentData.forEach(
+    this.state.students.forEach(
       student => {
-        if (this.props.studentAverages[student.id] !== undefined) {
-          classAverage += parseFloat(this.props.studentAverages[student.id]);
+        if (this.state.studentAverages[student.id] !== undefined) {
+          classAverage += parseFloat(this.state.studentAverages[student.id]);
           ++averageIndex;
         }
       }
     )
-    classAverage = (classAverage / averageIndex).toFixed(2);
 
-
-    var allStudents = this.props.studentData.map(
-      student =>
-        <div id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.props.studentAverages[student.id]}%</div>
-        </div>
-    )
-
-    return (
-      <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
-        <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-          Class Average: {classAverage}%
-        </div>
-        <button style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }} onClick={this.props.viewAssignmentInput}>
-          Input Assignment
-        </button>
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
-        </div>
-        {allStudents}
-        <form onSubmit={this.props.addStudent}>
-          <input type="text" value={this.props.studentName} onChange={this.props.handleStudentInput}></input>
-        </form>
-      </div>
-    )
-  }
-
-  render() {
-    if (this.props.view !== "class") {
-      return false
+    if(!averageIndex) {
+      classAverage = 'N/A';
+    } else {
+      classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    var allClasses = this.props.classNames.map(
-      Class =>  <Link to={`/class_${Class.id}`} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
-                  {Class.title}
-                </Link>
+
+    var allStudents = this.state.students.map(
+      student => {
+        if(this.state.studentAverages[student.id]) {
+          return (
+            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
+            </Link>
+          )
+        } else {
+          return (
+            <div key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }}>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
+              <div style={{ width: 50 + '%', height: 100 + '%' }}>N/A</div>
+            </div>
+          )
+        }
+      }
     )
 
-
     return (
-      <Router props={this.props}>
-        <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
-          <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
-          {allClasses}
-          {this.state.newTab}
+      <React.Fragment>
+        <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
+          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
+            Class Average: {classAverage}
         </div>
-        <Route exact path="/" component={this.home}/>
-        <Route path="/:class" component={this.students}/>
-      </Router>
+
+            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }}>
+            <button onClick={this.props.viewAssignmentInput}>
+              Input Assignment
+            </button>
+            </Link>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
+            <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
+          </div>
+          {allStudents}
+          <form onSubmit={this.addStudent}>
+            <input type="text" placeholder="Add student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+          </form>
+        </div>
+      </React.Fragment>
     )
   }
 }
