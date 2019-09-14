@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.row {
+  background-color: gainsboro;
+  border-bottom: 3px groove lightslategray;
+
+}
+
+a.row:hover {
+  background-color: white;
+}
+
+.column {
+  height: 100%;
+  width: 50%;
+  text-align: center;
+}
+
+.input {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1em;
+  text-align: center;
+  border: none;
+  background-color: gainsboro;
+  width: 100%;
+  bottom: 20%;
+  outline: none;
+}
+
+.tab {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.2rem;
+  color: grey;
+  padding: 10px;
+  margin-top: 1vh;
+  width: 6%;
+  background-color: gainsboro;
+  border: 1px groove gainsboro;
+  border-radius: 15px 15px 0 0;
+  text-align: center;
+  text-overflow: hidden;
+}
+
+.add {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.5rem;
+  height: 20%;
+  padding: 10px;
+  margin-top: 12px;
+  background-color: #9580ff;
+  border: none;
+  width: 7%;
+}
+
+.active {
+  color: black;
+  margin-top: 0;
+  background-color: white;
+  border: none;
+}
+
+.foreground {
+  background-color: #80d5ff;
+}
+
+.background {
+  background-color: #9580ff;
+  border: none;
+}
+
+.accent {
+  background-color:#80ffaa;
+}

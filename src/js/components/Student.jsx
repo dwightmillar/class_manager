@@ -98,9 +98,9 @@ export default class Student extends React.Component {
 
     var allAssignments = this.state.assignments.map(
       assignment =>
-        <div key={assignment.id} style={{ display: 'flex', flexDirection: 'row' }}>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{assignment.title}</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>
+        <div key={assignment.id} className="row">
+          <div className="column">{assignment.title}</div>
+          <div className="column">
           <input id={assignment.id} type="text" style={{ zIndex: 1,display: 'inline-block', width: 3 + '%', height: 20 + 'px' }} value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}>
             </input>
             /{assignment.totalpoints}
@@ -117,9 +117,9 @@ export default class Student extends React.Component {
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
             {this.state.name}'s Grades: {this.state.studentAverage}%
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
+          <div className="row">
+            <div className="column">Name</div>
+            <div className="column">Grade</div>
           </div>
           {allAssignments}
         </div>

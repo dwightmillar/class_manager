@@ -130,16 +130,16 @@ export default class Class extends React.Component {
       student => {
         if(this.state.studentAverages[student.id]) {
           return (
-            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
+            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} className="row">
+              <div className="column">{student.name}</div>
+              <div className="column">{this.state.studentAverages[student.id]}%</div>
             </Link>
           )
         } else {
           return (
-            <div key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }}>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>N/A</div>
+            <div key={student.id} id={student.id} className="row">
+              <div className="column">{student.name}</div>
+              <div className="column">N/A</div>
             </div>
           )
         }
@@ -148,7 +148,7 @@ export default class Class extends React.Component {
 
     return (
       <React.Fragment>
-        <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
+        <div style={{ width: 100 + 'vw', height: 90 + 'vh' }}>
           <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
             Class Average: {classAverage}
         </div>
@@ -158,9 +158,9 @@ export default class Class extends React.Component {
               Input Assignment
             </button>
             </Link>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
+          <div className="row">
+            <div className="column">Name</div>
+            <div className="column">Grade</div>
           </div>
           {allStudents}
           <form onSubmit={this.addStudent}>

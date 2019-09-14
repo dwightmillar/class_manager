@@ -6,12 +6,10 @@ import { withRouter } from 'react-router-dom';
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
+import { EventEmitter } from "events";
+
 function Home() {
   return <div>Hello, from Home!</div>;
-}
-
-function About() {
-  return <div>Hello, from About!</div>;
 }
 
 class App extends React.Component {
@@ -68,20 +66,41 @@ class App extends React.Component {
 
   render() {
     var allClasses = this.state.classes.map(
-      Class =>  <Link to={`/${Class.id}`} key={Class.id} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
-                  {Class.title}
-                </Link>
+      Class => {
+        if(this.props.location.pathname.split("/")[1] == Class.id) {
+          return (
+            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="tab active">
+              {Class.title}
+            </Link>
+          )
+        } else {
+          return (
+            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="tab">
+              {Class.title}
+            </Link>
+          )
+        }
+      }
     )
 
     const Display = ({ match }) => {
       return (
         <React.Fragment>
-          <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
-            <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
+          <div id="tab-list" class="row background" >
             {allClasses}
-            {/* {this.state.newTab} */}
-            <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
-              <input type="text" placeholder="Add class"></input>
+            <form onSubmit={this.addClass}>
+              <input className="add" type="text" placeholder="+"
+              onFocus={() => {
+                event.target.placeholder = 'Class Name';
+                event.target.className = 'input';
+                event.target.parentElement.className = 'tab';
+                }}
+              onBlur={() => {
+                event.target.placeholder = '+';
+                event.target.className = 'add';
+                event.target.parentElement.className = '';
+                }}>
+              </input>
             </form>
           </div>
           <Switch>
@@ -94,10 +113,10 @@ class App extends React.Component {
     }
 
     return(
-      <div>
+      <React.Fragment>
         <Route exact path="/" component={Home} />
         <Route path="/:classID" component={Display}/>
-      </div>
+      </React.Fragment>
     )
   }
 }
