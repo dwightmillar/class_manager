@@ -99,7 +99,6 @@ server.post('/api/addclass', function (request, response) {
   db.connect(function () {
     const title = JSON.stringify(request.body.name);
     const query = `INSERT INTO classes(title) VALUES (${title})`;
-    console.log('query: ',query);
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({
@@ -114,7 +113,6 @@ server.post('/api/addclass', function (request, response) {
 server.patch('/api/updatescore', function (request, response) {
   db.connect(function () {
     const scores = request.body.scores;
-    console.log(scores);
     let formattedScores = '';
     let affectedIDs = '';
 
@@ -126,7 +124,6 @@ server.patch('/api/updatescore', function (request, response) {
     affectedIDs = affectedIDs.slice(0, -2);
 
     const query = `UPDATE assignments SET score = CASE id ${formattedScores} END WHERE id IN (${affectedIDs})`;
-    console.log(query);
 
     db.query(query, function (error, data, fields) {
       if(!error) {
