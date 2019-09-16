@@ -23,11 +23,17 @@ a {
 
 div.column {
   border-top: 1px groove lightslategray;
-  padding-top: 1em;
+  padding-top: 0.5em;
 }
 
 a.row {
   background-color: white;
+}
+
+button > a {
+  height: 100%;
+  width: 100%;
+  padding: 10px 20px 10px 20px;
 }
 
 .student.row:hover {
@@ -42,10 +48,31 @@ a.row {
 
 .input {
   font-size: 1rem;
-  text-align: center;
+  height: 20%;
+  padding: 10px;
+  /* border: none; */
   background-color: gainsboro;
   width: 100%;
-  bottom: 20%;
+  cursor: text;
+}
+
+.assignment.input {
+  width: 10%;
+  background-color: white;
+}
+
+/* .column .input { */
+  /* border: ; */
+  /* outline: unset; */
+/* } */
+
+.add {
+  font-size: 1.5rem;
+  height: 20%;
+  padding: 10px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
 }
 
 .tab input {
@@ -69,17 +96,18 @@ form.row {
   border-top: 1px groove lightslategray;
 }
 
-button.assignment {
+.assignment {
   background-color: skyblue;
 }
 
-button.back {
+.back {
   background-color: grey;
 
 }
 
-button.submit {
+.submit {
   background-color: limegreen;
+  padding: 10px 0;
 }
 
 .tab {
@@ -93,12 +121,27 @@ button.submit {
   border: 1px groove gainsboro;
   border-radius: 15px 15px 0 0;
   text-align: center;
+  overflow: hidden;
+}
+
+.inactive {
+  font-size: 1.2rem;
+  color: grey;
+  padding: 10px;
+  margin-top: 1vh;
+  width: 5%;
+  white-space: nowrap;
+  background-color: gainsboro;
+  border: 1px groove gainsboro;
+  border-radius: 15px 15px 0 0;
+  text-align: center;
+  overflow: hidden;
 }
 
 a.tab:hover {
   color: black;
   min-width: 5%;
-  width: fit-content;
+  width: auto;
 }
 
 .active {
@@ -108,7 +151,8 @@ a.tab:hover {
   border-bottom: none;
   display: inline-block;
   min-width: 5%;
-  width: fit-content;
+  width: auto;
+  cursor: default;
 }
 
 button {
@@ -119,13 +163,11 @@ button {
   cursor: pointer;
 }
 
-.add {
-  font-size: 1.5rem;
-  height: 20%;
-  padding: 10px;
-  margin-top: 12px;
-  border: none;
-  width: 7%;
+.button {
+  border-radius:  20px;
+  font-size: 1.2rem;
+  padding: 10px 20px 10px 20px;
+  color: white;
   cursor: pointer;
 }
 

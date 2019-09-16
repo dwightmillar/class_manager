@@ -69,9 +69,9 @@ class App extends React.Component {
       Class => {
         if(this.props.location.pathname.split("/")[1] == Class.id) {
           return (
-            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="tab active">
+            <div key={Class.id} id={Class.id} className="tab active">
               {Class.title}
-            </Link>
+            </div>
           )
         } else {
           return (
@@ -86,10 +86,10 @@ class App extends React.Component {
     const Display = ({ match }) => {
       return (
         <React.Fragment>
-          <div id="tab-list" class="row" >
+          <div id="tab-list" class="row background" >
             {allClasses}
-            <form onSubmit={this.addClass}>
-              <input className="add" type="text" placeholder="+"
+            <form className="inactive background" onSubmit={this.addClass}>
+              <input className="add background" type="text" placeholder="+"
               onFocus={() => {
                 event.target.placeholder = 'Enter Name';
                 event.target.className = 'input';
@@ -97,15 +97,15 @@ class App extends React.Component {
                 }}
               onBlur={() => {
                 event.target.placeholder = '+';
-                event.target.className = 'add';
-                event.target.parentElement.className = '';
+                event.target.className = 'add background';
+                event.target.parentElement.className = 'inactive background';
                 }}>
               </input>
             </form>
           </div>
           <Switch>
             <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
-            <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+            <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
             <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
           </Switch>
         </React.Fragment>

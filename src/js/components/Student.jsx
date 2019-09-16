@@ -115,7 +115,7 @@ export default class Student extends React.Component {
     return (
       <React.Fragment>
 
-        <div style={{ width: 100 + '%', height: 90 + 'vh' }}>
+        <div>
           <header>
             <h1>
               {this.state.name}'s Average Grade:

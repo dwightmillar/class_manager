@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-// import { match } from "minimatch";
+import { match } from "minimatch";
 
 export default class Class extends React.Component {
   constructor() {
@@ -25,13 +25,11 @@ export default class Class extends React.Component {
 
   retrieveName() {
     const class_id = this.props.match.url.slice(1);
-    console.log(class_id);
     fetch("/api/getclasses?id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(Class => {
-        console.log(Class);
         this.setState({ title: Class.data[0].title })
       });
   }
@@ -63,6 +61,18 @@ export default class Class extends React.Component {
 
   addStudent(event) {
     event.preventDefault();
+    var studentName = this.state.newStudent;
+    var specCharCheck = /\W/;
+    var numberCheck = /\d/;
+    if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
+      event.target.children[0].placeholder = 'Can only use letters';
+      event.target.children[0].value = '';
+      return false;
+    } else if (this.state.newStudent.length < 2) {
+      event.target.children[0].placeholder = 'Must be at least 2 letters';
+      event.target.children[0].value = '';
+      return false;
+    }
 
     const class_id = this.props.match.url.slice(1);
 
@@ -163,16 +173,16 @@ export default class Class extends React.Component {
 
     return (
       <React.Fragment>
-        <div style={{ width: 100 + 'vw', height: 90 + 'vh' }}>
+        <div>
           <header>
             <h1>
               {this.state.title}
             </h1>
-            <h2 style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
+            <h2>
               Class Average: {classAverage}
             </h2>
           </header>
-            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 70 + '%' }}>
+            <Link to={this.props.match.url + "/input"}>
             <button className="assignment" onClick={this.props.viewAssignmentInput}>
               Input Assignment
             </button>

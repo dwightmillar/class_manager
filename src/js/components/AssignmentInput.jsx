@@ -32,6 +32,7 @@ export default class Assignment extends React.Component {
 
   handleAssignmentInput(event) {
     this.setState({ 'newAssignment': event.target.value })
+    console.log(event.target);
   }
 
   handleMaxPointsInput(event) {
@@ -49,6 +50,10 @@ export default class Assignment extends React.Component {
 
   addAssignment(event) {
     event.preventDefault();
+    if (this.state.newAssignment.length < 1) {
+      alert('Assignment missing title. Submit rejected.');
+      return false;
+    }
     const title = this.state.newAssignment;
     const totalpoints = this.state.maxPoints;
     const studentScores = this.state.scores;
@@ -70,7 +75,13 @@ export default class Assignment extends React.Component {
       .then(data => console.log(data))
       .catch(error => console.log(error))
 
-    // this.setState({ view: 'class', newAssignment: '', maxPoints: '', scores: {} })
+    var newScores = {};
+
+    for (let studentID in this.state.scores) {
+      newScores[studentID] = '';
+    }
+
+    this.setState({ newAssignment: '', maxPoints: '', scores: newScores })
   }
 
 
@@ -79,10 +90,10 @@ export default class Assignment extends React.Component {
     if(this.state.students.length > 0) {
       var allStudents = this.state.students.map(
         student =>
-          <div key={student.id} style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>
-              <input id={student.id} type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput} style={{ display: 'inline-block', width: 4 + '%', height: 20 + 'px' }}>
+          <div key={student.id} className="row">
+            <div className="column">{student.name}</div>
+            <div className="column">
+              <input id={student.id} className="input" type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}>
               </input>
             </div>
           </div>
@@ -93,22 +104,37 @@ export default class Assignment extends React.Component {
 
     return (
       <React.Fragment>
-        <div style={{ width: 100 + '%', height: 60 + 'px' }}>
-          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
+        <header>
+          <h1>
+            {this.state.title}Title
+          </h1>
+          <h2>
+            Class Average:
+            {/* {classAverage} */}
+          </h2>
+        </header>
+        <div>
+          <input className="assignment input" autoFocus type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} ></input>
+          <input className="assignment input" type="text" placeholder="Max Pts" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+        </div>
+        <div>
+          <div>
           </div>
-          <input type="text" value={this.state.newAssignment} onChange={this.handleAssignmentInput} style={{ display: 'inline-block', width: 10 + '%', height: 30 + 'px', marginLeft: 40 + '%' }}></input>
-          <input type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} style={{ display: 'inline-block', width: 3 + '%', height: 30 + 'px', marginLeft: 70 + '%' }}></input>
-
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Score</div>
+          <div className="row">
+            <h3 className="column">Name</h3>
+            <h3 className="column">Score</h3>
           </div>
           {allStudents}
-          <Link to={previousPageURL} style={{ width: 20 + '%', height: 60 + 'px' }}>
-            <button className="submit" onClick={this.addAssignment}>
+          <button className="submit" onClick={this.addAssignment}>
+            <Link to={previousPageURL} style={{width: 100 + '%', height: 100 + '%'}}>
               Submit
-            </button>
-          </Link>
+            </Link>
+          </button>
+          <button className="back">
+            <Link to={previousPageURL} style={{ width: 100 + '%', height: 100 + '%' }}>
+              Back
+            </Link>
+          </button>
         </div>
       </React.Fragment>
     )
