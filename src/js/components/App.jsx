@@ -86,12 +86,12 @@ class App extends React.Component {
     const Display = ({ match }) => {
       return (
         <React.Fragment>
-          <div id="tab-list" class="row background" >
+          <div id="tab-list" class="row" >
             {allClasses}
             <form onSubmit={this.addClass}>
               <input className="add" type="text" placeholder="+"
               onFocus={() => {
-                event.target.placeholder = 'Class Name';
+                event.target.placeholder = 'Enter Name';
                 event.target.className = 'input';
                 event.target.parentElement.className = 'tab';
                 }}

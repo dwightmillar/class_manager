@@ -21,7 +21,12 @@ server.use(staticMiddlewareFunction);
 
 server.get('/api/getclasses', function (request, response) {
   db.connect(function () {
-    const query = "SELECT * FROM `classes`";
+    const id = request._parsedUrl.query;
+    if(id){
+      var query = "SELECT * FROM `classes` WHERE " + id;
+    } else {
+      query = "SELECT * FROM `classes`";
+    }
     db.query(query, function (error, data, fields) {
       if (!error) {
         response.send({

@@ -6,6 +6,7 @@ export default class Class extends React.Component {
   constructor() {
     super();
     this.state = {
+      title: '',
       classAverage: '',
       newStudent: '',
       studentAverages: {},
@@ -19,6 +20,20 @@ export default class Class extends React.Component {
 
   componentDidMount() {
     this.retrieveStudents();
+    this.retrieveName();
+  }
+
+  retrieveName() {
+    const class_id = this.props.match.url.slice(1);
+    console.log(class_id);
+    fetch("/api/getclasses?id=" + class_id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(Class => {
+        console.log(Class);
+        this.setState({ title: Class.data[0].title })
+      });
   }
 
   retrieveStudents() {
@@ -130,14 +145,14 @@ export default class Class extends React.Component {
       student => {
         if(this.state.studentAverages[student.id]) {
           return (
-            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} className="row">
+            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} className="student row">
               <div className="column">{student.name}</div>
               <div className="column">{this.state.studentAverages[student.id]}%</div>
             </Link>
           )
         } else {
           return (
-            <div key={student.id} id={student.id} className="row">
+            <div key={student.id} id={student.id} className="student row">
               <div className="column">{student.name}</div>
               <div className="column">N/A</div>
             </div>
@@ -149,22 +164,26 @@ export default class Class extends React.Component {
     return (
       <React.Fragment>
         <div style={{ width: 100 + 'vw', height: 90 + 'vh' }}>
-          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            Class Average: {classAverage}
-        </div>
-
-            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }}>
-            <button onClick={this.props.viewAssignmentInput}>
+          <header>
+            <h1>
+              {this.state.title}
+            </h1>
+            <h2 style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
+              Class Average: {classAverage}
+            </h2>
+          </header>
+            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 70 + '%' }}>
+            <button className="assignment" onClick={this.props.viewAssignmentInput}>
               Input Assignment
             </button>
             </Link>
           <div className="row">
-            <div className="column">Name</div>
-            <div className="column">Grade</div>
+            <h3 className="column">Name</h3>
+            <h3 className="column">Grade</h3>
           </div>
           {allStudents}
-          <form onSubmit={this.addStudent}>
-            <input type="text" placeholder="Add student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+          <form className="row" onSubmit={this.addStudent}>
+            <input className="column" type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
           </form>
         </div>
       </React.Fragment>

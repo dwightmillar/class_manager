@@ -101,7 +101,9 @@ export default class Student extends React.Component {
         <div key={assignment.id} className="row">
           <div className="column">{assignment.title}</div>
           <div className="column">
-          <input id={assignment.id} type="text" style={{ zIndex: 1,display: 'inline-block', width: 3 + '%', height: 20 + 'px' }} value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}>
+            <input id={assignment.id} className="input" type="text" value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
+              onFocus={() => event.target.placeholder = ''}
+              onBlur={() => event.target.placeholder = assignment.score}>
             </input>
             /{assignment.totalpoints}
           </div>
@@ -113,21 +115,26 @@ export default class Student extends React.Component {
     return (
       <React.Fragment>
 
-        <div style={{ width: 100 + '%', height: 60 + 'px' }}>
-          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            {this.state.name}'s Grades: {this.state.studentAverage}%
-          </div>
+        <div style={{ width: 100 + '%', height: 90 + 'vh' }}>
+          <header>
+            <h1>
+              {this.state.name}'s Average Grade:
+            </h1>
+            <h1>
+              {this.state.studentAverage}%
+            </h1>
+          </header>
           <div className="row">
-            <div className="column">Name</div>
-            <div className="column">Grade</div>
+            <h3 className="column">Name</h3>
+            <h3 className="column">Grade</h3>
           </div>
           {allAssignments}
-        </div>
-        <Link to={previousPageURL} style={{ width: 20 + '%', height: 60 + 'px', marginLeft: 70 + '%' }}>
-          <button onClick={this.updateAssignmentScore}>
-            Back
+          <Link to={previousPageURL}>
+            <button className="back" onClick={this.updateAssignmentScore}>
+              Back
           </button>
-        </Link>
+          </Link>
+        </div>
       </React.Fragment>
     )
   }

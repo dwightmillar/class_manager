@@ -105,7 +105,7 @@ export default class Assignment extends React.Component {
           </div>
           {allStudents}
           <Link to={previousPageURL} style={{ width: 20 + '%', height: 60 + 'px' }}>
-            <button onClick={this.addAssignment}>
+            <button className="submit" onClick={this.addAssignment}>
               Submit
             </button>
           </Link>
