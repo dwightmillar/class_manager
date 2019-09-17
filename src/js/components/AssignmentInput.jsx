@@ -27,12 +27,20 @@ export default class Assignment extends React.Component {
       method: "GET"
     })
       .then(data => data.json())
-      .then(students => this.setState({ 'students': students.data }));
+      .then(students => {
+        this.setState({ 'students': students.data });
+        students.data.map(
+          student => {
+            let studentScores = this.state.scores;
+            studentScores[student.id] = '';
+            this.setState({ studentScores: studentScores });
+          }
+        )
+      })
   }
 
   handleAssignmentInput(event) {
     this.setState({ 'newAssignment': event.target.value })
-    console.log(event.target);
   }
 
   handleMaxPointsInput(event) {
@@ -40,10 +48,21 @@ export default class Assignment extends React.Component {
   }
 
   handleScoreInput(event) {
+    let studentScore = 0;
     const studentID = event.target.id;
     let student = this.state.scores;
-    const studentScore = parseInt(event.target.value);
+
+    if(isNaN(event.target.value)) {
+      return false;
+    }
+    if (event.target.value.length === 0) {
+      studentScore = event.target.value;
+    } else {
+      studentScore = parseInt(event.target.value);
+    }
+
     student[studentID] = studentScore;
+    console.log(student);
 
     this.setState({ scores: student });
   }

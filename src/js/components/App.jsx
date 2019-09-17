@@ -42,6 +42,9 @@ class App extends React.Component {
 
   addClass (event) {
     event.preventDefault();
+    if(event.target.children.value == undefined) {
+      return false;
+    }
     const title = event.target.children[0].value;
     event.target.children[0].value = '';
     fetch("/api/addclass", {

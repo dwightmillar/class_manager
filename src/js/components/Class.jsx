@@ -120,6 +120,8 @@ export default class Class extends React.Component {
 
     if (totalPointsPossible !== 0) {
       average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      average = 'N/A';
     }
 
     studentAverage[id] = average;
@@ -137,7 +139,7 @@ export default class Class extends React.Component {
 
     this.state.students.forEach(
       student => {
-        if (this.state.studentAverages[student.id] !== undefined) {
+        if (this.state.studentAverages[student.id] !== 'N/A') {
           classAverage += parseFloat(this.state.studentAverages[student.id]);
           ++averageIndex;
         }
@@ -153,7 +155,7 @@ export default class Class extends React.Component {
 
     var allStudents = this.state.students.map(
       student => {
-        if(this.state.studentAverages[student.id]) {
+        if(this.state.studentAverages[student.id] !== 'N/A') {
           return (
             <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} className="student row">
               <div className="column">{student.name}</div>

@@ -159,6 +159,7 @@ button {
   border-radius:  20px;
   font-size: 1.2rem;
   padding: 10px 20px 10px 20px;
+  margin: 30px 30px 30px 80%;
   color: white;
   cursor: pointer;
 }

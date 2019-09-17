@@ -9,7 +9,6 @@ export default class Student extends React.Component {
       assignments: [],
       studentAverage: 0,
       studentScores: {},
-      updatedScores: {}
     }
 
     this.retrieveName = this.retrieveName.bind(this);
@@ -41,6 +40,13 @@ export default class Student extends React.Component {
       .then(assignments => {
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(student_id, assignments.data);
+        assignments.data.map(
+          assignment => {
+            let studentScores = this.state.studentScores;
+            studentScores[assignment.id] = assignment.score;
+            this.setState({ studentScores: studentScores });
+          }
+        )
       });
   }
 
@@ -64,16 +70,27 @@ export default class Student extends React.Component {
   }
 
   handleUpdateScore(event) {
+
     const studentID = event.target.id;
     let student = this.state.studentScores;
-    const studentScore = parseInt(event.target.value);
+    let studentScore = 0;
+    if (isNaN(event.target.value)) {
+      return false;
+    }
+    if (event.target.value.length === 0) {
+      studentScore = event.target.value;
+    } else {
+      studentScore = parseInt(event.target.value);
+    }
+    console.log(studentScore);
     student[studentID] = studentScore;
 
-    this.setState({ updatedScores: student });
+    this.setState({ studentScores: student });
   }
 
   updateAssignmentScore() {
-    const scores = this.state.updatedScores;
+    const scores = this.state.studentScores;
+    console.log(scores);
     if (scores !== {}) {
       fetch("/api/updatescore", {
         headers: {
@@ -86,7 +103,7 @@ export default class Student extends React.Component {
         })
       })
       .then(data => data.json())
-      .then(response => console.log(response));
+      .then(response => response);
     }
   }
 
@@ -101,9 +118,15 @@ export default class Student extends React.Component {
         <div key={assignment.id} className="row">
           <div className="column">{assignment.title}</div>
           <div className="column">
-            <input id={assignment.id} className="input" type="text" value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
-              onFocus={() => event.target.placeholder = ''}
-              onBlur={() => event.target.placeholder = assignment.score}>
+            <input id={assignment.id} className="input" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
+              onBlur={() => {
+                if (event.target.value === '') {
+                  let student = this.state.studentScores;
+                  student[assignment.id] = assignment.score;
+                  this.setState({ studentScores : student })
+                }
+              }}
+              >
             </input>
             /{assignment.totalpoints}
           </div>
@@ -132,7 +155,7 @@ export default class Student extends React.Component {
           <Link to={previousPageURL}>
             <button className="back" onClick={this.updateAssignmentScore}>
               Back
-          </button>
+            </button>
           </Link>
         </div>
       </React.Fragment>
