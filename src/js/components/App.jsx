@@ -19,6 +19,7 @@ class App extends React.Component {
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.addClass = this.addClass.bind(this);
+    this.renderNewTab = this.renderNewTab.bind(this);
   }
 
   componentDidMount() {
@@ -56,14 +57,23 @@ class App extends React.Component {
         this.setState({ 'classes': this.state.classes.concat(newClassObj)});
         return responseObj.data.insertId;
       })
-      .then((id) =>
-       this.setState({ 'newClassRedirectURL': id })
-);
+      .then(id => {
+        this.setState({ 'newClassRedirectURL': id })
+      });
   }
 
-
+  renderNewTab() {
+    var newURL = this.state.newClassRedirectURL;
+    console.log(newURL);
+    this.setState({newClassRedirectURL: ''});
+    return <Redirect to={`/${newURL}`}/>
+  }
 
   render() {
+    if (this.state.newClassRedirectURL) {
+      return this.renderNewTab();
+    }
+
     var allClasses = this.state.classes.map(
       Class => {
         if(this.props.location.pathname.split("/")[1] == Class.id) {
@@ -114,10 +124,6 @@ class App extends React.Component {
           </Switch>
         </React.Fragment>
       )
-    }
-
-    if (this.state.newClassRedirectURL) {
-      return <Redirect to={`/${this.state.newClassRedirectURL}`}/>
     }
 
     return(
