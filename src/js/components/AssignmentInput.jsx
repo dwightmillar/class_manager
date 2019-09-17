@@ -141,11 +141,11 @@ export default class Assignment extends React.Component {
             {this.state.title}
           </h1>
           <div className="row">
-            <button className="btn btn-secondary center">
-              <Link to={previousPageURL} className="center" style={{ width: 100 + '%', height: 100 + '%' }}>
+            <Link to={previousPageURL} className="center">
+              <button className="btn btn-secondary">
                 Back
-              </Link>
-            </button>
+              </button>
+            </Link>
           </div>
           <div className="row">
             <input className="center" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
@@ -170,11 +170,13 @@ export default class Assignment extends React.Component {
               </tbody>
             </table>
           </div>
-          <button onClick={this.addAssignment}>
-            <Link to={previousPageURL} style={{width: 100 + '%', height: 100 + '%'}}>
-              Submit
+          <div className="row">
+            <Link to={"/1"} className="center" style={{zIndex: 1}}>
+              <button className="btn btn-success">
+                Submit
+              </button>
             </Link>
-          </button>
+          </div>
         </div>
       </React.Fragment>
     )

@@ -4,3 +4,17 @@
   margin-right: auto;
   text-decoration: none;
 }
+
+.addtab {
+  padding-left: 10px;
+  height: 90%;
+  width: 35px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1.7em
+}
+
+.fullheight {
+  height: 100%;
+}

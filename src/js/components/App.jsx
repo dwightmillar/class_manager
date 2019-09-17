@@ -42,7 +42,7 @@ class App extends React.Component {
 
   addClass (event) {
     event.preventDefault();
-    if(event.target.children.value == undefined) {
+    if(event.target.children[0].value == undefined) {
       return false;
     }
     const title = event.target.children[0].value;
@@ -72,15 +72,19 @@ class App extends React.Component {
       Class => {
         if(this.props.location.pathname.split("/")[1] == Class.id) {
           return (
-            <div key={Class.id} id={Class.id} className="nav-item">
-              {Class.title}
-            </div>
+            <li className="nav-item">
+              <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-link active">
+                {Class.title}
+              </Link>
+            </li>
           )
         } else {
           return (
-            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-item">
-              {Class.title}
-            </Link>
+            <li className="nav-item">
+              <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-link">
+                {Class.title}
+              </Link>
+            </li>
           )
         }
       }
@@ -89,23 +93,24 @@ class App extends React.Component {
     const Display = ({ match }) => {
       return (
         <React.Fragment>
-          <div id="tab-list" className="nav nav-tabs" >
+          <ul id="tab-list" className="nav nav-tabs" >
             {allClasses}
-            <form className="inactive background" onSubmit={this.addClass}>
-              <input className="add background" type="text" placeholder="+"
-              onFocus={() => {
-                event.target.placeholder = 'Enter Name';
-                event.target.className = 'input';
-                event.target.parentElement.className = 'tab';
-                }}
-              onBlur={() => {
-                event.target.placeholder = '+';
-                event.target.className = 'add background';
-                event.target.parentElement.className = 'inactive background';
-                }}>
-              </input>
-            </form>
-          </div>
+            <li className="nav-item">
+              <form className="fullheight" onSubmit={this.addClass}>
+                <input className="addtab" type="text" placeholder="+"
+                  onFocus={() => {
+                    event.target.placeholder = 'Enter Class';
+                    event.target.className = 'nav-link';
+                  }}
+                  onBlur={() => {
+                    event.target.placeholder = '+';
+                    event.target.className = 'addtab';
+                    event.target.value = '';
+                  }}>
+                </input>
+              </form>
+            </li>
+          </ul>
           <Switch>
             <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
             <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
