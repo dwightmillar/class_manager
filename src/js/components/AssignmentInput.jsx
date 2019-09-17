@@ -6,6 +6,7 @@ export default class Assignment extends React.Component {
   constructor() {
     super()
     this.state = {
+      title: '',
       students: [],
       newAssignment: '',
       maxPoints: '',
@@ -18,7 +19,17 @@ export default class Assignment extends React.Component {
   }
 
   componentDidMount() {
+    this.retrieveName();
     this.retrieveStudents();
+  }
+
+  retrieveName() {
+    const class_id = this.props.match.url.split('/')[1];
+    fetch("/api/getclasses?id=" + class_id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(Class => this.setState({ title: Class.data[0].title }));
   }
 
   retrieveStudents() {
@@ -109,13 +120,15 @@ export default class Assignment extends React.Component {
     if(this.state.students.length > 0) {
       var allStudents = this.state.students.map(
         student =>
-          <div key={student.id} className="row">
-            <div className="column">{student.name}</div>
-            <div className="column">
+          <tr key={student.id} className="d-flex">
+            <td className="col-2"></td>
+            <td className="col-4">{student.name}</td>
+            <td className="col-2"></td>
+            <td className="col-4">
               <input id={student.id} className="input" type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}>
               </input>
-            </div>
-          </div>
+            </td>
+          </tr>
       )
     }
 
@@ -124,34 +137,42 @@ export default class Assignment extends React.Component {
     return (
       <React.Fragment>
         <header>
-          <h1>
-            {this.state.title}Title
+          <h1 className="text-center">
+            {this.state.title}
           </h1>
-          <h2>
-            Class Average:
-            {/* {classAverage} */}
-          </h2>
-        </header>
-        <div>
-          <input className="assignment input" autoFocus type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} ></input>
-          <input className="assignment input" type="text" placeholder="Max Pts" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
-        </div>
-        <div>
-          <div>
+          <div className="row">
+            <button className="btn btn-secondary center">
+              <Link to={previousPageURL} className="center" style={{ width: 100 + '%', height: 100 + '%' }}>
+                Back
+              </Link>
+            </button>
           </div>
           <div className="row">
-            <h3 className="column">Name</h3>
-            <h3 className="column">Score</h3>
+            <input className="center" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
           </div>
-          {allStudents}
-          <button className="submit" onClick={this.addAssignment}>
+          <div className="row">
+            <input className="center" type="text" placeholder="Max Pts" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+          </div>
+        </header>
+        <div>
+          <div className="container-fluid">
+            <table className="table table-hover">
+              <thead>
+                <tr className="d-flex">
+                  <th className="col-2"></th>
+                  <th className="col-4">Name</th>
+                  <th className="col-2"></th>
+                  <th className="col-4">Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {allStudents}
+              </tbody>
+            </table>
+          </div>
+          <button onClick={this.addAssignment}>
             <Link to={previousPageURL} style={{width: 100 + '%', height: 100 + '%'}}>
               Submit
-            </Link>
-          </button>
-          <button className="back">
-            <Link to={previousPageURL} style={{ width: 100 + '%', height: 100 + '%' }}>
-              Back
             </Link>
           </button>
         </div>

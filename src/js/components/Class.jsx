@@ -157,17 +157,27 @@ export default class Class extends React.Component {
       student => {
         if(this.state.studentAverages[student.id] !== 'N/A') {
           return (
-            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} className="student row">
-              <div className="column">{student.name}</div>
-              <div className="column">{this.state.studentAverages[student.id]}%</div>
-            </Link>
+            <tr className="d-flex">
+              <td className="col-2"></td>
+              <td className="col-4">
+                {student.name}
+              </td>
+              <td className="col-2"></td>
+              <td className="col-4">
+                <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id}>
+                  {this.state.studentAverages[student.id]}%
+                </Link>
+              </td>
+            </tr>
           )
         } else {
           return (
-            <div key={student.id} id={student.id} className="student row">
-              <div className="column">{student.name}</div>
-              <div className="column">N/A</div>
-            </div>
+            <tr key={student.id} id={student.id} className="d-flex">
+              <td className="col-2"></td>
+              <td className="col-4">{student.name}</td>
+              <td className="col-2"></td>
+              <td className="col-4">N/A</td>
+            </tr>
           )
         }
       }
@@ -175,28 +185,46 @@ export default class Class extends React.Component {
 
     return (
       <React.Fragment>
-        <div>
-          <header>
-            <h1>
-              {this.state.title}
-            </h1>
-            <h2>
-              Class Average: {classAverage}
-            </h2>
-          </header>
-            <Link to={this.props.match.url + "/input"}>
-            <button className="assignment" onClick={this.props.viewAssignmentInput}>
-              Input Assignment
-            </button>
-            </Link>
+        <header className="container-fluid">
+          <h1 className="text-center">
+            {this.state.title}
+          </h1>
+          <h2 className="text-center">
+            Class Average: {classAverage}
+          </h2>
           <div className="row">
-            <h3 className="column">Name</h3>
-            <h3 className="column">Grade</h3>
+            <Link to={this.props.match.url + "/input"} className="center">
+              {/* <div className="col-8"></div> */}
+              <button className="btn btn-primary" onClick={this.props.viewAssignmentInput}>
+                Input Assignment
+              </button>
+            </Link>
           </div>
-          {allStudents}
-          <form className="row" onSubmit={this.addStudent}>
-            <input className="column" type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
-          </form>
+        </header>
+
+        <div className="container-fluid">
+          <table class="table table-hover">
+            <thead>
+              <tr className="d-flex">
+                <th className="col-2"></th>
+                <th className="col-4">Name</th>
+                <th className="col-2"></th>
+                <th className="col-4">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allStudents}
+              <tr className="d-flex">
+                <td className="col-2"></td>
+                <td className="col-4">
+                  <form onSubmit={this.addStudent}>
+                    <input type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+                  </form>
+                </td>
+                <td className="col-6"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </React.Fragment>
     )

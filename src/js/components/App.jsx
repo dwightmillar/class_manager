@@ -72,13 +72,13 @@ class App extends React.Component {
       Class => {
         if(this.props.location.pathname.split("/")[1] == Class.id) {
           return (
-            <div key={Class.id} id={Class.id} className="tab active">
+            <div key={Class.id} id={Class.id} className="nav-item">
               {Class.title}
             </div>
           )
         } else {
           return (
-            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="tab">
+            <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-item">
               {Class.title}
             </Link>
           )
@@ -89,7 +89,7 @@ class App extends React.Component {
     const Display = ({ match }) => {
       return (
         <React.Fragment>
-          <div id="tab-list" class="row background" >
+          <div id="tab-list" className="nav nav-tabs" >
             {allClasses}
             <form className="inactive background" onSubmit={this.addClass}>
               <input className="add background" type="text" placeholder="+"

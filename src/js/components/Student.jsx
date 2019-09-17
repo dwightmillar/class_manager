@@ -90,7 +90,6 @@ export default class Student extends React.Component {
 
   updateAssignmentScore() {
     const scores = this.state.studentScores;
-    console.log(scores);
     if (scores !== {}) {
       fetch("/api/updatescore", {
         headers: {
@@ -115,10 +114,12 @@ export default class Student extends React.Component {
 
     var allAssignments = this.state.assignments.map(
       assignment =>
-        <div key={assignment.id} className="row">
-          <div className="column">{assignment.title}</div>
-          <div className="column">
-            <input id={assignment.id} className="input" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
+        <tr key={assignment.id} className="d-flex">
+          <td className="col-2"></td>
+          <td className="col-4">{assignment.title}</td>
+          <td className="col-2"></td>
+          <td className="col-4">
+            <input id={assignment.id} type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
               onBlur={() => {
                 if (event.target.value === '') {
                   let student = this.state.studentScores;
@@ -129,34 +130,44 @@ export default class Student extends React.Component {
               >
             </input>
             /{assignment.totalpoints}
-          </div>
-        </div>
+          </td>
+        </tr>
     )
 
     const previousPageURL = "/" + this.props.match.url.split("/")[1];
 
     return (
       <React.Fragment>
-
-        <div>
-          <header>
-            <h1>
-              {this.state.name}'s Average Grade:
-            </h1>
-            <h1>
-              {this.state.studentAverage}%
-            </h1>
-          </header>
+        <header>
+          <h1 className="text-center">
+            {this.state.name}
+          </h1>
+          <h2 className="text-center">
+            {this.state.studentAverage}%
+          </h2>
           <div className="row">
-            <h3 className="column">Name</h3>
-            <h3 className="column">Grade</h3>
+            <Link to={previousPageURL} className="center">
+              <button className="btn btn-secondary" onClick={this.updateAssignmentScore}>
+                Back
+              </button>
+            </Link>
           </div>
-          {allAssignments}
-          <Link to={previousPageURL}>
-            <button className="back" onClick={this.updateAssignmentScore}>
-              Back
-            </button>
-          </Link>
+        </header>
+
+        <div className="container-fluid">
+          <table className="table table-hover">
+            <thead>
+              <tr className="d-flex">
+                <th className="col-2"></th>
+                <th className="col-4">Name</th>
+                <th className="col-2"></th>
+                <th className="col-4">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allAssignments}
+            </tbody>
+          </table>
         </div>
       </React.Fragment>
     )
