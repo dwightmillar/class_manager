@@ -126,12 +126,21 @@ class App extends React.Component {
       )
     }
 
-    return(
-      <React.Fragment>
-        <Route exact path="/" render={() => <Redirect to="/1"/>}/>
-        <Route path="/:classID" component={Display}/>
-      </React.Fragment>
-    )
+    if (!this.state.classes[0]) {
+      return <div>NO CLASSES</div>
+    } else {
+      return (
+        <React.Fragment>
+          <Route exact path="/" render={() => (
+            this.state.classes ? (
+              <Redirect to={`/${this.state.classes[0].id}`} />
+            ) : (
+              {Display}
+            ))} />
+          <Route path="/:classID" component={Display} />
+        </React.Fragment>
+      )
+    }
   }
 }
 

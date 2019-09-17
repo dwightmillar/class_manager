@@ -214,12 +214,12 @@ export default class Assignment extends React.Component {
               </button>
             </Link>
             <div className="col-2"></div>
-            <input className="center" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+            <input className="center assignment" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
           </div>
           <div className="row">
-            <div className="center">Total possible points: &nbsp;
-              <input className="points" type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
-            </div>
+            <div className="col-7"></div>
+            <div>Total possible points:&nbsp;</div>
+            <input className="points" type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
           </div>
         </header>
         <div>

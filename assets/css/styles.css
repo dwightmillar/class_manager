@@ -34,3 +34,12 @@ input.points {
 .btn {
   margin: 20px;
 }
+
+input.nav-link {
+  height: 100%;
+  width: 60%;
+}
+
+input.assignment {
+  height:42
+}
