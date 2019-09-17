@@ -129,11 +129,7 @@ export default class Class extends React.Component {
     this.setState({ studentAverages: studentAverage })
   }
 
-  handleStudentInput(event) {
-    this.setState({ 'newStudent': event.target.value })
-  }
-
-  render() {
+  handleClassAverage() {
     var classAverage = 0;
     var averageIndex = 0;
 
@@ -152,12 +148,22 @@ export default class Class extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
+    return classAverage;
+  }
 
-    var allStudents = this.state.students.map(
+  handleStudentInput(event) {
+    this.setState({ 'newStudent': event.target.value })
+  }
+
+  render() {
+
+    var inputButton = null;
+
+    const allStudents = this.state.students.map(
       student => {
         if(this.state.studentAverages[student.id] !== 'N/A') {
           return (
-            <tr className="d-flex">
+            <tr className="d-flex" key={student.id}>
               <td className="col-2"></td>
               <td className="col-4">
                 {student.name}
@@ -183,6 +189,23 @@ export default class Class extends React.Component {
       }
     )
 
+    if(this.state.students.length) {
+      inputButton =
+        <Link to={this.props.match.url + "/input"} className="center">
+          <button className="btn btn-primary">
+            Input Assignment
+              </button>
+        </Link>
+    } else {
+      inputButton =
+      <div className="center">
+          <button className="btn btn-primary disabled hidecursor">
+            Input Assignment
+          </button>
+      </div>
+    }
+
+
     return (
       <React.Fragment>
         <header className="container-fluid">
@@ -190,20 +213,16 @@ export default class Class extends React.Component {
             {this.state.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {classAverage}
+            Class Average: {this.handleClassAverage()}
           </h2>
           <div className="row">
-            <Link to={this.props.match.url + "/input"} className="center">
-              {/* <div className="col-8"></div> */}
-              <button className="btn btn-primary" onClick={this.props.viewAssignmentInput}>
-                Input Assignment
-              </button>
-            </Link>
+            <div className="col-5"></div>
+            {inputButton}
           </div>
         </header>
 
         <div className="container-fluid">
-          <table class="table table-hover">
+          <table className="table table-hover">
             <thead>
               <tr className="d-flex">
                 <th className="col-2"></th>

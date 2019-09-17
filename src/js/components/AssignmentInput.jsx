@@ -8,6 +8,7 @@ export default class Assignment extends React.Component {
     this.state = {
       title: '',
       students: [],
+      studentAverages: [],
       newAssignment: '',
       maxPoints: '',
       scores: {}
@@ -45,9 +46,69 @@ export default class Assignment extends React.Component {
             let studentScores = this.state.scores;
             studentScores[student.id] = '';
             this.setState({ studentScores: studentScores });
+            this.retrieveAssignments(student.id);
           }
         )
       })
+  }
+
+  retrieveAssignments(id) {
+    fetch("/api/getassignments?student_id=" + id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(assignments => {
+        this.setState({ 'assignments': assignments.data });
+        this.handleStudentGradeAverage(id, assignments.data);
+      });
+  }
+
+  handleStudentGradeAverage(id, data) {
+    let studentAverage = this.state.studentAverages;
+    let totalPointsScored = 0;
+    let totalPointsPossible = 0;
+    let average = 0;
+
+    if (data.length > 0) {
+      data.forEach(
+        grade => {
+          totalPointsScored += grade.score;
+          totalPointsPossible += grade.totalpoints;
+        }
+      )
+    }
+
+    if (totalPointsPossible !== 0) {
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      average = 'N/A';
+    }
+
+    studentAverage[id] = average;
+
+    this.setState({ studentAverages: studentAverage })
+  }
+
+  handleClassAverage() {
+    var classAverage = 0;
+    var averageIndex = 0;
+
+    this.state.students.forEach(
+      student => {
+        if (this.state.studentAverages[student.id] !== 'N/A') {
+          classAverage += parseFloat(this.state.studentAverages[student.id]);
+          ++averageIndex;
+        }
+      }
+    )
+
+    if (!averageIndex) {
+      classAverage = 'N/A';
+    } else {
+      classAverage = (classAverage / averageIndex).toFixed(2) + '%';
+    }
+
+    return classAverage;
   }
 
   handleAssignmentInput(event) {
@@ -73,7 +134,6 @@ export default class Assignment extends React.Component {
     }
 
     student[studentID] = studentScore;
-    console.log(student);
 
     this.setState({ scores: student });
   }
@@ -90,6 +150,8 @@ export default class Assignment extends React.Component {
     let scores = this.state.students.map(
       student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id})`
     ).toString();
+
+    console.log(scores);
 
     fetch("/api/addassignment", {
       headers: {
@@ -111,7 +173,8 @@ export default class Assignment extends React.Component {
       newScores[studentID] = '';
     }
 
-    this.setState({ newAssignment: '', maxPoints: '', scores: newScores })
+    this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
+    this.retrieveStudents();
   }
 
 
@@ -125,7 +188,7 @@ export default class Assignment extends React.Component {
             <td className="col-4">{student.name}</td>
             <td className="col-2"></td>
             <td className="col-4">
-              <input id={student.id} className="input" type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}>
+              <input id={student.id} className="points" type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}>
               </input>
             </td>
           </tr>
@@ -140,18 +203,23 @@ export default class Assignment extends React.Component {
           <h1 className="text-center">
             {this.state.title}
           </h1>
+          <h2 className="text-center">
+            Class Average: {this.handleClassAverage()}
+          </h2>
           <div className="row">
-            <Link to={previousPageURL} className="center">
+            <div className="col-1"></div>
+            <Link to={previousPageURL}>
               <button className="btn btn-secondary">
                 Back
               </button>
             </Link>
-          </div>
-          <div className="row">
+            <div className="col-2"></div>
             <input className="center" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
           </div>
           <div className="row">
-            <input className="center" type="text" placeholder="Max Pts" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            <div className="center">Total possible points: &nbsp;
+              <input className="points" type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            </div>
           </div>
         </header>
         <div>
@@ -171,11 +239,11 @@ export default class Assignment extends React.Component {
             </table>
           </div>
           <div className="row">
-            <Link to={"/1"} className="center" style={{zIndex: 1}}>
-              <button className="btn btn-success">
-                Submit
-              </button>
-            </Link>
+            <div className="col-8">
+            </div>
+            <button className="btn btn-success" onClick={this.addAssignment}>
+              Submit
+            </button>
           </div>
         </div>
       </React.Fragment>

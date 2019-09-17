@@ -2,26 +2,19 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router';
 
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
 import { EventEmitter } from "events";
 
-function Home() {
-  return <div>Hello, from Home!</div>;
-}
-
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       classes: [],
-
-      newStudent: '',
-      newStudentID: '',
-      newClassID: '',
-      newAssignment: '',
+      newClassRedirectURL: ''
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
@@ -60,9 +53,12 @@ class App extends React.Component {
       .then(data => data.json())
       .then(responseObj => {
         const newClassObj = [{ 'id': responseObj.data.insertId, 'title': title }];
-        console.log(newClassObj);
-        this.setState({ 'classes': this.state.classes.concat(newClassObj)})
-    });
+        this.setState({ 'classes': this.state.classes.concat(newClassObj)});
+        return responseObj.data.insertId;
+      })
+      .then((id) =>
+       this.setState({ 'newClassRedirectURL': id })
+);
   }
 
 
@@ -72,16 +68,16 @@ class App extends React.Component {
       Class => {
         if(this.props.location.pathname.split("/")[1] == Class.id) {
           return (
-            <li className="nav-item">
-              <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-link active">
+            <li className="nav-item" key={Class.id}>
+              <Link to={`/${Class.id}`} id={Class.id} className="nav-link active">
                 {Class.title}
               </Link>
             </li>
           )
         } else {
           return (
-            <li className="nav-item">
-              <Link to={`/${Class.id}`} key={Class.id} id={Class.id} className="nav-link">
+            <li className="nav-item" key={Class.id}>
+              <Link to={`/${Class.id}`} id={Class.id} className="nav-link">
                 {Class.title}
               </Link>
             </li>
@@ -120,9 +116,13 @@ class App extends React.Component {
       )
     }
 
+    if (this.state.newClassRedirectURL) {
+      return <Redirect to={`/${this.state.newClassRedirectURL}`}/>
+    }
+
     return(
       <React.Fragment>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" render={() => <Redirect to="/1"/>}/>
         <Route path="/:classID" component={Display}/>
       </React.Fragment>
     )

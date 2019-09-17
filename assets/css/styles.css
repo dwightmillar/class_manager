@@ -15,6 +15,22 @@
   font-size: 1.7em
 }
 
+button.hidecursor {
+  cursor: default;
+}
+
 .fullheight {
   height: 100%;
+}
+
+input {
+  height: 2em;
+}
+
+input.points {
+  width: 50px;
+}
+
+.btn {
+  margin: 20px;
 }

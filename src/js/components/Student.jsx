@@ -119,7 +119,7 @@ export default class Student extends React.Component {
           <td className="col-4">{assignment.title}</td>
           <td className="col-2"></td>
           <td className="col-4">
-            <input id={assignment.id} type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
+            <input id={assignment.id} className="points" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
               onBlur={() => {
                 if (event.target.value === '') {
                   let student = this.state.studentScores;
@@ -146,7 +146,8 @@ export default class Student extends React.Component {
             {this.state.studentAverage}%
           </h2>
           <div className="row">
-            <Link to={previousPageURL} className="center">
+            <div className="col-1"></div>
+            <Link to={previousPageURL}>
               <button className="btn btn-secondary" onClick={this.updateAssignmentScore}>
                 Back
               </button>
