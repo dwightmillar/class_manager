@@ -97,31 +97,51 @@ class App extends React.Component {
     )
 
     const Display = ({ match }) => {
+      var output =
+      <React.Fragment>
+        <h1>OOPS</h1>
+        <h3>The page you are looking for doesn't exist.</h3>
+      </React.Fragment>;
+
+      this.state.classes.forEach(() => {
+        if (3 == match.url.split('/')[1]) {
+          output =
+          <React.Fragment>
+            <ul id="tab-list" className="nav nav-tabs" >
+              {allClasses}
+              <li className="nav-item">
+                <form className="fullheight" onSubmit={this.addClass}>
+                  <input className="addtab" type="text" placeholder="+"
+                    onFocus={() => {
+                      event.target.placeholder = 'Enter Class';
+                      event.target.className = 'nav-link';
+                    }}
+                    onBlur={() => {
+                      event.target.placeholder = '+';
+                      event.target.className = 'addtab';
+                      event.target.value = '';
+                    }}>
+                  </input>
+                </form>
+              </li>
+            </ul>
+            <Switch>
+              <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
+              <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+              <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+            </Switch>
+          </React.Fragment>
+        }
+      })
+
+      return output;
+    }
+
+    const nonExistent = () => {
       return (
         <React.Fragment>
-          <ul id="tab-list" className="nav nav-tabs" >
-            {allClasses}
-            <li className="nav-item">
-              <form className="fullheight" onSubmit={this.addClass}>
-                <input className="addtab" type="text" placeholder="+"
-                  onFocus={() => {
-                    event.target.placeholder = 'Enter Class';
-                    event.target.className = 'nav-link';
-                  }}
-                  onBlur={() => {
-                    event.target.placeholder = '+';
-                    event.target.className = 'addtab';
-                    event.target.value = '';
-                  }}>
-                </input>
-              </form>
-            </li>
-          </ul>
-          <Switch>
-            <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
-            <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
-            <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
-          </Switch>
+          <h1>OOPS</h1>
+          <h3>The page you are looking for doesn't exist.</h3>
         </React.Fragment>
       )
     }
@@ -135,7 +155,7 @@ class App extends React.Component {
             this.state.classes ? (
               <Redirect to={`/${this.state.classes[0].id}`} />
             ) : (
-              {Display}
+              {nonExistent}
             ))} />
           <Route path="/:classID" component={Display} />
         </React.Fragment>
