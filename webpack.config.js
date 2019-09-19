@@ -25,6 +25,9 @@ module.exports = {
       filename: "./index.html"
     })
   ],
+  output: {
+    publicPath: '/'
+  },
   devtool: 'source-map',
   devServer: {
     host: 'localhost',

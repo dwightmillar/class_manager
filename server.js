@@ -121,7 +121,7 @@ server.patch('/api/updatescore', function (request, response) {
     let formattedScores = '';
     let affectedIDs = '';
 
-    for (assignmentID in scores) {
+    for (let assignmentID in scores) {
      formattedScores += `WHEN ${assignmentID} THEN ${scores[assignmentID]} `;
      affectedIDs += `${assignmentID}, `;
     }

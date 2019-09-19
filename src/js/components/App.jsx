@@ -103,8 +103,8 @@ class App extends React.Component {
         <h3>The page you are looking for doesn't exist.</h3>
       </React.Fragment>;
 
-      this.state.classes.forEach(() => {
-        if (3 == match.url.split('/')[1]) {
+      this.state.classes.forEach(classData => {
+        if (classData.id == match.url.split('/')[1]) {
           output =
           <React.Fragment>
             <ul id="tab-list" className="nav nav-tabs" >
@@ -133,21 +133,36 @@ class App extends React.Component {
           </React.Fragment>
         }
       })
+      console.log(output);
 
       return output;
     }
 
-    const nonExistent = () => {
-      return (
-        <React.Fragment>
-          <h1>OOPS</h1>
-          <h3>The page you are looking for doesn't exist.</h3>
-        </React.Fragment>
-      )
-    }
 
     if (!this.state.classes[0]) {
-      return <div>NO CLASSES</div>
+      return (
+        <React.Fragment>
+          <ul id="tab-list" className="nav nav-tabs" >
+            {allClasses}
+            <li className="nav-item">
+              <form className="fullheight" onSubmit={this.addClass}>
+                <input className="addtab" type="text" placeholder="+"
+                  onFocus={() => {
+                    event.target.placeholder = 'Enter Class';
+                    event.target.className = 'nav-link';
+                  }}
+                  onBlur={() => {
+                    event.target.placeholder = '+';
+                    event.target.className = 'addtab';
+                    event.target.value = '';
+                  }}>
+                </input>
+              </form>
+            </li>
+          </ul>
+          <h1>NO CLASSES</h1>
+        </React.Fragment>
+      )
     } else {
       return (
         <React.Fragment>
@@ -155,7 +170,7 @@ class App extends React.Component {
             this.state.classes ? (
               <Redirect to={`/${this.state.classes[0].id}`} />
             ) : (
-              {nonExistent}
+              {Display}
             ))} />
           <Route path="/:classID" component={Display} />
         </React.Fragment>
