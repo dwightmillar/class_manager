@@ -9,7 +9,6 @@ export default class Student extends React.Component {
       assignments: [],
       studentAverage: 0,
       studentScores: {},
-      updatedScores: {}
     }
 
     this.retrieveName = this.retrieveName.bind(this);
@@ -41,6 +40,13 @@ export default class Student extends React.Component {
       .then(assignments => {
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(student_id, assignments.data);
+        assignments.data.map(
+          assignment => {
+            let studentScores = this.state.studentScores;
+            studentScores[assignment.id] = assignment.score;
+            this.setState({ studentScores: studentScores });
+          }
+        )
       });
   }
 
@@ -64,16 +70,26 @@ export default class Student extends React.Component {
   }
 
   handleUpdateScore(event) {
+
     const studentID = event.target.id;
     let student = this.state.studentScores;
-    const studentScore = parseInt(event.target.value);
+    let studentScore = 0;
+    if (isNaN(event.target.value)) {
+      return false;
+    }
+    if (event.target.value.length === 0) {
+      studentScore = event.target.value;
+    } else {
+      studentScore = parseInt(event.target.value);
+    }
+    console.log(studentScore);
     student[studentID] = studentScore;
 
-    this.setState({ updatedScores: student });
+    this.setState({ studentScores: student });
   }
 
   updateAssignmentScore() {
-    const scores = this.state.updatedScores;
+    const scores = this.state.studentScores;
     if (scores !== {}) {
       fetch("/api/updatescore", {
         headers: {
@@ -86,7 +102,7 @@ export default class Student extends React.Component {
         })
       })
       .then(data => data.json())
-      .then(response => console.log(response));
+      .then(response => response);
     }
   }
 
@@ -98,36 +114,62 @@ export default class Student extends React.Component {
 
     var allAssignments = this.state.assignments.map(
       assignment =>
-        <div key={assignment.id} style={{ display: 'flex', flexDirection: 'row' }}>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>{assignment.title}</div>
-          <div style={{ width: 50 + '%', height: 100 + '%' }}>
-          <input id={assignment.id} type="text" style={{ zIndex: 1,display: 'inline-block', width: 3 + '%', height: 20 + 'px' }} value={this.state.updatedScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}>
+        <tr key={assignment.id} className="d-flex">
+          <td className="col-2"></td>
+          <td className="col-4">{assignment.title}</td>
+          <td className="col-2"></td>
+          <td className="col-4">
+            <input id={assignment.id} className="points" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
+              onBlur={() => {
+                if (event.target.value === '') {
+                  let student = this.state.studentScores;
+                  student[assignment.id] = assignment.score;
+                  this.setState({ studentScores : student })
+                }
+              }}
+              >
             </input>
             /{assignment.totalpoints}
-          </div>
-        </div>
+          </td>
+        </tr>
     )
 
     const previousPageURL = "/" + this.props.match.url.split("/")[1];
 
     return (
       <React.Fragment>
+        <header>
+          <h1 className="text-center">
+            {this.state.name}
+          </h1>
+          <h2 className="text-center">
+            {this.state.studentAverage}%
+          </h2>
+          <div className="row">
+            <div className="col-1"></div>
+            <Link to={previousPageURL}>
+              <button className="btn btn-secondary" onClick={this.updateAssignmentScore}>
+                Back
+              </button>
+            </Link>
+          </div>
+        </header>
 
-        <div style={{ width: 100 + '%', height: 60 + 'px' }}>
-          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            {this.state.name}'s Grades: {this.state.studentAverage}%
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
-          </div>
-          {allAssignments}
+        <div className="container-fluid">
+          <table className="table table-hover">
+            <thead>
+              <tr className="d-flex">
+                <th className="col-2"></th>
+                <th className="col-4">Name</th>
+                <th className="col-2"></th>
+                <th className="col-4">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allAssignments}
+            </tbody>
+          </table>
         </div>
-        <Link to={previousPageURL} style={{ width: 20 + '%', height: 60 + 'px', marginLeft: 70 + '%' }}>
-          <button onClick={this.updateAssignmentScore}>
-            Back
-          </button>
-        </Link>
       </React.Fragment>
     )
   }

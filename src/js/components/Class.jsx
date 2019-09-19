@@ -1,11 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-// import { match } from "minimatch";
+import { match } from "minimatch";
 
 export default class Class extends React.Component {
   constructor() {
     super();
     this.state = {
+      title: '',
       classAverage: '',
       newStudent: '',
       studentAverages: {},
@@ -19,6 +20,18 @@ export default class Class extends React.Component {
 
   componentDidMount() {
     this.retrieveStudents();
+    this.retrieveName();
+  }
+
+  retrieveName() {
+    const class_id = this.props.match.url.slice(1);
+    fetch("/api/getclasses?id=" + class_id, {
+      method: "GET"
+    })
+      .then(data => data.json())
+      .then(Class => {
+        this.setState({ title: Class.data[0].title })
+      });
   }
 
   retrieveStudents() {
@@ -48,6 +61,18 @@ export default class Class extends React.Component {
 
   addStudent(event) {
     event.preventDefault();
+    var studentName = this.state.newStudent;
+    var specCharCheck = /\W/;
+    var numberCheck = /\d/;
+    if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
+      event.target.children[0].placeholder = 'Can only use letters';
+      event.target.children[0].value = '';
+      return false;
+    } else if (this.state.newStudent.length < 2) {
+      event.target.children[0].placeholder = 'Must be at least 2 letters';
+      event.target.children[0].value = '';
+      return false;
+    }
 
     const class_id = this.props.match.url.slice(1);
 
@@ -95,6 +120,8 @@ export default class Class extends React.Component {
 
     if (totalPointsPossible !== 0) {
       average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      average = 'N/A';
     }
 
     studentAverage[id] = average;
@@ -102,17 +129,13 @@ export default class Class extends React.Component {
     this.setState({ studentAverages: studentAverage })
   }
 
-  handleStudentInput(event) {
-    this.setState({ 'newStudent': event.target.value })
-  }
-
-  render() {
+  handleClassAverage() {
     var classAverage = 0;
     var averageIndex = 0;
 
     this.state.students.forEach(
       student => {
-        if (this.state.studentAverages[student.id] !== undefined) {
+        if (this.state.studentAverages[student.id] !== 'N/A') {
           classAverage += parseFloat(this.state.studentAverages[student.id]);
           ++averageIndex;
         }
@@ -125,47 +148,102 @@ export default class Class extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
+    return classAverage;
+  }
 
-    var allStudents = this.state.students.map(
+  handleStudentInput(event) {
+    this.setState({ 'newStudent': event.target.value })
+  }
+
+  render() {
+
+    var inputButton = null;
+
+    const allStudents = this.state.students.map(
       student => {
-        if(this.state.studentAverages[student.id]) {
+        if(this.state.studentAverages[student.id] !== 'N/A') {
           return (
-            <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }} onClick={this.props.viewStudent}>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{this.state.studentAverages[student.id]}%</div>
-            </Link>
+            <tr className="d-flex" key={student.id}>
+              <td className="col-2"></td>
+              <td className="col-4">
+                {student.name}
+              </td>
+              <td className="col-2"></td>
+              <td className="col-4">
+                <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id}>
+                  {this.state.studentAverages[student.id]}%
+                </Link>
+              </td>
+            </tr>
           )
         } else {
           return (
-            <div key={student.id} id={student.id} style={{ display: 'flex', flexDirection: 'row' }}>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>{student.name}</div>
-              <div style={{ width: 50 + '%', height: 100 + '%' }}>N/A</div>
-            </div>
+            <tr key={student.id} id={student.id} className="d-flex">
+              <td className="col-2"></td>
+              <td className="col-4">{student.name}</td>
+              <td className="col-2"></td>
+              <td className="col-4">N/A</td>
+            </tr>
           )
         }
       }
     )
 
+    if(this.state.students.length) {
+      inputButton =
+        <Link to={this.props.match.url + "/input"} className="center">
+          <button className="btn btn-primary">
+            Input Assignment
+              </button>
+        </Link>
+    } else {
+      inputButton =
+      <div className="center">
+          <button className="btn btn-primary disabled hidecursor">
+            Input Assignment
+          </button>
+      </div>
+    }
+
+
     return (
       <React.Fragment>
-        <div style={{ width: 100 + 'vw', height: 60 + 'px' }}>
-          <div style={{ display: 'inline-block', width: 25 + '%', height: 60 + 'px' }}>
-            Class Average: {classAverage}
-        </div>
-
-            <Link to={this.props.match.url + "/input"} style={{ display: 'inline-block', width: 30 + '%', height: 60 + 'px', marginLeft: 40 + '%' }}>
-            <button onClick={this.props.viewAssignmentInput}>
-              Input Assignment
-            </button>
-            </Link>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Name</div>
-            <div style={{ width: 50 + '%', height: 100 + '%' }}>Grade</div>
+        <header className="container-fluid">
+          <h1 className="text-center">
+            {this.state.title}
+          </h1>
+          <h2 className="text-center">
+            Class Average: {this.handleClassAverage()}
+          </h2>
+          <div className="row">
+            <div className="col-5"></div>
+            {inputButton}
           </div>
-          {allStudents}
-          <form onSubmit={this.addStudent}>
-            <input type="text" placeholder="Add student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
-          </form>
+        </header>
+
+        <div className="container-fluid">
+          <table className="table table-hover">
+            <thead>
+              <tr className="d-flex">
+                <th className="col-2"></th>
+                <th className="col-4">Name</th>
+                <th className="col-2"></th>
+                <th className="col-4">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allStudents}
+              <tr className="d-flex">
+                <td className="col-2"></td>
+                <td className="col-4">
+                  <form onSubmit={this.addStudent}>
+                    <input type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+                  </form>
+                </td>
+                <td className="col-6"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </React.Fragment>
     )

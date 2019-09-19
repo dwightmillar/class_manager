@@ -2,32 +2,24 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router';
 
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
-function Home() {
-  return <div>Hello, from Home!</div>;
-}
-
-function About() {
-  return <div>Hello, from About!</div>;
-}
+import { EventEmitter } from "events";
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       classes: [],
-
-      newStudent: '',
-      newStudentID: '',
-      newClassID: '',
-      newAssignment: '',
+      newClassRedirectURL: ''
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.addClass = this.addClass.bind(this);
+    this.renderNewTab = this.renderNewTab.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +36,9 @@ class App extends React.Component {
 
   addClass (event) {
     event.preventDefault();
+    if(event.target.children[0].value == undefined) {
+      return false;
+    }
     const title = event.target.children[0].value;
     event.target.children[0].value = '';
     fetch("/api/addclass", {
@@ -59,46 +54,128 @@ class App extends React.Component {
       .then(data => data.json())
       .then(responseObj => {
         const newClassObj = [{ 'id': responseObj.data.insertId, 'title': title }];
-        console.log(newClassObj);
-        this.setState({ 'classes': this.state.classes.concat(newClassObj)})
-    });
+        this.setState({ 'classes': this.state.classes.concat(newClassObj)});
+        return responseObj.data.insertId;
+      })
+      .then(id => {
+        this.setState({ 'newClassRedirectURL': id })
+      });
   }
 
-
+  renderNewTab() {
+    var newURL = this.state.newClassRedirectURL;
+    console.log(newURL);
+    this.setState({newClassRedirectURL: ''});
+    return <Redirect to={`/${newURL}`}/>
+  }
 
   render() {
+    if (this.state.newClassRedirectURL) {
+      return this.renderNewTab();
+    }
+
     var allClasses = this.state.classes.map(
-      Class =>  <Link to={`/${Class.id}`} key={Class.id} id={Class.id} style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.props.retrieveStudents}>
-                  {Class.title}
-                </Link>
+      Class => {
+        if(this.props.location.pathname.split("/")[1] == Class.id) {
+          return (
+            <li className="nav-item" key={Class.id}>
+              <Link to={`/${Class.id}`} id={Class.id} className="nav-link active">
+                {Class.title}
+              </Link>
+            </li>
+          )
+        } else {
+          return (
+            <li className="nav-item" key={Class.id}>
+              <Link to={`/${Class.id}`} id={Class.id} className="nav-link">
+                {Class.title}
+              </Link>
+            </li>
+          )
+        }
+      }
     )
 
     const Display = ({ match }) => {
+      var output =
+      <React.Fragment>
+        <h1>OOPS</h1>
+        <h3>The page you are looking for doesn't exist.</h3>
+      </React.Fragment>;
+
+      this.state.classes.forEach(classData => {
+        if (classData.id == match.url.split('/')[1]) {
+          output =
+          <React.Fragment>
+            <ul id="tab-list" className="nav nav-tabs" >
+              {allClasses}
+              <li className="nav-item">
+                <form className="fullheight" onSubmit={this.addClass}>
+                  <input className="addtab" type="text" placeholder="+"
+                    onFocus={() => {
+                      event.target.placeholder = 'Enter Class';
+                      event.target.className = 'nav-link';
+                    }}
+                    onBlur={() => {
+                      event.target.placeholder = '+';
+                      event.target.className = 'addtab';
+                      event.target.value = '';
+                    }}>
+                  </input>
+                </form>
+              </li>
+            </ul>
+            <Switch>
+              <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
+              <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+              <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+            </Switch>
+          </React.Fragment>
+        }
+      })
+      console.log(output);
+
+      return output;
+    }
+
+
+    if (!this.state.classes[0]) {
       return (
         <React.Fragment>
-          <div id="tab-list" style={{ display: 'flex', flexDirection: 'row', backgroundColor: 'lightgrey' }}>
-            <div id="add-class" style={{ padding: 10 + 'px', backgroundColor: 'white' }} onClick={this.createNewTab}>+</div>
+          <ul id="tab-list" className="nav nav-tabs" >
             {allClasses}
-            {/* {this.state.newTab} */}
-            <form onSubmit={this.addClass} style={{ padding: 10 + 'px', backgroundColor: 'white' }}>
-              <input type="text" placeholder="Add class"></input>
-            </form>
-          </div>
-          <Switch>
-            <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
-            <Route path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
-            <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
-          </Switch>
+            <li className="nav-item">
+              <form className="fullheight" onSubmit={this.addClass}>
+                <input className="addtab" type="text" placeholder="+"
+                  onFocus={() => {
+                    event.target.placeholder = 'Enter Class';
+                    event.target.className = 'nav-link';
+                  }}
+                  onBlur={() => {
+                    event.target.placeholder = '+';
+                    event.target.className = 'addtab';
+                    event.target.value = '';
+                  }}>
+                </input>
+              </form>
+            </li>
+          </ul>
+          <h1>NO CLASSES</h1>
+        </React.Fragment>
+      )
+    } else {
+      return (
+        <React.Fragment>
+          <Route exact path="/" render={() => (
+            this.state.classes ? (
+              <Redirect to={`/${this.state.classes[0].id}`} />
+            ) : (
+              {Display}
+            ))} />
+          <Route path="/:classID" component={Display} />
         </React.Fragment>
       )
     }
-
-    return(
-      <div>
-        <Route exact path="/" component={Home} />
-        <Route path="/:classID" component={Display}/>
-      </div>
-    )
   }
 }
 
