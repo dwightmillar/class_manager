@@ -83,6 +83,20 @@ server.post('/api/addstudent', function (request, response) {
   })
 });
 
+server.delete('/api/deletestudent', function (request, response) {
+  db.connect(function () {
+    const query = "DELETE students, assignments FROM students INNER JOIN assignments ON students.id = assignments.student_id WHERE students.id = " + request.body.id;
+    db.query(query, function (error, data, fields) {
+      if (!error) {
+        response.send({
+          success: true,
+          data
+        });
+      }
+    });
+  })
+});
+
 server.post('/api/addassignment', function (request, response) {
   db.connect(function () {
     const query = ` INSERT INTO assignments
