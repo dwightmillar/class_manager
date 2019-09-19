@@ -34,7 +34,7 @@ export default class Assignment extends React.Component {
   }
 
   retrieveStudents() {
-    const class_id = this.props.match.url.slice(1, -6);
+    const class_id = this.props.match.url.split('/')[1];
     fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
     })
@@ -147,8 +147,10 @@ export default class Assignment extends React.Component {
     const title = this.state.newAssignment;
     const totalpoints = this.state.maxPoints;
     const studentScores = this.state.scores;
+    const classid = this.props.match.url.split('/')[1];
+    console.log(classid);
     let scores = this.state.students.map(
-      student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id})`
+      student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id}, ${classid})`
     ).toString();
 
     console.log(scores);

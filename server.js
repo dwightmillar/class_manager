@@ -98,10 +98,29 @@ server.delete('/api/deletestudent', function (request, response) {
   })
 });
 
+server.delete('/api/deleteclass', function (request, response) {
+  db.connect(function () {
+    var query = `DELETE classes, students, assignments
+                  FROM classes
+                  LEFT JOIN students on classes.id = students.class_id
+                  LEFT JOIN assignments on assignments.class_id = students.class_id
+                  WHERE classes.id = ${request.body.id}`
+    console.log(query);
+    db.query(query, function (error, data, fields) {
+      if (!error) {
+        response.send({
+          success: true,
+          data
+        });
+      }
+    });
+  })
+});
+
 server.post('/api/addassignment', function (request, response) {
   db.connect(function () {
     const query = ` INSERT INTO assignments
-                      (title, score, totalpoints, student_id)
+                      (title, score, totalpoints, student_id, class_id)
                     VALUES
                       ${request.body.scores}`;
     db.query(query, function (error, data, fields) {
