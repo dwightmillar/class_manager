@@ -15,6 +15,7 @@ export default class Class extends React.Component {
     }
     this.retrieveStudents = this.retrieveStudents.bind(this);
     this.addStudent = this.addStudent.bind(this);
+    this.deleteStudent = this.deleteStudent.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
   }
 
@@ -46,6 +47,38 @@ export default class Class extends React.Component {
         );
         this.setState({ 'students': students.data })
       });
+  }
+
+  deleteStudent(event) {
+    const id = event.target.parentElement.id;
+
+    this.state.students.forEach(
+      (student, index) => {
+        if (student.id == id) {
+          const currentStudentList = this.state.students;
+          var newStudentList = [];
+
+          if (currentStudentList.length > 1) {
+            newStudentList = currentStudentList.slice(0, index).concat(currentStudentList.slice(index + 1, currentStudentList.length + 1));
+          }
+
+          this.setState({ students: newStudentList});
+        }
+      }
+    )
+
+    fetch("/api/deletestudent", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "DELETE",
+      body: JSON.stringify({
+        id: id,
+      })
+    })
+    .then(data => data.json())
+    .then(response => console.log(response));
   }
 
   retrieveAssignments(id) {
@@ -163,17 +196,18 @@ export default class Class extends React.Component {
       student => {
         if(this.state.studentAverages[student.id] !== 'N/A') {
           return (
-            <tr className="d-flex" key={student.id}>
+            <tr key={student.id} id={student.id} className="d-flex">
               <td className="col-2"></td>
               <td className="col-4">
                 {student.name}
               </td>
               <td className="col-2"></td>
-              <td className="col-4">
+              <td className="col-3">
                 <Link to={this.props.match.url + `/${student.id}`} key={student.id} id={student.id}>
                   {this.state.studentAverages[student.id]}%
                 </Link>
               </td>
+              <td className="col-1" onClick={this.deleteStudent}>X</td>
             </tr>
           )
         } else {
@@ -182,7 +216,8 @@ export default class Class extends React.Component {
               <td className="col-2"></td>
               <td className="col-4">{student.name}</td>
               <td className="col-2"></td>
-              <td className="col-4">N/A</td>
+              <td className="col-3">N/A</td>
+              <td className="col-1" onClick={this.deleteStudent}>X</td>
             </tr>
           )
         }

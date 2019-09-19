@@ -133,7 +133,6 @@ class App extends React.Component {
           </React.Fragment>
         }
       })
-      console.log(output);
 
       return output;
     }
