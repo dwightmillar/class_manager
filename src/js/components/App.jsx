@@ -7,6 +7,8 @@ import { Redirect } from 'react-router';
 import Class from "./Class.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
+import ClassList from "./ClassList.jsx";
+import NotFound from "./NotFound.jsx";
 import { EventEmitter } from "events";
 
 class App extends React.Component {
@@ -14,11 +16,12 @@ class App extends React.Component {
     super();
     this.state = {
       classes: [],
-      newClassRedirectURL: ''
+      redirectURL: ''
     };
 
     this.retrieveClasses = this.retrieveClasses.bind(this);
     this.addClass = this.addClass.bind(this);
+    this.deleteClass = this.deleteClass.bind(this);
     this.renderNewTab = this.renderNewTab.bind(this);
   }
 
@@ -58,19 +61,58 @@ class App extends React.Component {
         return responseObj.data.insertId;
       })
       .then(id => {
-        this.setState({ 'newClassRedirectURL': id })
+        this.setState({ 'redirectURL': id })
       });
   }
 
+  deleteClass() {
+    const class_id = this.props.location.pathname.slice(1);
+    var redirectURL = '';
+
+    this.state.classes.forEach(
+      (Class, index) => {
+        if (Class.id == class_id) {
+          const currentClassList = this.state.classes;
+          var newClassList = [];
+
+          if (currentClassList.length > 1) {
+            newClassList = currentClassList.slice(0, index).concat(currentClassList.slice(index + 1, currentClassList.length + 1));
+          }
+
+          if (newClassList[index]) {
+            redirectURL = newClassList[index].id;
+          } else if (this.state.classes.length > 1) {
+            redirectURL = newClassList[index - 1].id;
+          }
+
+          this.setState({ 'classes': newClassList, 'redirectURL': redirectURL });
+        }
+      }
+    )
+
+    fetch("/api/deleteclass", {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "DELETE",
+      body: JSON.stringify({
+        id: class_id,
+      })
+    })
+      .then(data => data.json())
+      .then(response => console.log(response));
+  }
+
   renderNewTab() {
-    var newURL = this.state.newClassRedirectURL;
+    var newURL = this.state.redirectURL;
     console.log(newURL);
-    this.setState({newClassRedirectURL: ''});
+    this.setState({redirectURL: ''});
     return <Redirect to={`/${newURL}`}/>
   }
 
   render() {
-    if (this.state.newClassRedirectURL) {
+    if (this.state.redirectURL) {
       return this.renderNewTab();
     }
 
@@ -97,69 +139,33 @@ class App extends React.Component {
     )
 
     const Display = ({ match }) => {
-      var output =
-      <React.Fragment>
-        <h1>OOPS</h1>
-        <h3>The page you are looking for doesn't exist.</h3>
-      </React.Fragment>;
+      if (this.state.classes.find(classData => classData.id == match.url.split('/')[1])) {
 
-      this.state.classes.forEach(classData => {
-        if (classData.id == match.url.split('/')[1]) {
-          output =
+        return (
           <React.Fragment>
-            <ul id="tab-list" className="nav nav-tabs" >
-              {allClasses}
-              <li className="nav-item">
-                <form className="fullheight" onSubmit={this.addClass}>
-                  <input className="addtab" type="text" placeholder="+"
-                    onFocus={() => {
-                      event.target.placeholder = 'Enter Class';
-                      event.target.className = 'nav-link';
-                    }}
-                    onBlur={() => {
-                      event.target.placeholder = '+';
-                      event.target.className = 'addtab';
-                      event.target.value = '';
-                    }}>
-                  </input>
-                </form>
-              </li>
-            </ul>
-            <Switch>
-              <Route exact path={match.url} render={(props) => <Class {...props}></Class>} />
-              <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
-              <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
-            </Switch>
-          </React.Fragment>
-        }
-      })
 
-      return output;
+             <ClassList allClasses={allClasses} addClass={this.addClass} />
+
+             <Switch>
+               <Route exact path={match.url} render={(props) => <Class {...props} deleteClass={this.deleteClass}></Class>} />
+               <Route exact path={match.url + "/input"} render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+               <Route path={match.url + "/:studentID"} render={(props) => <Student {...props}></Student>} />
+             </Switch>
+
+           </React.Fragment>
+        )
+      } else {
+
+        return <NotFound />
+      }
     }
 
 
     if (!this.state.classes[0]) {
       return (
         <React.Fragment>
-          <ul id="tab-list" className="nav nav-tabs" >
-            {allClasses}
-            <li className="nav-item">
-              <form className="fullheight" onSubmit={this.addClass}>
-                <input className="addtab" type="text" placeholder="+"
-                  onFocus={() => {
-                    event.target.placeholder = 'Enter Class';
-                    event.target.className = 'nav-link';
-                  }}
-                  onBlur={() => {
-                    event.target.placeholder = '+';
-                    event.target.className = 'addtab';
-                    event.target.value = '';
-                  }}>
-                </input>
-              </form>
-            </li>
-          </ul>
-          <h1>NO CLASSES</h1>
+          <ClassList allClasses={allClasses} addClass={this.addClass}/>
+          <h1 className="center">NO CLASSES</h1>
         </React.Fragment>
       )
     } else {
@@ -169,7 +175,7 @@ class App extends React.Component {
             this.state.classes ? (
               <Redirect to={`/${this.state.classes[0].id}`} />
             ) : (
-              {Display}
+              <NotFound />
             ))} />
           <Route path="/:classID" component={Display} />
         </React.Fragment>

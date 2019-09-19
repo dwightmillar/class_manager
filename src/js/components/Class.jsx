@@ -226,14 +226,14 @@ export default class Class extends React.Component {
 
     if(this.state.students.length) {
       inputButton =
-        <Link to={this.props.match.url + "/input"} className="center">
+        <Link to={this.props.match.url + "/input"}>
           <button className="btn btn-primary">
             Input Assignment
               </button>
         </Link>
     } else {
       inputButton =
-      <div className="center">
+      <div>
           <button className="btn btn-primary disabled hidecursor">
             Input Assignment
           </button>
@@ -251,8 +251,11 @@ export default class Class extends React.Component {
             Class Average: {this.handleClassAverage()}
           </h2>
           <div className="row">
-            <div className="col-5"></div>
+            <div className="col-8"></div>
             {inputButton}
+            <button className="btn btn-danger hidecursor" onClick={this.props.deleteClass}>
+              Delete Class
+            </button>
           </div>
         </header>
 
