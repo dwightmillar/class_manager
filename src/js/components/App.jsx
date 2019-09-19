@@ -140,7 +140,13 @@ class App extends React.Component {
     )
 
     const Display = ({ match }) => {
+      console.log('outside if:',this.props.location);
+      console.log('outside if:', match.url.split('/')[1]);
+      console.log(this.state.classes);
+
       if (this.state.classes.find(classData => classData.id == match.url.split('/')[1])) {
+
+        console.log('inside if:',this.props.location);
 
         return (
           <React.Fragment>
@@ -155,10 +161,13 @@ class App extends React.Component {
 
            </React.Fragment>
         )
-      } else {
+      }
+      else {
 
         return (
-          <Redirect to="/"/>
+          <React.Fragment>
+            <ClassList allClasses={allClasses} addClass={this.addClass} />
+          </React.Fragment>
         )
       }
     }
