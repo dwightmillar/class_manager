@@ -9,6 +9,7 @@ import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
 import ClassList from "./ClassList.jsx";
 import NotFound from "./NotFound.jsx";
+import Welcome from "./Welcome.jsx";
 import { EventEmitter } from "events";
 
 class App extends React.Component {
@@ -156,32 +157,28 @@ class App extends React.Component {
         )
       } else {
 
-        return <NotFound />
+        return (
+          <Redirect to="/"/>
+        )
       }
     }
-
-
-    if (!this.state.classes[0]) {
-      return (
-        <React.Fragment>
-          <ClassList allClasses={allClasses} addClass={this.addClass}/>
-          <h1 className="center">NO CLASSES</h1>
-        </React.Fragment>
-      )
-    } else {
       return (
         <React.Fragment>
           <Route exact path="/" render={() => (
-            this.state.classes ? (
+            this.state.classes.length ? (
               <Redirect to={`/${this.state.classes[0].id}`} />
             ) : (
-              <NotFound />
-            ))} />
+              <React.Fragment>
+                  <ClassList allClasses={allClasses} addClass={this.addClass}/>
+                  <Welcome />
+              </React.Fragment>
+            )
+          )} />
           <Route path="/:classID" component={Display} />
         </React.Fragment>
       )
     }
   }
-}
+// }
 
 export default withRouter(App);
