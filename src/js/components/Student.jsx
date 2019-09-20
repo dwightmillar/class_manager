@@ -24,7 +24,7 @@ export default class Student extends React.Component {
   }
 
   retrieveName() {
-    const student_id = this.props.match.url.slice(3);
+    const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getstudents?id=" + student_id, {
       method: "GET"
     })
@@ -33,7 +33,7 @@ export default class Student extends React.Component {
   }
 
   retrieveAssignments() {
-    const student_id = this.props.match.url.slice(3);
+    const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getassignments?student_id=" + student_id, {
       method: "GET"
     })
@@ -112,10 +112,9 @@ export default class Student extends React.Component {
     if(!this.state.assignments[0]) {
       return false
     }
-    console.log(this.props.location.pathname.split('/')[1]);
-    console.log(this.state.assignments[0].class_id);
-    if (!(this.props.location.pathname.split('/')[1] == this.state.assignments[0].class_id)) {
-      return <Redirect to={`/${this.state.assignments[0].class_id}/${this.props.location.pathname.split('/')[2]}`} />
+
+    if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
+      return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
     }
 
     var allAssignments = this.state.assignments.map(
