@@ -107,7 +107,6 @@ class App extends React.Component {
 
   renderNewTab() {
     var newURL = this.state.redirectURL;
-    console.log(newURL);
     this.setState({redirectURL: ''});
     return <Redirect to={`/${newURL}`}/>
   }
@@ -181,16 +180,11 @@ class App extends React.Component {
             )
           )} />
           <Route path="/:classID" render={(props) => (
-            // this.state.classes.length ? (
               <Display {...props}/>
-            // ) : (
-                // <Redirect to={'/'} />
-              // )
           )} />
         </React.Fragment>
       )
     }
   }
-// }
 
 export default withRouter(App);

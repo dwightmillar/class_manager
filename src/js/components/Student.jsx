@@ -84,7 +84,6 @@ export default class Student extends React.Component {
     } else {
       studentScore = parseInt(event.target.value);
     }
-    console.log(studentScore);
     student[studentID] = studentScore;
 
     this.setState({ studentScores: student });
@@ -113,8 +112,6 @@ export default class Student extends React.Component {
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
-    console.log(this.props.match.url.split('/')[1]);
-    console.log(this.state.assignments[0].class_id);
     if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
       return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
     }
