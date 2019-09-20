@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { Redirect } from 'react-router';
+import NotFound from "./NotFound.jsx";
 
 export default class Student extends React.Component {
   constructor() {
@@ -23,7 +25,7 @@ export default class Student extends React.Component {
   }
 
   retrieveName() {
-    const student_id = this.props.match.url.slice(3);
+    const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getstudents?id=" + student_id, {
       method: "GET"
     })
@@ -32,7 +34,7 @@ export default class Student extends React.Component {
   }
 
   retrieveAssignments() {
-    const student_id = this.props.match.url.slice(3);
+    const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getassignments?student_id=" + student_id, {
       method: "GET"
     })
@@ -108,8 +110,13 @@ export default class Student extends React.Component {
 
 
   render() {
-    if(!this.state.assignments) {
-      return false
+    if(!this.state.assignments[0]) {
+      return <NotFound />
+    }
+    console.log(this.props.match.url.split('/')[1]);
+    console.log(this.state.assignments[0].class_id);
+    if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
+      return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
     }
 
     var allAssignments = this.state.assignments.map(

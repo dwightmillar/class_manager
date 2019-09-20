@@ -140,6 +140,7 @@ class App extends React.Component {
     )
 
     const Display = ({ match }) => {
+
       if (this.state.classes.find(classData => classData.id == match.url.split('/')[1])) {
 
         return (
@@ -158,10 +159,15 @@ class App extends React.Component {
       } else {
 
         return (
-          <Redirect to="/"/>
+          <React.Fragment>
+            <ClassList allClasses={allClasses} addClass={this.addClass} />
+            <Welcome />
+          </React.Fragment>
         )
       }
     }
+
+
       return (
         <React.Fragment>
           <Route exact path="/" render={() => (
@@ -174,7 +180,13 @@ class App extends React.Component {
               </React.Fragment>
             )
           )} />
-          <Route path="/:classID" component={Display} />
+          <Route path="/:classID" render={(props) => (
+            // this.state.classes.length ? (
+              <Display {...props}/>
+            // ) : (
+                // <Redirect to={'/'} />
+              // )
+          )} />
         </React.Fragment>
       )
     }
