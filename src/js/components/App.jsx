@@ -156,16 +156,18 @@ class App extends React.Component {
 
            </React.Fragment>
         )
-      }
-      else {
+      } else {
 
         return (
           <React.Fragment>
             <ClassList allClasses={allClasses} addClass={this.addClass} />
+            <Welcome />
           </React.Fragment>
         )
       }
     }
+
+
       return (
         <React.Fragment>
           <Route exact path="/" render={() => (
@@ -178,7 +180,13 @@ class App extends React.Component {
               </React.Fragment>
             )
           )} />
-          <Route path="/:classID" component={Display} />
+          <Route path="/:classID" render={(props) => (
+            // this.state.classes.length ? (
+              <Display {...props}/>
+            // ) : (
+                // <Redirect to={'/'} />
+              // )
+          )} />
         </React.Fragment>
       )
     }

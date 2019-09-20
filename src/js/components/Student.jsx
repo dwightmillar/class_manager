@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Redirect } from 'react-router';
+import NotFound from "./NotFound.jsx";
 
 export default class Student extends React.Component {
   constructor() {
@@ -110,9 +111,10 @@ export default class Student extends React.Component {
 
   render() {
     if(!this.state.assignments[0]) {
-      return false
+      return <NotFound />
     }
-
+    console.log(this.props.match.url.split('/')[1]);
+    console.log(this.state.assignments[0].class_id);
     if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
       return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
     }
