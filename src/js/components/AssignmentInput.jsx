@@ -149,9 +149,22 @@ export default class Assignment extends React.Component {
     const studentScores = this.state.scores;
     const classid = this.props.match.url.split('/')[1];
     console.log(classid);
+
+    let removeCommaIndex = 0;
+
     let scores = this.state.students.map(
-      student => `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id}, ${classid})`
+      student => {
+        if (studentScores[student.id]) {
+          return `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id}, ${classid})`
+        } else {
+          ++removeCommaIndex;
+        }
+      }
     ).toString();
+
+    if (removeCommaIndex) {
+      scores = scores.slice(removeCommaIndex);
+    }
 
     console.log(scores);
 
