@@ -43,10 +43,21 @@ server.get('/api/getclasses', function (request, response, next) {
 server.get('/api/getstudents', function (request, response, next) {
   let params = [];
 
-  const class_id = request.url.split('=')[1];
+  const queryType = request.url.split('=')[0].split('?')[1];
+  const id = request.url.split('=')[1];
 
-  params.push(class_id);
-  var query = `SELECT * FROM students WHERE class_id=?`;
+  params.push(id);
+
+  console.log('queryType: ',queryType);
+
+  if (queryType === 'class_id') {
+    var query = `SELECT * FROM students WHERE class_id=?`;
+  } else {
+    query = `SELECT * FROM students WHERE id=?`;
+  }
+
+
+
 
   db.query(query, params, function (error, data, fields) {
   if (error) return next(error);
