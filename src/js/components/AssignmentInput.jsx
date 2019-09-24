@@ -155,7 +155,7 @@ export default class Assignment extends React.Component {
     let scores = this.state.students.map(
       student => {
         if (studentScores[student.id]) {
-          return `('${title}', ${studentScores[student.id]}, ${totalpoints}, ${student.id}, ${classid})`
+          return `${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
         } else {
           ++removeCommaIndex;
         }

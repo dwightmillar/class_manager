@@ -21,13 +21,14 @@ server.use(staticMiddlewareFunction);
 
 server.get('/api/getclasses', function (request, response, next) {
   let params = [];
+  const id = request.url.split('=')[1];
 
-  if (request._parsedUrl.query){
-    params.push(request._parsedUrl.query);
-    var query = `SELECT * FROM 'classes' WHERE ?`;
+  if (id){
+    params.push(id);
+    var query = `SELECT * FROM classes WHERE id = ?`;
 
   } else {
-    query = `SELECT * FROM 'classes'`;
+    query = `SELECT * FROM classes`;
   }
   db.query(query, params, function (error, data, fields) {
     if (error) return next(error);
@@ -42,9 +43,10 @@ server.get('/api/getclasses', function (request, response, next) {
 server.get('/api/getstudents', function (request, response, next) {
   let params = [];
 
-  params.push(request._parsedUrl.query);
+  const class_id = request.url.split('=')[1];
 
-  const query = `SELECT * FROM 'students' WHERE ?`;
+  params.push(class_id);
+  var query = `SELECT * FROM students WHERE class_id=?`;
 
   db.query(query, params, function (error, data, fields) {
   if (error) return next(error);
@@ -58,9 +60,11 @@ server.get('/api/getstudents', function (request, response, next) {
 server.get('/api/getassignments', function (request, response, next) {
     let params = [];
 
-    params.push(request._parsedUrl.query);
+    const student_id = request.url.split('=')[1]
 
-    const query = `SELECT * FROM 'assignments' WHERE ?`;
+    params.push(student_id);
+
+    const query = `SELECT * FROM assignments WHERE student_id=?`;
 
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
@@ -74,10 +78,13 @@ server.get('/api/getassignments', function (request, response, next) {
 server.post('/api/addstudent', function (request, response, next) {
     let params = [];
 
-    params.push(request.body.name);
-    params.push(request.body['class_id']);
+    const student_name = request.body.name;
+    const class_id = request.body['class_id'];
 
-    const query = `INSERT INTO students (name, class_id) VALUES (\"?\",?)`;
+    params.push(student_name);
+    params.push(class_id);
+
+    const query = `INSERT INTO students (name, class_id) VALUES (?,?)`;
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
@@ -90,9 +97,14 @@ server.post('/api/addstudent', function (request, response, next) {
 server.delete('/api/deletestudent', function (request, response, next) {
     let params = [];
 
-    params.push(request.body.id);
+    const student_id = request.body.id;
 
-    var query = `DELETE students, assignments FROM students INNER JOIN assignments ON students.id = assignments.student_id WHERE students.id = ?`;
+    params.push(student_id);
+
+    const query = `DELETE students, assignments FROM
+                students LEFT JOIN assignments ON
+                students.id = assignments.student_id
+                WHERE students.id=?`;
 
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
@@ -106,15 +118,16 @@ server.delete('/api/deletestudent', function (request, response, next) {
 server.delete('/api/deleteclass', function (request, response, next) {
     let params = [];
 
-    params.push(request.body.id);
+    const id = request.body.id;
 
-    var query = `DELETE classes, students, assignments
+    params.push(id);
+
+    const query = `DELETE classes, students, assignments
                   FROM classes
                   LEFT JOIN students on classes.id = students.class_id
                   LEFT JOIN assignments on assignments.class_id = students.class_id
                   WHERE classes.id = ?`
 
-    console.log(query);
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
@@ -125,15 +138,27 @@ server.delete('/api/deleteclass', function (request, response, next) {
 });
 
 server.post('/api/addassignment', function (request, response, next) {
-    let params = [];
+    let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
 
-    params.push(request.body.scores);
+    const assignments = request.body.scores.split(',');
 
-    const query = ` INSERT INTO assignments
-                      (title, score, totalpoints, student_id, class_id)
-                    VALUES
-                      ?`;
-    db.query(query, params, function (error, data, fields) {
+    for(let assignmentsIndex = 0; assignmentsIndex < assignments.length; assignmentsIndex++){
+
+      if ((assignmentsIndex % 5 - 4) === 0) {
+        query += ' ?), (';
+      } else {
+        query += ' ?,';
+      }
+    }
+    query = query.slice(0, query.length - 3);
+
+    query = mysql.format(query, assignments);
+
+    console.log('query: ',query);
+    console.log('assignments: ', assignments);
+
+
+    db.query(query, function (error, data, fields) {
       if (error) return next(error);
         response.send({
           success: true,
@@ -143,10 +168,9 @@ server.post('/api/addassignment', function (request, response, next) {
 });
 
 server.post('/api/addclass', function (request, response, next) {
-    const title = JSON.stringify(request.body.name);
     let params = [];
 
-    params.push(title);
+    params.push(request.body.name);
 
     const query = `INSERT INTO classes(title) VALUES (?)`;
     db.query(query, params, function (error, data, fields) {
@@ -162,23 +186,28 @@ server.post('/api/addclass', function (request, response, next) {
 
 server.patch('/api/updatescore', function (request, response, next) {
     const scores = request.body.scores;
-    let formattedScores = '';
-    let affectedIDs = '';
     let params = [];
-
-
+    let query = "UPDATE assignments SET score = CASE id ";
 
     for (let assignmentID in scores) {
-      formattedScores += `WHEN ${assignmentID} THEN ${scores[assignmentID]} `;
-      affectedIDs += `${assignmentID}, `;
+      params.push(assignmentID);
+      params.push(scores[assignmentID]);
+      query += "WHEN ? THEN ? ";
     }
-    affectedIDs = affectedIDs.slice(0, -2);
+
+    query += "END WHERE id IN ("
+
+    for (let assignmentID in scores) {
+      params.push(assignmentID);
+      query += "?, ";
+    }
+
+    query = query.slice(0, query.length - 2);
+    query += ')';
 
 
-
-    params.push(formattedScores, affectedIDs);
-    const query = `UPDATE assignments SET score = CASE id ? END WHERE id IN (?)`;
-
+    query = mysql.format(query, params);
+    console.log('query: ',query);
 
     db.query(query, params, function (error, data, fields) {
       if(error) return next(error);

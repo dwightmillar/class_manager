@@ -31,6 +31,7 @@ export default class Class extends React.Component {
     })
       .then(data => data.json())
       .then(Class => {
+        console.log(Class);
         this.setState({ title: Class.data[0].title })
       });
   }
