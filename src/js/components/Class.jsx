@@ -11,12 +11,14 @@ export default class Class extends React.Component {
       newStudent: '',
       studentAverages: {},
       students: [],
-      assignments: []
+      assignments: [],
+      displayModal: false
     }
     this.retrieveStudents = this.retrieveStudents.bind(this);
     this.addStudent = this.addStudent.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
+    this.showModal = this.showModal.bind(this);
   }
 
   componentDidMount() {
@@ -189,9 +191,18 @@ export default class Class extends React.Component {
     this.setState({ 'newStudent': event.target.value })
   }
 
+  showModal() {
+    this.setState({ displayModal: true });
+  }
+
+  hideModal() {
+    this.setState({ displayModal: false });
+  }
+
   render() {
 
     var inputButton = null;
+    var modal = null;
 
     const allStudents = this.state.students.map(
       student => {
@@ -208,7 +219,7 @@ export default class Class extends React.Component {
                   {this.state.studentAverages[student.id]}%
                 </Link>
               </td>
-              <td className="col-1" onClick={this.deleteStudent}>X</td>
+              <td className="col-1 clickable" onClick={this.showModal}>X</td>
             </tr>
           )
         } else {
@@ -241,6 +252,35 @@ export default class Class extends React.Component {
       </div>
     }
 
+    if(this.state.displayModal) {
+      modal =
+        <React.Fragment>
+          <div className="modalshadow" style={{ "display": "block" }}></div>
+          <div className="modaltext">
+            <div className="row"></div>
+            <div className="row">
+              <div className="col-12">
+                Are you sure you want to delete?
+              </div>
+            </div>
+            <div className="row">
+
+              <div className="col-3"></div>
+
+              <div className="col-3">
+                <button className="btn btn-secondary">Go Back</button>
+              </div>
+
+              <div className="col-3">
+                <button className="btn btn-danger">Confirm</button>
+              </div>
+
+              <div className="col-3"></div>
+            </div>
+          </div>
+        </React.Fragment>
+    }
+
 
     return (
       <React.Fragment>
@@ -259,7 +299,7 @@ export default class Class extends React.Component {
             </button>
           </div>
         </header>
-
+        {modal}
         <div className="container-fluid">
           <table className="table table-hover">
             <thead>
