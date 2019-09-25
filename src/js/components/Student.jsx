@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-import { Redirect } from 'react-router';
 import NotFound from "./NotFound.jsx";
+import history from '../../history.js';
+
 
 export default class Student extends React.Component {
   constructor() {
@@ -108,11 +109,12 @@ export default class Student extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
     if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
-      return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
+      history.replace('/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
     }
 
     var allAssignments = this.state.assignments.map(

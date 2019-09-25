@@ -16,7 +16,7 @@ class Modal extends React.Component {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.props.hideDeleteStudent}>Back</button>
-                <button id={this.props.displayDeleteStudent} type="button" className="btn btn-danger" onClick={this.props.deleteStudent}>Delete</button>
+                <button id={this.props.displayDeleteStudent ? this.props.displayDeleteStudent : undefined} type="button" className="btn btn-danger" onClick={this.props.deleteStudent} autoFocus>Delete</button>
               </div>
             </div>
           </div>
@@ -36,7 +36,7 @@ class Modal extends React.Component {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.props.hideDeleteClass}>Back</button>
-                <button id={this.props.displayDeleteStudent} type="button" className="btn btn-danger" onClick={this.props.deleteClass}>Delete</button>
+                <button id={this.props.displayDeleteStudent ? this.props.displayDeleteStudent : undefined} type="button" className="btn btn-danger" onClick={this.props.deleteClass} autoFocus>Delete</button>
               </div>
             </div>
           </div>

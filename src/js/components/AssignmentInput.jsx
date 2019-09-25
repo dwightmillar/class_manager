@@ -148,7 +148,6 @@ export default class Assignment extends React.Component {
     const totalpoints = this.state.maxPoints;
     const studentScores = this.state.scores;
     const classid = this.props.match.params.classID;
-    console.log(classid);
 
     let removeCommaIndex = 0;
 
@@ -166,8 +165,6 @@ export default class Assignment extends React.Component {
       scores = scores.slice(removeCommaIndex);
     }
 
-    console.log(scores);
-
     fetch("/api/addassignment", {
       headers: {
         'Accept': 'application/json',
@@ -179,8 +176,8 @@ export default class Assignment extends React.Component {
       })
     })
       .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.log(error))
+      .then(data => console.log('postassignment response:', data))
+      .catch(error => console.error('postassignment error: ',error))
 
     var newScores = {};
 

@@ -1,25 +1,24 @@
 import React from 'react';
-import Welcome from "./Welcome.jsx";
 import ClassView from "./ClassView.jsx";
 import Student from "./Student.jsx";
 import AssignmentInput from "./AssignmentInput.jsx";
 import NotFound from "./NotFound.jsx";
+import { Redirect } from 'react-router';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-
+import history from '../../history.js';
+import Welcome from './Welcome.jsx';
 
 
 class ClassList extends React.Component {
   constructor() {
     super();
     this.state = {
-      classes: [],
-      redirectURL: ''
+      classes: []
     };
 
     this.getClasses = this.getClasses.bind(this);
     this.postClass = this.postClass.bind(this);
     this.deleteClass = this.deleteClass.bind(this);
-    this.renderNewTab = this.renderNewTab.bind(this);
   }
 
   componentDidMount() {
@@ -57,14 +56,14 @@ class ClassList extends React.Component {
         this.setState({ 'classes': this.state.classes.concat(newClassObj) });
         return responseObj.data.insertId;
       })
-      .then(id => {
-        this.setState({ 'redirectURL': id })
-      });
+      .then(id => {history.push('/' + id)});
   }
 
   deleteClass() {
     const class_id = this.props.match.params.classID;
-    var redirectURL = '';
+    const class_index = this.state.classes.findIndex(
+      Class => Class.id == class_id
+    );
 
     fetch("/api/deleteclass", {
       headers: {
@@ -90,21 +89,22 @@ class ClassList extends React.Component {
         } else {
           console.error('FAILED TO DELETE: ', response)
         }
+      })
+      .then(() => {
+        var new_class_id = '';
+        if (this.state.classes[class_index]) {
+          new_class_id = this.state.classes[class_index].id;
+        } else if (this.state.classes[class_index - 1]){
+          new_class_id = this.state.classes[class_index - 1].id;
+        } else {
+          new_class_id = 'welcome';
+        }
+        history.replace('/' + new_class_id);
       });
-  }
-
-  renderNewTab() {
-    var newURL = this.state.redirectURL;
-    this.setState({ redirectURL: '' });
-    return <Redirect to={`/${newURL}`} />
   }
 
 
   render(){
-    console.log('ClassList.props: ',this.props);
-    if (this.state.redirectURL) {
-      return this.renderNewTab();
-    }
 
     var allClasses = this.state.classes.map(
       Class => {
@@ -129,25 +129,17 @@ class ClassList extends React.Component {
               <Route path="/:classID/input" render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
               <Route path="/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
               <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass}></ClassView>} />
-
-              {/* <Route exact path="/" render={() => (
-                this.state.classes.length ? (
-                  <Redirect to={`/${this.state.classes[0].id}`} />
-                ) : (
-                    <React.Fragment>
-
-                      <Welcome />
-                    </React.Fragment>
-                  )
-              )} /> */}
             </Switch>
 
           </React.Fragment>
         )
-      } else {
+      } else if (this.state.classes.length) {
+           history.replace('/' + this.state.classes[0].id);
+           return null
 
+      } else {
         return (
-          <Welcome />
+          <Redirect to="/welcome"/>
         )
       }
     }
@@ -173,7 +165,10 @@ class ClassList extends React.Component {
           </li>
         </ul >
 
-        <Display />
+        <Switch>
+          <Route path="/welcome" render={() => <Welcome />} />
+          <Route path={this.props.match.url} render={() => <Display />} />
+        </Switch>
       </React.Fragment>
     )
   }
