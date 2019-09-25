@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import Modal from './Modal.jsx';
 import { match } from "minimatch";
 
-export default class Class extends React.Component {
+export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -14,7 +14,9 @@ export default class Class extends React.Component {
       students: [],
       assignments: [],
       displayDeleteStudent: false,
-      displayDeleteClass: false
+      displayDeleteClass: false,
+      disableForm: false,
+      inputPlaceholder: 'Enter Student'
     }
     this.getStudents = this.getStudents.bind(this);
     this.postStudent = this.postStudent.bind(this);
@@ -32,7 +34,7 @@ export default class Class extends React.Component {
   }
 
   getClass() {
-    const class_id = this.props.match.url.slice(1);
+    const class_id = this.props.match.params.classID;
     fetch("/api/getclasses?id=" + class_id, {
       method: "GET"
     })
@@ -43,7 +45,7 @@ export default class Class extends React.Component {
   }
 
   getStudents() {
-    const class_id = this.props.match.url.slice(1);
+    const class_id = this.props.match.params.classID;
     fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
     })
@@ -57,22 +59,7 @@ export default class Class extends React.Component {
   }
 
   deleteStudent(event) {
-    const id = event.target.id
-    this.state.students.forEach(
-      (student, index) => {
-        if (student.id == id) {
-          const currentStudentList = this.state.students;
-          var newStudentList = [];
-
-          if (currentStudentList.length > 1) {
-            newStudentList = currentStudentList.slice(0, index).concat(currentStudentList.slice(index + 1, currentStudentList.length + 1));
-          }
-
-          this.setState({ students: newStudentList, displayDeleteStudent: false});
-        }
-      }
-    )
-
+    const id = parseInt(event.target.id);
     fetch("/api/deletestudent", {
       headers: {
         'Accept': 'application/json',
@@ -83,8 +70,21 @@ export default class Class extends React.Component {
         id: id,
       })
     })
-    .then(data => data.json())
-    .then(response => console.log(response));
+      .then(data => data.json())
+      .then(response => {
+        if(response.success) {
+          this.setState({
+            students: this.state.students.filter(
+              student => {
+                if (student.id !== id) return student
+              }
+            ),
+            displayDeleteStudent: false
+          })
+        } else {
+          console.error('FAILED TO DELETE: ',response)
+        }
+      });
   }
 
   getAssignments(id) {
@@ -101,23 +101,26 @@ export default class Class extends React.Component {
   postStudent(event) {
     event.preventDefault();
 
-    const form = event.target.children.nameinput;
-    form.disabled = true;
+    this.setState({disableForm: true});
 
     var studentName = this.state.newStudent;
     var specCharCheck = /\W/;
     var numberCheck = /\d/;
     if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
-      event.target.children[0].placeholder = 'Can only use letters';
-      event.target.children[0].value = '';
+      this.setState({ inputPlaceholder: 'Can only use letters',
+                      newStudent: '' ,
+                      disableForm: false });
       return false;
     } else if (this.state.newStudent.length < 2) {
-      event.target.children[0].placeholder = 'Must be at least 2 letters';
-      event.target.children[0].value = '';
+      this.setState({ inputPlaceholder: 'Must be longer than 2 letters',
+                      newStudent: '' ,
+                      disableForm: false });
       return false;
     }
 
-    const class_id = this.props.match.url.slice(1);
+    console.log('Class.props: ',this.props);
+
+    const class_id = this.props.match.params.classID;
 
     fetch("/api/addstudent", {
       headers: {
@@ -130,21 +133,25 @@ export default class Class extends React.Component {
         class_id: class_id
       })
     })
-      .then(data => data.json())
-      .then(newStudent => {
+    .then(data => data.json())
+    .then(response => {
+      if (response.success){
         this.setState({
-          'newStudentID': newStudent.data.insertId
+          'newStudentID': response.data.insertId
         });
-        this.addStudentDirect(class_id, form);
-      });
+        this.addStudentDirect(class_id);
+      } else {
+        console.error('FAILED TO ADD: ', response);
+      }
+    });
   }
 
-  addStudentDirect(class_id, form) {
+  addStudentDirect(class_id) {
     const newStudentObj = [{ 'class_id': class_id, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
     this.setState({ 'students': this.state.students.concat(newStudentObj) });
     this.handleStudentGradeAverage(this.state.newStudentID, []);
     this.setState({ 'newStudent': '', 'newStudentID': '' });
-    form.disabled = false;
+    this.setState({disableForm: false});
   }
 
   handleStudentGradeAverage(id, data) {
@@ -221,6 +228,7 @@ export default class Class extends React.Component {
   render() {
 
     var inputButton = null;
+    var input = null;
 
     const allStudents = this.state.students.map(
       student => {
@@ -278,6 +286,14 @@ export default class Class extends React.Component {
       </div>
     }
 
+    if(this.state.disableForm) {
+      input =
+        <input type="text" name="nameinput" placeholder={this.state.inputPlaceholder} value={this.state.newStudent} onChange={this.handleStudentInput} onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })} disabled></input>
+    } else {
+      input =
+        <input type="text" name="nameinput" placeholder={this.state.inputPlaceholder} value={this.state.newStudent} onChange={this.handleStudentInput} onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}></input>
+    }
+
 
     return (
       <React.Fragment>
@@ -318,7 +334,7 @@ export default class Class extends React.Component {
                 <td className="col-2"></td>
                 <td className="col-4">
                   <form onSubmit={this.postStudent}>
-                    <input type="text" name="nameinput" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+                    {input}
                   </form>
                 </td>
                 <td className="col-6"></td>

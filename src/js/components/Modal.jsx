@@ -4,7 +4,7 @@ class Modal extends React.Component {
   render() {
     if (this.props.displayDeleteStudent) {
       return (
-        <div className="modal show" tabindex="-1" role="dialog">
+        <div className="modal show" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">
@@ -25,7 +25,7 @@ class Modal extends React.Component {
 
     } else if (this.props.displayDeleteClass) {
       return (
-        <div className="modal show" tabindex="-1" role="dialog">
+        <div className="modal show" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <div className="modal-header">

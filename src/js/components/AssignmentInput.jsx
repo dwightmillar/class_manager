@@ -25,7 +25,7 @@ export default class Assignment extends React.Component {
   }
 
   getClass() {
-    const class_id = this.props.match.url.split('/')[1];
+    const class_id = this.props.match.params.classID;
     fetch("/api/getclasses?id=" + class_id, {
       method: "GET"
     })
@@ -34,7 +34,7 @@ export default class Assignment extends React.Component {
   }
 
   getStudents() {
-    const class_id = this.props.match.url.split('/')[1];
+    const class_id = this.props.match.params.classID;
     fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
     })
@@ -147,7 +147,7 @@ export default class Assignment extends React.Component {
     const title = this.state.newAssignment;
     const totalpoints = this.state.maxPoints;
     const studentScores = this.state.scores;
-    const classid = this.props.match.url.split('/')[1];
+    const classid = this.props.match.params.classID;
     console.log(classid);
 
     let removeCommaIndex = 0;
@@ -210,7 +210,7 @@ export default class Assignment extends React.Component {
       )
     }
 
-    const previousPageURL = "/" + this.props.match.url.split("/")[1];
+    const previousPageURL = "/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>

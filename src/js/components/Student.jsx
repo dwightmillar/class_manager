@@ -25,7 +25,7 @@ export default class Student extends React.Component {
   }
 
   getClass() {
-    const student_id = this.props.match.url.split('/')[2];
+    const student_id = this.props.match.params.studentID;
     fetch("/api/getstudents?id=" + student_id, {
       method: "GET"
     })
@@ -34,7 +34,7 @@ export default class Student extends React.Component {
   }
 
   getAssignments() {
-    const student_id = this.props.match.url.split('/')[2];
+    const student_id = this.props.match.params.studentID;
     fetch("/api/getassignments?student_id=" + student_id, {
       method: "GET"
     })
@@ -107,12 +107,11 @@ export default class Student extends React.Component {
     }
   }
 
-
   render() {
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
-    if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
+    if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
       return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
     }
 
@@ -138,7 +137,7 @@ export default class Student extends React.Component {
         </tr>
     )
 
-    const previousPageURL = "/" + this.props.match.url.split("/")[1];
+    const previousPageURL = "/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>
