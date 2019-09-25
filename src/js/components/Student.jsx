@@ -13,18 +13,18 @@ export default class Student extends React.Component {
       studentScores: {},
     }
 
-    this.retrieveName = this.retrieveName.bind(this);
-    this.retrieveAssignments = this.retrieveAssignments.bind(this);
+    this.getClass = this.getClass.bind(this);
+    this.getAssignments = this.getAssignments.bind(this);
     this.handleUpdateScore = this.handleUpdateScore.bind(this);
-    this.updateAssignmentScore = this.updateAssignmentScore.bind(this);
+    this.patchAssignmentScore = this.patchAssignmentScore.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveAssignments();
-    this.retrieveName();
+    this.getAssignments();
+    this.getClass();
   }
 
-  retrieveName() {
+  getClass() {
     const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getstudents?id=" + student_id, {
       method: "GET"
@@ -33,7 +33,7 @@ export default class Student extends React.Component {
       .then(student => this.setState({name: student.data[0].name}));
   }
 
-  retrieveAssignments() {
+  getAssignments() {
     const student_id = this.props.match.url.split('/')[2];
     fetch("/api/getassignments?student_id=" + student_id, {
       method: "GET"
@@ -89,7 +89,7 @@ export default class Student extends React.Component {
     this.setState({ studentScores: student });
   }
 
-  updateAssignmentScore() {
+  patchAssignmentScore() {
     const scores = this.state.studentScores;
     if (scores !== {}) {
       fetch("/api/updatescore", {
@@ -152,7 +152,7 @@ export default class Student extends React.Component {
           <div className="row">
             <div className="col-1"></div>
             <Link to={previousPageURL}>
-              <button className="btn btn-secondary" onClick={this.updateAssignmentScore}>
+              <button className="btn btn-secondary" onClick={this.patchAssignmentScore}>
                 Back
               </button>
             </Link>

@@ -71,7 +71,7 @@ server.get('/api/getstudents', function (request, response, next) {
 server.get('/api/getassignments', function (request, response, next) {
     let params = [];
 
-    const student_id = request.url.split('=')[1]
+    const student_id = request.url.split('=')[1];
 
     params.push(student_id);
 

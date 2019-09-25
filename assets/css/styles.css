@@ -9,34 +9,8 @@
   cursor: pointer;
 }
 
-.modaltext .row {
-  height: 25%;
-}
-
-.modaltext .row .col-12{
-  text-align: center;
-}
-
-.modalshadow {
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  background-color: grey;
-  position: absolute;
-  opacity: .3;
-}
-
-.modaltext {
-  background-color: white;
-  height: 200px;
-  width: 600px;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  position: absolute;
-  z-index: 2;
-
+.show {
+  display: block;
 }
 
 .addtab {

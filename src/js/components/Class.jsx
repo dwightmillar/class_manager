@@ -12,33 +12,36 @@ export default class Class extends React.Component {
       studentAverages: {},
       students: [],
       assignments: [],
-      displayModal: false
+      displayDeleteStudent: false,
+      displayDeleteClass: false
     }
-    this.retrieveStudents = this.retrieveStudents.bind(this);
-    this.addStudent = this.addStudent.bind(this);
+    this.getStudents = this.getStudents.bind(this);
+    this.postStudent = this.postStudent.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
-    this.showModal = this.showModal.bind(this);
+    this.showDeleteStudent = this.showDeleteStudent.bind(this);
+    this.showDeleteClass = this.showDeleteClass.bind(this);
+    this.hideDeleteStudent = this.hideDeleteStudent.bind(this);
+    this.hideDeleteClass = this.hideDeleteClass.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveStudents();
-    this.retrieveName();
+    this.getStudents();
+    this.getClass();
   }
 
-  retrieveName() {
+  getClass() {
     const class_id = this.props.match.url.slice(1);
     fetch("/api/getclasses?id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(Class => {
-        console.log(Class);
         this.setState({ title: Class.data[0].title })
       });
   }
 
-  retrieveStudents() {
+  getStudents() {
     const class_id = this.props.match.url.slice(1);
     fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
@@ -46,15 +49,14 @@ export default class Class extends React.Component {
       .then(data => data.json())
       .then(students => {
         students.data.map(
-          student => this.retrieveAssignments(student.id)
+          student => this.getAssignments(student.id)
         );
         this.setState({ 'students': students.data })
       });
   }
 
   deleteStudent(event) {
-    const id = event.target.parentElement.id;
-
+    const id = event.target.id
     this.state.students.forEach(
       (student, index) => {
         if (student.id == id) {
@@ -65,7 +67,7 @@ export default class Class extends React.Component {
             newStudentList = currentStudentList.slice(0, index).concat(currentStudentList.slice(index + 1, currentStudentList.length + 1));
           }
 
-          this.setState({ students: newStudentList});
+          this.setState({ students: newStudentList, displayDeleteStudent: false});
         }
       }
     )
@@ -84,7 +86,7 @@ export default class Class extends React.Component {
     .then(response => console.log(response));
   }
 
-  retrieveAssignments(id) {
+  getAssignments(id) {
     fetch("/api/getassignments?student_id=" + id, {
       method: "GET"
     })
@@ -95,8 +97,12 @@ export default class Class extends React.Component {
       });
   }
 
-  addStudent(event) {
+  postStudent(event) {
     event.preventDefault();
+
+    const form = event.target.children.nameinput;
+    form.disabled = true;
+
     var studentName = this.state.newStudent;
     var specCharCheck = /\W/;
     var numberCheck = /\d/;
@@ -128,15 +134,16 @@ export default class Class extends React.Component {
         this.setState({
           'newStudentID': newStudent.data.insertId
         });
-        this.addStudentDirect(class_id);
+        this.addStudentDirect(class_id, form);
       });
   }
 
-  addStudentDirect(class_id) {
+  addStudentDirect(class_id, form) {
     const newStudentObj = [{ 'class_id': class_id, 'id': this.state.newStudentID, 'name': this.state.newStudent }];
     this.setState({ 'students': this.state.students.concat(newStudentObj) });
     this.handleStudentGradeAverage(this.state.newStudentID, []);
     this.setState({ 'newStudent': '', 'newStudentID': '' });
+    form.disabled = false;
   }
 
   handleStudentGradeAverage(id, data) {
@@ -191,12 +198,24 @@ export default class Class extends React.Component {
     this.setState({ 'newStudent': event.target.value })
   }
 
-  showModal() {
-    this.setState({ displayModal: true });
+  showDeleteStudent(event) {
+    const id = event.target.parentElement.parentElement.parentElement.id;
+    console.log('id: ',id);
+    this.setState({ displayDeleteStudent: id });
+
   }
 
-  hideModal() {
-    this.setState({ displayModal: false });
+  hideDeleteStudent() {
+    this.setState({ displayDeleteStudent: false });
+  }
+
+  showDeleteClass() {
+    this.setState({ displayDeleteClass: true });
+
+  }
+
+  hideDeleteClass() {
+    this.setState({ displayDeleteClass: false });
   }
 
   render() {
@@ -219,7 +238,11 @@ export default class Class extends React.Component {
                   {this.state.studentAverages[student.id]}%
                 </Link>
               </td>
-              <td className="col-1 clickable" onClick={this.showModal}>X</td>
+              <td className="col-1 clickable">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </td>
             </tr>
           )
         } else {
@@ -229,7 +252,11 @@ export default class Class extends React.Component {
               <td className="col-4">{student.name}</td>
               <td className="col-2"></td>
               <td className="col-3">N/A</td>
-              <td className="col-1" onClick={this.deleteStudent}>X</td>
+              <td className="col-1">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </td>
             </tr>
           )
         }
@@ -252,33 +279,44 @@ export default class Class extends React.Component {
       </div>
     }
 
-    if(this.state.displayModal) {
+    if(this.state.displayDeleteStudent) {
       modal =
-        <React.Fragment>
-          <div className="modalshadow" style={{ "display": "block" }}></div>
-          <div className="modaltext">
-            <div className="row"></div>
-            <div className="row">
-              <div className="col-12">
-                Are you sure you want to delete?
+        <div className="modal show" tabindex="-1" role="dialog">
+        <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Are you sure?</h5>
+
               </div>
-            </div>
-            <div className="row">
-
-              <div className="col-3"></div>
-
-              <div className="col-3">
-                <button className="btn btn-secondary">Go Back</button>
+              <div className="modal-body">
+                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
               </div>
-
-              <div className="col-3">
-                <button className="btn btn-danger">Confirm</button>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.hideDeleteStudent}>Back</button>
+                <button id={this.state.displayDeleteStudent} type="button" className="btn btn-danger" onClick={this.deleteStudent}>Delete</button>
               </div>
-
-              <div className="col-3"></div>
             </div>
           </div>
-        </React.Fragment>
+        </div>
+    } else if (this.state.displayDeleteClass) {
+      modal =
+        <div className="modal show" tabindex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Are you sure?</h5>
+
+              </div>
+              <div className="modal-body">
+                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.hideDeleteClass}>Back</button>
+                <button id={this.state.displayDeleteClass} type="button" className="btn btn-danger" onClick={this.props.deleteClass}>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
     }
 
 
@@ -294,7 +332,7 @@ export default class Class extends React.Component {
           <div className="row">
             <div className="col-8"></div>
             {inputButton}
-            <button className="btn btn-danger hidecursor" onClick={this.props.deleteClass}>
+            <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
               Delete Class
             </button>
           </div>
@@ -315,8 +353,8 @@ export default class Class extends React.Component {
               <tr className="d-flex">
                 <td className="col-2"></td>
                 <td className="col-4">
-                  <form onSubmit={this.addStudent}>
-                    <input type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+                  <form onSubmit={this.postStudent}>
+                    <input type="text" name="nameinput" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
                   </form>
                 </td>
                 <td className="col-6"></td>

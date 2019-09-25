@@ -16,15 +16,15 @@ export default class Assignment extends React.Component {
     this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
-    this.addAssignment = this.addAssignment.bind(this);
+    this.postAssignment = this.postAssignment.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveName();
-    this.retrieveStudents();
+    this.getClass();
+    this.getStudents();
   }
 
-  retrieveName() {
+  getClass() {
     const class_id = this.props.match.url.split('/')[1];
     fetch("/api/getclasses?id=" + class_id, {
       method: "GET"
@@ -33,7 +33,7 @@ export default class Assignment extends React.Component {
       .then(Class => this.setState({ title: Class.data[0].title }));
   }
 
-  retrieveStudents() {
+  getStudents() {
     const class_id = this.props.match.url.split('/')[1];
     fetch("/api/getstudents?class_id=" + class_id, {
       method: "GET"
@@ -46,13 +46,13 @@ export default class Assignment extends React.Component {
             let studentScores = this.state.scores;
             studentScores[student.id] = '';
             this.setState({ studentScores: studentScores });
-            this.retrieveAssignments(student.id);
+            this.getAssignments(student.id);
           }
         )
       })
   }
 
-  retrieveAssignments(id) {
+  getAssignments(id) {
     fetch("/api/getassignments?student_id=" + id, {
       method: "GET"
     })
@@ -138,7 +138,7 @@ export default class Assignment extends React.Component {
     this.setState({ scores: student });
   }
 
-  addAssignment(event) {
+  postAssignment(event) {
     event.preventDefault();
     if (this.state.newAssignment.length < 1) {
       alert('Assignment missing title. Submit rejected.');
@@ -189,7 +189,7 @@ export default class Assignment extends React.Component {
     }
 
     this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
-    this.retrieveStudents();
+    this.getStudents();
   }
 
 
@@ -256,7 +256,7 @@ export default class Assignment extends React.Component {
           <div className="row">
             <div className="col-8">
             </div>
-            <button className="btn btn-success" onClick={this.addAssignment}>
+            <button className="btn btn-success" onClick={this.postAssignment}>
               Submit
             </button>
           </div>

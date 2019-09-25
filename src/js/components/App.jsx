@@ -20,17 +20,17 @@ class App extends React.Component {
       redirectURL: ''
     };
 
-    this.retrieveClasses = this.retrieveClasses.bind(this);
-    this.addClass = this.addClass.bind(this);
+    this.getClasses = this.getClasses.bind(this);
+    this.postClass = this.postClass.bind(this);
     this.deleteClass = this.deleteClass.bind(this);
     this.renderNewTab = this.renderNewTab.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveClasses();
+    this.getClasses();
   }
 
-  retrieveClasses() {
+  getClasses() {
     fetch("/api/getclasses", {
       method: "GET"
     })
@@ -38,7 +38,7 @@ class App extends React.Component {
       .then(classes => this.setState({ 'classes': classes.data }));
   }
 
-  addClass (event) {
+  postClass (event) {
     event.preventDefault();
     if(event.target.children[0].value == undefined) {
       return false;
@@ -145,7 +145,7 @@ class App extends React.Component {
         return (
           <React.Fragment>
 
-             <ClassList allClasses={allClasses} addClass={this.addClass} />
+             <ClassList allClasses={allClasses} postClass={this.postClass} />
 
              <Switch>
                <Route exact path={match.url} render={(props) => <Class {...props} deleteClass={this.deleteClass}></Class>} />
@@ -159,7 +159,7 @@ class App extends React.Component {
 
         return (
           <React.Fragment>
-            <ClassList allClasses={allClasses} addClass={this.addClass} />
+            <ClassList allClasses={allClasses} postClass={this.postClass} />
             <Welcome />
           </React.Fragment>
         )
@@ -174,7 +174,7 @@ class App extends React.Component {
               <Redirect to={`/${this.state.classes[0].id}`} />
             ) : (
               <React.Fragment>
-                  <ClassList allClasses={allClasses} addClass={this.addClass}/>
+                  <ClassList allClasses={allClasses} postClass={this.postClass}/>
                   <Welcome />
               </React.Fragment>
             )
