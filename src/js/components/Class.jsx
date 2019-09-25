@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import Modal from './Modal.jsx';
 import { match } from "minimatch";
 
 export default class Class extends React.Component {
@@ -200,7 +201,6 @@ export default class Class extends React.Component {
 
   showDeleteStudent(event) {
     const id = event.target.parentElement.parentElement.parentElement.id;
-    console.log('id: ',id);
     this.setState({ displayDeleteStudent: id });
 
   }
@@ -221,7 +221,6 @@ export default class Class extends React.Component {
   render() {
 
     var inputButton = null;
-    var modal = null;
 
     const allStudents = this.state.students.map(
       student => {
@@ -279,46 +278,6 @@ export default class Class extends React.Component {
       </div>
     }
 
-    if(this.state.displayDeleteStudent) {
-      modal =
-        <div className="modal show" tabindex="-1" role="dialog">
-        <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Are you sure?</h5>
-
-              </div>
-              <div className="modal-body">
-                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.hideDeleteStudent}>Back</button>
-                <button id={this.state.displayDeleteStudent} type="button" className="btn btn-danger" onClick={this.deleteStudent}>Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-    } else if (this.state.displayDeleteClass) {
-      modal =
-        <div className="modal show" tabindex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Are you sure?</h5>
-
-              </div>
-              <div className="modal-body">
-                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.hideDeleteClass}>Back</button>
-                <button id={this.state.displayDeleteClass} type="button" className="btn btn-danger" onClick={this.props.deleteClass}>Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-    }
-
 
     return (
       <React.Fragment>
@@ -337,7 +296,12 @@ export default class Class extends React.Component {
             </button>
           </div>
         </header>
-        {modal}
+        <Modal displayDeleteClass={this.state.displayDeleteClass}
+                displayDeleteStudent={this.state.displayDeleteStudent}
+                hideDeleteClass={this.hideDeleteClass}
+                hideDeleteStudent={this.hideDeleteStudent}
+                deleteStudent={this.deleteStudent}
+                deleteClass={this.props.deleteClass}/>
         <div className="container-fluid">
           <table className="table table-hover">
             <thead>
