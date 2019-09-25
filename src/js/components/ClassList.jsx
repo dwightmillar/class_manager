@@ -119,6 +119,12 @@ class ClassList extends React.Component {
       }
     )
 
+    let currentClassTitle = this.state.classes.find(Class => Class.id == this.props.match.params.classID);
+
+    if(currentClassTitle){
+      currentClassTitle = currentClassTitle.title;
+    }
+
     const Display = () => {
 
       if (this.state.classes.find(classData => classData.id == this.props.match.params.classID)) {
@@ -128,19 +134,18 @@ class ClassList extends React.Component {
             <Switch>
               <Route path="/:classID/input" render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
               <Route path="/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
-              <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass}></ClassView>} />
+              <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
             </Switch>
 
           </React.Fragment>
         )
-      } else if (this.state.classes.length) {
-           history.replace('/' + this.state.classes[0].id);
-           return null
-
       } else {
-        return (
-          <Redirect to="/welcome"/>
-        )
+          if (this.state.classes.length) {
+            history.replace('/' + this.state.classes[0].id);
+          } else {
+            history.replace('/welcome');
+          }
+           return null
       }
     }
 

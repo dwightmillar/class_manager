@@ -7,7 +7,6 @@ export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      title: '',
       classAverage: '',
       newStudent: '',
       studentAverages: {},
@@ -30,18 +29,6 @@ export default class ClassView extends React.Component {
 
   componentDidMount() {
     this.getStudents();
-    this.getClass();
-  }
-
-  getClass() {
-    const class_id = this.props.match.params.classID;
-    fetch("/api/getclasses?id=" + class_id, {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(Class => {
-        this.setState({ title: Class.data[0].title })
-      });
   }
 
   getStudents() {
@@ -117,8 +104,6 @@ export default class ClassView extends React.Component {
                       disableForm: false });
       return false;
     }
-
-    console.log('Class.props: ',this.props);
 
     const class_id = this.props.match.params.classID;
 
@@ -280,9 +265,9 @@ export default class ClassView extends React.Component {
     } else {
       inputButton =
       <div>
-          <button className="btn btn-primary disabled hidecursor">
-            Input Assignment
-          </button>
+        <button className="btn btn-primary disabled hidecursor">
+          Input Assignment
+        </button>
       </div>
     }
 
@@ -299,7 +284,7 @@ export default class ClassView extends React.Component {
       <React.Fragment>
         <header className="container-fluid">
           <h1 className="text-center">
-            {this.state.title}
+            {this.props.title}
           </h1>
           <h2 className="text-center">
             Class Average: {this.handleClassAverage()}

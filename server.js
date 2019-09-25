@@ -48,7 +48,6 @@ server.get('/api/getstudents', function (request, response, next) {
 
   params.push(id);
 
-  console.log('queryType: ',queryType);
 
   if (queryType === 'class_id') {
     var query = `SELECT * FROM students WHERE class_id=?`;
@@ -165,9 +164,6 @@ server.post('/api/addassignment', function (request, response, next) {
 
     query = mysql.format(query, assignments);
 
-    console.log('query: ',query);
-    console.log('assignments: ', assignments);
-
 
     db.query(query, function (error, data, fields) {
       if (error) return next(error);
@@ -218,7 +214,6 @@ server.patch('/api/updatescore', function (request, response, next) {
 
 
     query = mysql.format(query, params);
-    console.log('query: ',query);
 
     db.query(query, params, function (error, data, fields) {
       if(error) return next(error);
