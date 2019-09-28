@@ -1,73 +1,54 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import Modal from './Modal.jsx';
 import { match } from "minimatch";
 
-export default class Class extends React.Component {
+export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      title: '',
       classAverage: '',
       newStudent: '',
       studentAverages: {},
       students: [],
-      assignments: []
+      assignments: [],
+      displayDeleteStudent: false,
+      displayDeleteClass: false,
+      disableForm: false,
+      inputPlaceholder: 'Enter Student'
     }
-    this.retrieveStudents = this.retrieveStudents.bind(this);
-    this.addStudent = this.addStudent.bind(this);
+    this.getStudents = this.getStudents.bind(this);
+    this.postStudent = this.postStudent.bind(this);
     this.deleteStudent = this.deleteStudent.bind(this);
     this.handleStudentInput = this.handleStudentInput.bind(this);
+    this.showDeleteStudent = this.showDeleteStudent.bind(this);
+    this.showDeleteClass = this.showDeleteClass.bind(this);
+    this.hideDeleteStudent = this.hideDeleteStudent.bind(this);
+    this.hideDeleteClass = this.hideDeleteClass.bind(this);
+    this.renderModal = this.renderModal.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveStudents();
-    this.retrieveName();
+    this.getStudents();
   }
 
-  retrieveName() {
-    const class_id = this.props.match.url.slice(1);
-    fetch("/api/getclasses?id=" + class_id, {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(Class => {
-        this.setState({ title: Class.data[0].title })
-      });
-  }
-
-  retrieveStudents() {
-    const class_id = this.props.match.url.slice(1);
-    fetch("/api/getstudents?class_id=" + class_id, {
+  getStudents() {
+    const class_id = this.props.match.params.classID;
+    fetch("/api/students?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(students => {
         students.data.map(
-          student => this.retrieveAssignments(student.id)
+          student => this.getAssignments(student.id)
         );
         this.setState({ 'students': students.data })
       });
   }
 
   deleteStudent(event) {
-    const id = event.target.parentElement.id;
-
-    this.state.students.forEach(
-      (student, index) => {
-        if (student.id == id) {
-          const currentStudentList = this.state.students;
-          var newStudentList = [];
-
-          if (currentStudentList.length > 1) {
-            newStudentList = currentStudentList.slice(0, index).concat(currentStudentList.slice(index + 1, currentStudentList.length + 1));
-          }
-
-          this.setState({ students: newStudentList});
-        }
-      }
-    )
-
-    fetch("/api/deletestudent", {
+    const id = parseInt(event.target.id);
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -77,12 +58,25 @@ export default class Class extends React.Component {
         id: id,
       })
     })
-    .then(data => data.json())
-    .then(response => console.log(response));
+      .then(data => data.json())
+      .then(response => {
+        if(response.success) {
+          this.setState({
+            students: this.state.students.filter(
+              student => {
+                if (student.id !== id) return student
+              }
+            ),
+            displayDeleteStudent: false
+          })
+        } else {
+          console.error('FAILED TO DELETE: ',response)
+        }
+      });
   }
 
-  retrieveAssignments(id) {
-    fetch("/api/getassignments?student_id=" + id, {
+  getAssignments(id) {
+    fetch("/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -92,24 +86,29 @@ export default class Class extends React.Component {
       });
   }
 
-  addStudent(event) {
+  postStudent(event) {
     event.preventDefault();
+
+    this.setState({disableForm: true});
+
     var studentName = this.state.newStudent;
     var specCharCheck = /\W/;
     var numberCheck = /\d/;
     if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
-      event.target.children[0].placeholder = 'Can only use letters';
-      event.target.children[0].value = '';
+      this.setState({ inputPlaceholder: 'Can only use letters',
+                      newStudent: '' ,
+                      disableForm: false });
       return false;
     } else if (this.state.newStudent.length < 2) {
-      event.target.children[0].placeholder = 'Must be at least 2 letters';
-      event.target.children[0].value = '';
+      this.setState({ inputPlaceholder: 'Must be longer than 2 letters',
+                      newStudent: '' ,
+                      disableForm: false });
       return false;
     }
 
-    const class_id = this.props.match.url.slice(1);
+    const class_id = this.props.match.params.classID;
 
-    fetch("/api/addstudent", {
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -120,13 +119,17 @@ export default class Class extends React.Component {
         class_id: class_id
       })
     })
-      .then(data => data.json())
-      .then(newStudent => {
+    .then(data => data.json())
+    .then(response => {
+      if (response.success){
         this.setState({
-          'newStudentID': newStudent.data.insertId
+          'newStudentID': response.data.insertId
         });
         this.addStudentDirect(class_id);
-      });
+      } else {
+        console.error('FAILED TO ADD: ', response);
+      }
+    });
   }
 
   addStudentDirect(class_id) {
@@ -134,6 +137,7 @@ export default class Class extends React.Component {
     this.setState({ 'students': this.state.students.concat(newStudentObj) });
     this.handleStudentGradeAverage(this.state.newStudentID, []);
     this.setState({ 'newStudent': '', 'newStudentID': '' });
+    this.setState({disableForm: false});
   }
 
   handleStudentGradeAverage(id, data) {
@@ -188,9 +192,50 @@ export default class Class extends React.Component {
     this.setState({ 'newStudent': event.target.value })
   }
 
+  showDeleteStudent(event) {
+    const id = event.target.parentElement.parentElement.parentElement.id;
+    this.setState({ displayDeleteStudent: id });
+
+  }
+
+  hideDeleteStudent() {
+    this.setState({ displayDeleteStudent: false });
+  }
+
+  showDeleteClass() {
+    this.setState({ displayDeleteClass: true });
+
+  }
+
+  hideDeleteClass() {
+    this.setState({ displayDeleteClass: false });
+  }
+
+  renderModal() {
+    if(this.state.displayDeleteClass) {
+      return {
+        display: 'modal show',
+        delete: this.props.deleteClass,
+        hideModal: this.hideDeleteClass
+      }
+    } else if (this.state.displayDeleteStudent) {
+      return {
+        display: 'modal show',
+        delete: this.deleteStudent,
+        hideModal: this.hideDeleteStudent,
+        deleteID: this.state.displayDeleteStudent
+      }
+    } else {
+      return {
+        display: 'modal'
+      }
+    }
+  }
+
   render() {
 
     var inputButton = null;
+    var input = null;
 
     const allStudents = this.state.students.map(
       student => {
@@ -207,7 +252,11 @@ export default class Class extends React.Component {
                   {this.state.studentAverages[student.id]}%
                 </Link>
               </td>
-              <td className="col-1" onClick={this.deleteStudent}>X</td>
+              <td className="col-1 clickable">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </td>
             </tr>
           )
         } else {
@@ -217,7 +266,11 @@ export default class Class extends React.Component {
               <td className="col-4">{student.name}</td>
               <td className="col-2"></td>
               <td className="col-3">N/A</td>
-              <td className="col-1" onClick={this.deleteStudent}>X</td>
+              <td className="col-1">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </td>
             </tr>
           )
         }
@@ -234,18 +287,26 @@ export default class Class extends React.Component {
     } else {
       inputButton =
       <div>
-          <button className="btn btn-primary disabled hidecursor">
-            Input Assignment
-          </button>
+        <button className="btn btn-primary disabled hidecursor">
+          Input Assignment
+        </button>
       </div>
     }
+
+    input =
+      <input type="text" autoFocus name="nameinput"
+      placeholder={this.state.inputPlaceholder}
+      value={this.state.newStudent} onChange={this.handleStudentInput}
+      onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
+      disabled={this.state.disableForm}>
+      </input>
 
 
     return (
       <React.Fragment>
         <header className="container-fluid">
           <h1 className="text-center">
-            {this.state.title}
+            {this.props.title}
           </h1>
           <h2 className="text-center">
             Class Average: {this.handleClassAverage()}
@@ -253,12 +314,12 @@ export default class Class extends React.Component {
           <div className="row">
             <div className="col-8"></div>
             {inputButton}
-            <button className="btn btn-danger hidecursor" onClick={this.props.deleteClass}>
+            <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
               Delete Class
             </button>
           </div>
         </header>
-
+        <Modal renderModal={this.renderModal}/>
         <div className="container-fluid">
           <table className="table table-hover">
             <thead>
@@ -271,11 +332,11 @@ export default class Class extends React.Component {
             </thead>
             <tbody>
               {allStudents}
-              <tr className="d-flex">
+              <tr className="d-flex input">
                 <td className="col-2"></td>
                 <td className="col-4">
-                  <form onSubmit={this.addStudent}>
-                    <input type="text" placeholder="Enter Student" value={this.state.newStudent} onChange={this.handleStudentInput}></input>
+                  <form onSubmit={this.postStudent}>
+                    {input}
                   </form>
                 </td>
                 <td className="col-6"></td>

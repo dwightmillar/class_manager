@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-import { Redirect } from 'react-router';
 import NotFound from "./NotFound.jsx";
+import history from '../../history.js';
+
 
 export default class Student extends React.Component {
   constructor() {
@@ -13,29 +14,29 @@ export default class Student extends React.Component {
       studentScores: {},
     }
 
-    this.retrieveName = this.retrieveName.bind(this);
-    this.retrieveAssignments = this.retrieveAssignments.bind(this);
+    this.getClass = this.getClass.bind(this);
+    this.getAssignments = this.getAssignments.bind(this);
     this.handleUpdateScore = this.handleUpdateScore.bind(this);
-    this.updateAssignmentScore = this.updateAssignmentScore.bind(this);
+    this.patchAssignmentScore = this.patchAssignmentScore.bind(this);
   }
 
   componentDidMount() {
-    this.retrieveAssignments();
-    this.retrieveName();
+    this.getAssignments();
+    this.getClass();
   }
 
-  retrieveName() {
-    const student_id = this.props.match.url.split('/')[2];
-    fetch("/api/getstudents?id=" + student_id, {
+  getClass() {
+    const student_id = this.props.match.params.studentID;
+    fetch("/api/students?id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(student => this.setState({name: student.data[0].name}));
   }
 
-  retrieveAssignments() {
-    const student_id = this.props.match.url.split('/')[2];
-    fetch("/api/getassignments?student_id=" + student_id, {
+  getAssignments() {
+    const student_id = this.props.match.params.studentID;
+    fetch("/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -89,10 +90,10 @@ export default class Student extends React.Component {
     this.setState({ studentScores: student });
   }
 
-  updateAssignmentScore() {
+  patchAssignmentScore() {
     const scores = this.state.studentScores;
     if (scores !== {}) {
-      fetch("/api/updatescore", {
+      fetch("/api/assignments", {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -107,13 +108,13 @@ export default class Student extends React.Component {
     }
   }
 
-
   render() {
+    console.log(this.props);
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
-    if (!(this.props.match.url.split('/')[1] == this.state.assignments[0].class_id)) {
-      return <Redirect to={`/${this.state.assignments[0].class_id}/${this.state.assignments[0].student_id}`} />
+    if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
+      history.replace('/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
     }
 
     var allAssignments = this.state.assignments.map(
@@ -133,12 +134,12 @@ export default class Student extends React.Component {
               }}
               >
             </input>
-            /{assignment.totalpoints}
+            &nbsp;/&nbsp;{assignment.totalpoints}
           </td>
         </tr>
     )
 
-    const previousPageURL = "/" + this.props.match.url.split("/")[1];
+    const previousPageURL = "/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>
@@ -152,7 +153,7 @@ export default class Student extends React.Component {
           <div className="row">
             <div className="col-1"></div>
             <Link to={previousPageURL}>
-              <button className="btn btn-secondary" onClick={this.updateAssignmentScore}>
+              <button className="btn btn-secondary" onClick={this.patchAssignmentScore}>
                 Back
               </button>
             </Link>
