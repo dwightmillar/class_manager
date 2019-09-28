@@ -273,10 +273,17 @@ export default class ClassView extends React.Component {
 
     if(this.state.disableForm) {
       input =
-        <input type="text" name="nameinput" placeholder={this.state.inputPlaceholder} value={this.state.newStudent} onChange={this.handleStudentInput} onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })} disabled></input>
+        <input type="text" name="nameinput"
+        placeholder={this.state.inputPlaceholder}
+        value={this.state.newStudent} onChange={this.handleStudentInput}
+        onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
+        disabled></input>
     } else {
       input =
-        <input type="text" name="nameinput" placeholder={this.state.inputPlaceholder} value={this.state.newStudent} onChange={this.handleStudentInput} onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}></input>
+        <input type="text" name="nameinput"
+        placeholder={this.state.inputPlaceholder}
+        value={this.state.newStudent} onChange={this.handleStudentInput}
+        onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}></input>
     }
 
 
@@ -315,7 +322,7 @@ export default class ClassView extends React.Component {
             </thead>
             <tbody>
               {allStudents}
-              <tr className="d-flex">
+              <tr className="d-flex input">
                 <td className="col-2"></td>
                 <td className="col-4">
                   <form onSubmit={this.postStudent}>

@@ -51,3 +51,12 @@ input.nav-link {
 input.assignment {
   height: 42
 }
+
+tr.d-flex.input:hover {
+  background-color: white;
+}
+
+.error {
+  outline-color: red;
+  border-color: red;
+}

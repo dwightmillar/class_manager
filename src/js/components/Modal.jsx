@@ -12,7 +12,7 @@ class Modal extends React.Component {
 
               </div>
               <div className="modal-body">
-                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
+                <p>Deleting this will <b>permanently delete</b> all associated data. Would you like to proceed?</p>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.props.hideDeleteStudent}>Back</button>
@@ -32,7 +32,7 @@ class Modal extends React.Component {
                 <h5 className="modal-title">Are you sure?</h5>
               </div>
               <div className="modal-body">
-                <p>Deleting this will <b>permenantly delete</b> all associated data. Would you like to proceed?</p>
+                <p>Deleting this will <b>permanently delete</b> all associated data. Would you like to proceed?</p>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={this.props.hideDeleteClass}>Back</button>

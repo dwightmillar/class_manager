@@ -134,7 +134,7 @@ export default class Student extends React.Component {
               }}
               >
             </input>
-            /{assignment.totalpoints}
+            &nbsp;/&nbsp;{assignment.totalpoints}
           </td>
         </tr>
     )

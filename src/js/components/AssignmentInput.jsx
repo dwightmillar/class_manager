@@ -11,7 +11,8 @@ export default class Assignment extends React.Component {
       studentAverages: [],
       newAssignment: '',
       maxPoints: '',
-      scores: {}
+      scores: {},
+      inputerror: false
     }
     this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
@@ -20,18 +21,9 @@ export default class Assignment extends React.Component {
   }
 
   componentDidMount() {
-    this.getClass();
     this.getStudents();
   }
 
-  getClass() {
-    const class_id = this.props.match.params.classID;
-    fetch("/api/getclasses?id=" + class_id, {
-      method: "GET"
-    })
-      .then(data => data.json())
-      .then(Class => this.setState({ title: Class.data[0].title }));
-  }
 
   getStudents() {
     const class_id = this.props.match.params.classID;
@@ -116,6 +108,9 @@ export default class Assignment extends React.Component {
   }
 
   handleMaxPointsInput(event) {
+    if (isNaN(event.target.value)) {
+      return false;
+    }
     this.setState({ 'maxPoints': event.target.value })
   }
 
@@ -140,30 +135,54 @@ export default class Assignment extends React.Component {
 
   postAssignment(event) {
     event.preventDefault();
-    if (this.state.newAssignment.length < 1) {
-      alert('Assignment missing title. Submit rejected.');
+    let errorCheck = false;
+
+    if (!this.state.newAssignment.length || !this.state.maxPoints ) {
+      console.log('invalid assignmentname or maxpoints');
+      this.setState({ inputerror: true });
+      errorCheck = true;
       return false;
     }
+
     const title = this.state.newAssignment;
     const totalpoints = this.state.maxPoints;
     const studentScores = this.state.scores;
     const classid = this.props.match.params.classID;
-
-    let removeCommaIndex = 0;
 
     let scores = this.state.students.map(
       student => {
         if (studentScores[student.id]) {
           return `${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
         } else {
-          ++removeCommaIndex;
+          this.setState({ inputerror: true });
+          errorCheck = true;
+          return false;
         }
       }
-    ).toString();
+    )
 
-    if (removeCommaIndex) {
-      scores = scores.slice(removeCommaIndex);
+    console.log('scores: ',scores);
+
+    for (var score in scores) {
+      if (score === '') {
+        console.log('invalid score');
+        errorCheck = true;
+      }
     }
+
+    if (!scores[scores.length - 1]) {
+      return false;
+    } else {
+      scores = scores.toString();
+    }
+
+    if(errorCheck) {
+      this.setState({inputerror: true});
+      return false;
+    } else {
+      this.setState({inputerror: false});
+    }
+
 
     fetch("/api/addassignment", {
       headers: {
@@ -200,8 +219,8 @@ export default class Assignment extends React.Component {
             <td className="col-4">{student.name}</td>
             <td className="col-2"></td>
             <td className="col-4">
-              <input id={student.id} className="points" type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}>
-              </input>
+              <input id={student.id} className={(this.state.inputerror && (this.state.scores[student.id] === '')) ? "points error" : "points"} type="text" value={this.state.scores[student.id]} onChange={this.handleScoreInput}></input>
+              &nbsp;/&nbsp;{this.state.maxPoints}
             </td>
           </tr>
       )
@@ -213,7 +232,7 @@ export default class Assignment extends React.Component {
       <React.Fragment>
         <header>
           <h1 className="text-center">
-            {this.state.title}
+            {this.props.title}
           </h1>
           <h2 className="text-center">
             Class Average: {this.handleClassAverage()}
@@ -226,12 +245,12 @@ export default class Assignment extends React.Component {
               </button>
             </Link>
             <div className="col-2"></div>
-            <input className="center assignment" type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+            <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
           </div>
           <div className="row">
             <div className="col-7"></div>
             <div>Total possible points:&nbsp;</div>
-            <input className="points" type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            <input className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
           </div>
         </header>
         <div>

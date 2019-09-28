@@ -35,7 +35,9 @@ class ClassList extends React.Component {
 
   postClass(event) {
     event.preventDefault();
-    if (event.target.children[0].value == undefined) {
+    console.log(event.target.children[0].value);
+    if (event.target.children[0].value === '') {
+      console.log('entered postclass');
       return false;
     }
     const title = event.target.children[0].value;
@@ -132,7 +134,7 @@ class ClassList extends React.Component {
         return (
           <React.Fragment>
             <Switch>
-              <Route path="/:classID/input" render={(props) => <AssignmentInput {...props}></AssignmentInput>} />
+              <Route path="/:classID/input" render={(props) => <AssignmentInput {...props} title={currentClassTitle}></AssignmentInput>} />
               <Route path="/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
               <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
             </Switch>
