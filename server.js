@@ -11,15 +11,13 @@ const db = mysql.createConnection(creds);
 
 
 server.use(BodyParser.json())
-server.use(BodyParser.urlencoded({ extended: true }))
 
-
-const htmlDirectory = __dirname + 'index.html';
-const staticMiddlewareFunction = express.static(path.join(htmlDirectory));
+const htmlDirectory = path.join(__dirname , 'index.html');
+const staticMiddlewareFunction = express.static(htmlDirectory);
 
 server.use(staticMiddlewareFunction);
 
-server.get('/api/getclasses', function (request, response, next) {
+server.get('/api/classes', function (request, response, next) {
   let params = [];
   const id = request.url.split('=')[1];
 
@@ -40,7 +38,7 @@ server.get('/api/getclasses', function (request, response, next) {
 });
 
 
-server.get('/api/getstudents', function (request, response, next) {
+server.get('/api/students', function (request, response, next) {
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
@@ -67,7 +65,7 @@ server.get('/api/getstudents', function (request, response, next) {
   });
 });
 
-server.get('/api/getassignments', function (request, response, next) {
+server.get('/api/assignments', function (request, response, next) {
     let params = [];
 
     const student_id = request.url.split('=')[1];
@@ -85,7 +83,7 @@ server.get('/api/getassignments', function (request, response, next) {
     });
 });
 
-server.post('/api/addstudent', function (request, response, next) {
+server.post('/api/students', function (request, response, next) {
     let params = [];
 
     const student_name = request.body.name;
@@ -104,7 +102,7 @@ server.post('/api/addstudent', function (request, response, next) {
     });
 });
 
-server.delete('/api/deletestudent', function (request, response, next) {
+server.delete('/api/students', function (request, response, next) {
     let params = [];
 
     const student_id = request.body.id;
@@ -125,7 +123,7 @@ server.delete('/api/deletestudent', function (request, response, next) {
     });
 });
 
-server.delete('/api/deleteclass', function (request, response, next) {
+server.delete('/api/classes', function (request, response, next) {
     let params = [];
 
     const id = request.body.id;
@@ -147,7 +145,7 @@ server.delete('/api/deleteclass', function (request, response, next) {
     });
 });
 
-server.post('/api/addassignment', function (request, response, next) {
+server.post('/api/assignments', function (request, response, next) {
     let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
 
     const assignments = request.body.scores.split(',');
@@ -174,7 +172,7 @@ server.post('/api/addassignment', function (request, response, next) {
     });
 });
 
-server.post('/api/addclass', function (request, response, next) {
+server.post('/api/classes', function (request, response, next) {
     let params = [];
 
     params.push(request.body.name);
@@ -191,7 +189,7 @@ server.post('/api/addclass', function (request, response, next) {
 
 
 
-server.patch('/api/updatescore', function (request, response, next) {
+server.patch('/api/assignments', function (request, response, next) {
     const scores = request.body.scores;
     let params = [];
     let query = "UPDATE assignments SET score = CASE id ";

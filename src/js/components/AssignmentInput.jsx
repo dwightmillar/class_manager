@@ -27,7 +27,7 @@ export default class Assignment extends React.Component {
 
   getStudents() {
     const class_id = this.props.match.params.classID;
-    fetch("/api/getstudents?class_id=" + class_id, {
+    fetch("/api/students?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -45,7 +45,7 @@ export default class Assignment extends React.Component {
   }
 
   getAssignments(id) {
-    fetch("/api/getassignments?student_id=" + id, {
+    fetch("/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -141,6 +141,7 @@ export default class Assignment extends React.Component {
       console.log('invalid assignmentname or maxpoints');
       this.setState({ inputerror: true });
       errorCheck = true;
+      alert('You need to fill out the highlighted fields');
       return false;
     }
 
@@ -156,6 +157,7 @@ export default class Assignment extends React.Component {
         } else {
           this.setState({ inputerror: true });
           errorCheck = true;
+          alert('You need to fill out the highlighted fields');
           return false;
         }
       }
@@ -184,7 +186,7 @@ export default class Assignment extends React.Component {
     }
 
 
-    fetch("/api/addassignment", {
+    fetch("/api/assignments", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

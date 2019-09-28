@@ -27,7 +27,7 @@ export default class Student extends React.Component {
 
   getClass() {
     const student_id = this.props.match.params.studentID;
-    fetch("/api/getstudents?id=" + student_id, {
+    fetch("/api/students?id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -36,7 +36,7 @@ export default class Student extends React.Component {
 
   getAssignments() {
     const student_id = this.props.match.params.studentID;
-    fetch("/api/getassignments?student_id=" + student_id, {
+    fetch("/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -93,7 +93,7 @@ export default class Student extends React.Component {
   patchAssignmentScore() {
     const scores = this.state.studentScores;
     if (scores !== {}) {
-      fetch("/api/updatescore", {
+      fetch("/api/assignments", {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'

@@ -25,6 +25,7 @@ export default class ClassView extends React.Component {
     this.showDeleteClass = this.showDeleteClass.bind(this);
     this.hideDeleteStudent = this.hideDeleteStudent.bind(this);
     this.hideDeleteClass = this.hideDeleteClass.bind(this);
+    this.renderModal = this.renderModal.bind(this);
   }
 
   componentDidMount() {
@@ -33,7 +34,7 @@ export default class ClassView extends React.Component {
 
   getStudents() {
     const class_id = this.props.match.params.classID;
-    fetch("/api/getstudents?class_id=" + class_id, {
+    fetch("/api/students?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -47,7 +48,7 @@ export default class ClassView extends React.Component {
 
   deleteStudent(event) {
     const id = parseInt(event.target.id);
-    fetch("/api/deletestudent", {
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -75,7 +76,7 @@ export default class ClassView extends React.Component {
   }
 
   getAssignments(id) {
-    fetch("/api/getassignments?student_id=" + id, {
+    fetch("/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -107,7 +108,7 @@ export default class ClassView extends React.Component {
 
     const class_id = this.props.match.params.classID;
 
-    fetch("/api/addstudent", {
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -210,6 +211,27 @@ export default class ClassView extends React.Component {
     this.setState({ displayDeleteClass: false });
   }
 
+  renderModal() {
+    if(this.state.displayDeleteClass) {
+      return {
+        display: 'modal show',
+        delete: this.props.deleteClass,
+        hideModal: this.hideDeleteClass
+      }
+    } else if (this.state.displayDeleteStudent) {
+      return {
+        display: 'modal show',
+        delete: this.deleteStudent,
+        hideModal: this.hideDeleteStudent,
+        deleteID: this.state.displayDeleteStudent
+      }
+    } else {
+      return {
+        display: 'modal'
+      }
+    }
+  }
+
   render() {
 
     var inputButton = null;
@@ -271,20 +293,13 @@ export default class ClassView extends React.Component {
       </div>
     }
 
-    if(this.state.disableForm) {
-      input =
-        <input type="text" name="nameinput"
-        placeholder={this.state.inputPlaceholder}
-        value={this.state.newStudent} onChange={this.handleStudentInput}
-        onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
-        disabled></input>
-    } else {
-      input =
-        <input type="text" name="nameinput"
-        placeholder={this.state.inputPlaceholder}
-        value={this.state.newStudent} onChange={this.handleStudentInput}
-        onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}></input>
-    }
+    input =
+      <input type="text" autoFocus name="nameinput"
+      placeholder={this.state.inputPlaceholder}
+      value={this.state.newStudent} onChange={this.handleStudentInput}
+      onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
+      disabled={this.state.disableForm}>
+      </input>
 
 
     return (
@@ -304,12 +319,7 @@ export default class ClassView extends React.Component {
             </button>
           </div>
         </header>
-        <Modal displayDeleteClass={this.state.displayDeleteClass}
-                displayDeleteStudent={this.state.displayDeleteStudent}
-                hideDeleteClass={this.hideDeleteClass}
-                hideDeleteStudent={this.hideDeleteStudent}
-                deleteStudent={this.deleteStudent}
-                deleteClass={this.props.deleteClass}/>
+        <Modal renderModal={this.renderModal}/>
         <div className="container-fluid">
           <table className="table table-hover">
             <thead>
