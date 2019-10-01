@@ -12,7 +12,7 @@ const db = mysql.createConnection(creds);
 
 server.use(BodyParser.json())
 
-const htmlDirectory = path.join(__dirname , 'index.html');
+const htmlDirectory = path.join(__dirname , 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);
 
 server.use(staticMiddlewareFunction);
