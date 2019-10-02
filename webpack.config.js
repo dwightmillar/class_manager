@@ -36,7 +36,7 @@ module.exports = {
     watchContentBase: true,
     stats: 'minimal',
     proxy: {
-      '/api': 'http://127.0.0.1:3001/'
+      '/api': 'http://localhost:3001'
     }
   }
 }
