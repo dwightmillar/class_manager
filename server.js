@@ -17,7 +17,7 @@ const staticMiddlewareFunction = express.static(htmlDirectory);
 
 server.use(staticMiddlewareFunction);
 
-server.get('/api/classes', function (request, response, next) {
+server.get('/class_manager/classes', function (request, response, next) {
   let params = [];
   const id = request.url.split('=')[1];
 
@@ -38,7 +38,7 @@ server.get('/api/classes', function (request, response, next) {
 });
 
 
-server.get('/api/students', function (request, response, next) {
+server.get('/class_manager/students', function (request, response, next) {
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
@@ -65,7 +65,7 @@ server.get('/api/students', function (request, response, next) {
   });
 });
 
-server.get('/api/assignments', function (request, response, next) {
+server.get('/class_manager/assignments', function (request, response, next) {
     let params = [];
 
     const student_id = request.url.split('=')[1];
@@ -83,7 +83,7 @@ server.get('/api/assignments', function (request, response, next) {
     });
 });
 
-server.post('/api/students', function (request, response, next) {
+server.post('/class_manager/students', function (request, response, next) {
     let params = [];
 
     const student_name = request.body.name;
@@ -102,7 +102,7 @@ server.post('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/students', function (request, response, next) {
+server.delete('/class_manager/students', function (request, response, next) {
     let params = [];
 
     const student_id = request.body.id;
@@ -123,7 +123,7 @@ server.delete('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/classes', function (request, response, next) {
+server.delete('/class_manager/classes', function (request, response, next) {
     let params = [];
 
     const id = request.body.id;
@@ -145,7 +145,7 @@ server.delete('/api/classes', function (request, response, next) {
     });
 });
 
-server.post('/api/assignments', function (request, response, next) {
+server.post('/class_manager/assignments', function (request, response, next) {
     let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
 
     const assignments = request.body.scores.split(',');
@@ -172,7 +172,7 @@ server.post('/api/assignments', function (request, response, next) {
     });
 });
 
-server.post('/api/classes', function (request, response, next) {
+server.post('/class_manager/classes', function (request, response, next) {
     let params = [];
 
     params.push(request.body.name);
@@ -189,7 +189,7 @@ server.post('/api/classes', function (request, response, next) {
 
 
 
-server.patch('/api/assignments', function (request, response, next) {
+server.patch('/class_manager/assignments', function (request, response, next) {
     const scores = request.body.scores;
     let params = [];
     let query = "UPDATE assignments SET score = CASE id ";
