@@ -36,7 +36,7 @@ module.exports = {
     watchContentBase: true,
     stats: 'minimal',
     proxy: {
-      '/class_manager': 'http://localhost:3001'
+      '/api': 'http://localhost:3001'
     }
   }
 }

@@ -26,7 +26,7 @@ class ClassList extends React.Component {
   }
 
   getClasses() {
-    fetch("/class_manager/classes", {
+    fetch("/api/classes", {
       method: "GET"
     })
       .then(data => data.json())
@@ -42,7 +42,7 @@ class ClassList extends React.Component {
     }
     const title = event.target.children[0].value;
     event.target.children[0].value = '';
-    fetch("/class_manager/classes", {
+    fetch("/api/classes", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ class ClassList extends React.Component {
       Class => Class.id == class_id
     );
 
-    fetch("/class_manager/classes", {
+    fetch("/api/classes", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
