@@ -173,7 +173,7 @@ class ClassList extends React.Component {
         </ul >
 
         <Switch>
-          <Route path="/class_manager/welcome" render={() => <Welcome />} />
+          <Route exact path="/class_manager/welcome" render={() => <Welcome />} />
           <Route path={this.props.match.url} render={() => <Display />} />
         </Switch>
       </React.Fragment>
