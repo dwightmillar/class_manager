@@ -16,7 +16,7 @@
 .addtab {
   padding-left: 10px;
   height: 90%;
-  width: 35px;
+  width: 60px;
   border: none;
   outline: none;
   cursor: pointer;
@@ -24,7 +24,7 @@
 }
 
 * {
-  font-size: calc(20px + 0.4vw);
+  font-size: calc(1.8vh + 4px);
 }
 
 td.col-1 {

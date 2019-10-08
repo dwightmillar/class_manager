@@ -254,7 +254,7 @@ export default class ClassView extends React.Component {
               </td>
               <td className="col-1 clickable">
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
-                  <span aria-hidden="true">&times;</span>
+                  <div>&times;</div>
                 </button>
               </td>
             </tr>
@@ -268,7 +268,7 @@ export default class ClassView extends React.Component {
               <td className="col-3">N/A</td>
               <td className="col-1">
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
-                  <span aria-hidden="true">&times;</span>
+                  <div>&times;</div>
                 </button>
               </td>
             </tr>
