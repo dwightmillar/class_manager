@@ -20,7 +20,26 @@
   border: none;
   outline: none;
   cursor: pointer;
-  font-size: 1.7em
+  font-size: 1.7em;
+}
+
+* {
+  font-size: calc(20px + 0.4vw);
+}
+
+td.col-1 {
+  padding: 0.5rem 0.75rem;
+}
+
+td button {
+  height: 100%;
+  width: 100%;
+}
+
+td div {
+  font-size: 1.2em;
+  height: 100%;
+  width: 100%;
 }
 
 button.hidecursor {
@@ -60,43 +79,4 @@ tr.d-flex.input:hover {
   outline-color: tomato;
   border-color: tomato;
   background-color: pink;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -60px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.tooltip .tooltiptext::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: #555 transparent transparent transparent;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
 }
