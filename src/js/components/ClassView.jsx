@@ -92,15 +92,14 @@ export default class ClassView extends React.Component {
     this.setState({disableForm: true});
 
     var studentName = this.state.newStudent;
-    var specCharCheck = /\W/;
-    var numberCheck = /\d/;
-    if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
+    var lettersOnlyCheck = /[^A-Z,a-z,\s]/;
+    if (lettersOnlyCheck.test(studentName)) {
       this.setState({ inputPlaceholder: 'Can only use letters',
                       newStudent: '' ,
                       disableForm: false });
       return false;
     } else if (this.state.newStudent.length < 2) {
-      this.setState({ inputPlaceholder: 'Must be longer than 2 letters',
+      this.setState({ inputPlaceholder: 'Too short',
                       newStudent: '' ,
                       disableForm: false });
       return false;
