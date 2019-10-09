@@ -7,7 +7,7 @@ export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      classAverage: '',
+      classAverage: 'Calculating...',
       newStudent: '',
       studentAverages: {},
       students: [],
@@ -30,6 +30,10 @@ export default class ClassView extends React.Component {
 
   componentDidMount() {
     this.getStudents();
+  }
+
+  componentDidUpdate() {
+    this.handleClassAverage();
   }
 
   getStudents() {
@@ -92,7 +96,7 @@ export default class ClassView extends React.Component {
     this.setState({disableForm: true});
 
     var studentName = this.state.newStudent;
-    var lettersOnlyCheck = /[^A-Z,a-z,\s]/;
+    var lettersOnlyCheck = /[^-A-Z,a-z,\s]/;
     if (lettersOnlyCheck.test(studentName)) {
       this.setState({ inputPlaceholder: 'Can only use letters',
                       newStudent: '' ,
@@ -308,7 +312,7 @@ export default class ClassView extends React.Component {
             {this.props.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {this.handleClassAverage()}
+            Class Average: {this.state.classAverage}
           </h2>
           <div className="row">
             <div className="col-8"></div>
