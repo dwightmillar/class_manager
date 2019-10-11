@@ -14,8 +14,8 @@ class App extends React.Component {
   render() {
       return (
         <React.Fragment>
-          <Route exact path="../" render={() => <Redirect to='/ ' />} />
-          <Route path="../:classID" render={(props) => (
+          <Route exact path="/" render={() => <Redirect to='/ ' />} />
+          <Route path="/:classID" render={(props) => (
             <ClassList {...props}/>
           )} />
 
