@@ -228,7 +228,7 @@ export default class Assignment extends React.Component {
       )
     }
 
-    const previousPageURL = "/" + this.props.match.params.classID;
+    const previousPageURL = "/class_manager/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>

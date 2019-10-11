@@ -58,7 +58,7 @@ class ClassList extends React.Component {
         this.setState({ 'classes': this.state.classes.concat(newClassObj) });
         return responseObj.data.insertId;
       })
-      .then(id => {history.push('class_manager/' + id)});
+      .then(id => {history.push('/class_manager/' + id)});
   }
 
   deleteClass() {
@@ -112,7 +112,7 @@ class ClassList extends React.Component {
       Class => {
           return (
             <li className="nav-item" key={Class.id}>
-              <Link to={`/${Class.id}`} id={Class.id}
+              <Link to={`/class_manager/${Class.id}`} id={Class.id}
               className={this.props.match.params.classID == Class.id ? 'nav-link active' : 'nav-link'}>
                 {Class.title}
               </Link>
