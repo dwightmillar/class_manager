@@ -188,7 +188,7 @@ export default class ClassView extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    return classAverage;
+    this.setState({classAverage: classAverage});
   }
 
   handleStudentInput(event) {
