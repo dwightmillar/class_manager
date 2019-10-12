@@ -8,6 +8,7 @@ export default class Assignment extends React.Component {
     this.state = {
       title: '',
       students: [],
+      classAverage: 'Calculating...',
       studentAverages: [],
       newAssignment: '',
       maxPoints: '',
@@ -42,6 +43,9 @@ export default class Assignment extends React.Component {
           }
         )
       })
+      .then(
+        this.handleClassAverage()
+      );
   }
 
   getAssignments(id) {
@@ -81,7 +85,7 @@ export default class Assignment extends React.Component {
 
     studentAverage[id] = average;
 
-    this.setState({ studentAverages: studentAverage })
+    this.setState({ studentAverages: studentAverage });
   }
 
   handleClassAverage() {
@@ -103,7 +107,7 @@ export default class Assignment extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    return classAverage;
+    this.setState({classAverage});
   }
 
   handleAssignmentInput(event) {
@@ -246,7 +250,7 @@ export default class Assignment extends React.Component {
             {this.props.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {this.handleClassAverage()}
+            Class Average: {this.state.classAverage}
           </h2>
           <div className="row">
             <div className="col-1"></div>

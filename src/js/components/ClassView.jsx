@@ -42,10 +42,11 @@ export default class ClassView extends React.Component {
         students.data.map(
           student => this.getAssignments(student.id)
         );
-        this.setState({ 'students': students.data,
-                        'classAverage': 'Calculating...' });
-        this.handleClassAverage();
-      });
+        this.setState({ 'students': students.data });
+      })
+      .then(
+        this.handleClassAverage()
+      );
   }
 
   deleteStudent(event) {
