@@ -92,7 +92,7 @@ export default class ClassView extends React.Component {
     this.setState({disableForm: true});
 
     var studentName = this.state.newStudent;
-    var lettersOnlyCheck = /[^A-Z,a-z,\s]/;
+    var lettersOnlyCheck = /[^-A-Z,a-z,\s]/;
     if (lettersOnlyCheck.test(studentName)) {
       this.setState({ inputPlaceholder: 'Can only use letters',
                       newStudent: '' ,
