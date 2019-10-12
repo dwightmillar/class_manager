@@ -185,6 +185,8 @@ export default class ClassView extends React.Component {
 
     if(!averageIndex) {
       classAverage = 'N/A';
+    } else if (isNaN(classAverage / averageIndex)) {
+      return false;
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
