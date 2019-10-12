@@ -7,7 +7,7 @@ export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      classAverage: '',
+      classAverage: 'Calculating...',
       newStudent: '',
       studentAverages: {},
       students: [],
@@ -163,6 +163,7 @@ export default class ClassView extends React.Component {
     studentAverage[id] = average;
 
     this.setState({ studentAverages: studentAverage })
+    this.handleClassAverage();
   }
 
   handleClassAverage() {
@@ -184,7 +185,7 @@ export default class ClassView extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    return classAverage;
+    this.setState({classAverage});
   }
 
   handleStudentInput(event) {
@@ -308,7 +309,7 @@ export default class ClassView extends React.Component {
             {this.props.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {this.handleClassAverage()}
+            Class Average: {this.state.classAverage}
           </h2>
           <div className="row">
             <div className="col-8"></div>
