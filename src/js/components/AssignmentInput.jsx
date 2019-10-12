@@ -64,6 +64,9 @@ export default class Assignment extends React.Component {
     if (data.length > 0) {
       data.forEach(
         grade => {
+          if (isNaN(grade.score)) {
+            grade.score = 0;
+          }
           totalPointsScored += grade.score;
           totalPointsPossible += grade.totalpoints;
         }
