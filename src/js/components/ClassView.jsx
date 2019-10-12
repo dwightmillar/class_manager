@@ -70,7 +70,8 @@ export default class ClassView extends React.Component {
               }
             ),
             displayDeleteStudent: false
-          })
+          });
+          this.handleClassAverage();
         } else {
           console.error('FAILED TO DELETE: ',response)
         }
@@ -126,6 +127,7 @@ export default class ClassView extends React.Component {
         this.setState({
           'newStudentID': response.data.insertId
         });
+        this.handleClassAverage();
         this.addStudentDirect(class_id);
       } else {
         console.error('FAILED TO ADD: ', response);
