@@ -17,6 +17,7 @@ export default class Assignment extends React.Component {
     }
     this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
+    this.handleClassAverage = this.handleClassAverage.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
     this.postAssignment = this.postAssignment.bind(this);
   }
@@ -107,7 +108,7 @@ export default class Assignment extends React.Component {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    this.setState({classAverage});
+    this.setState({classAverage: classAverage});
   }
 
   handleAssignmentInput(event) {
