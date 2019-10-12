@@ -118,7 +118,7 @@ export default class Assignment extends React.Component {
     let studentScore = 0;
     const studentID = event.target.id;
     let student = this.state.scores;
-    const valueCheck = /[\dmM]/;
+    const valueCheck = /[\dM{1}]/;
 
     if(!valueCheck.test(event.target.value)) {
       return false;
@@ -127,6 +127,9 @@ export default class Assignment extends React.Component {
     if (!isNaN(event.target.value)){
       studentScore = parseInt(event.target.value);
     } else {
+      if (event.target.value.length > 1) {
+        return false;
+      }
       studentScore = event.target.value;
     }
 
