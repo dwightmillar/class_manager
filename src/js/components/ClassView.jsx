@@ -7,7 +7,7 @@ export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      classAverage: 'Calculating...',
+      classAverage: '',
       newStudent: '',
       studentAverages: {},
       students: [],
@@ -32,10 +32,6 @@ export default class ClassView extends React.Component {
     this.getStudents();
   }
 
-  componentDidUpdate() {
-    this.handleClassAverage();
-  }
-
   getStudents() {
     const class_id = this.props.match.params.classID;
     fetch("/class_manager/api/students?class_id=" + class_id, {
@@ -46,7 +42,9 @@ export default class ClassView extends React.Component {
         students.data.map(
           student => this.getAssignments(student.id)
         );
-        this.setState({ 'students': students.data })
+        this.setState({ 'students': students.data,
+                        'classAverage': 'Calculating...' });
+        this.handleClassAverage();
       });
   }
 
