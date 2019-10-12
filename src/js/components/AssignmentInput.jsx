@@ -118,13 +118,15 @@ export default class Assignment extends React.Component {
     let studentScore = 0;
     const studentID = event.target.id;
     let student = this.state.scores;
-    const valueCheck = /[\dM{1}]/;
+    const valueCheck = /[\d\sM{1}]/;
 
     if(!valueCheck.test(event.target.value)) {
       return false;
     }
 
-    if (!isNaN(event.target.value)){
+    if(event.target.value === '') {
+      studentScore = 0;
+    } else if (!isNaN(event.target.value)){
       studentScore = parseInt(event.target.value);
     } else {
       if (event.target.value.length > 1) {
@@ -257,7 +259,7 @@ export default class Assignment extends React.Component {
           <div className="row">
             <div className="col-7"></div>
             <div>Total possible points:&nbsp;</div>
-            <input type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            <input type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
           </div>
         </header>
         <div>
