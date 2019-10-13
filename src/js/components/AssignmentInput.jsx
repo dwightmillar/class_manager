@@ -56,7 +56,7 @@ export default class Assignment extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
-        console.log('assignments: ',assignments);S
+        console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
