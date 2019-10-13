@@ -64,6 +64,7 @@ export default class Assignment extends React.Component {
 
   handleStudentGradeAverage(id, data) {
     let studentAverage = this.state.studentAverages;
+    console.log('studentAverage: ',studentAverage);
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
     let average = 0;
