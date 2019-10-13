@@ -71,6 +71,8 @@ export default class Assignment extends React.Component {
     if (data.length > 0) {
       data.forEach(
         grade => {
+          // grade.score = parseInt(grade.score);
+          console.log('grade: ',grade);
           if (isNaN(grade.score)) {
             grade.score = 0;
           }
