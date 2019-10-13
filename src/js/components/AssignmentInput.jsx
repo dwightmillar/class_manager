@@ -87,7 +87,7 @@ export default class Assignment extends React.Component {
     }
 
     if (totalPointsPossible !== 0) {
-      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+      average = parseFloat((totalPointsScored / totalPointsPossible * 100).toFixed(2));
     } else {
       average = 'N/A';
     }
