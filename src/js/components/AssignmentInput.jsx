@@ -92,7 +92,7 @@ export default class Assignment extends React.Component {
       average = 'N/A';
     }
 
-    studentAverage[id] = average;
+    studentAverage.push(average);
 
     this.setState({ studentAverages: studentAverage });
   }
