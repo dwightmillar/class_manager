@@ -64,7 +64,6 @@ export default class Assignment extends React.Component {
 
   handleStudentGradeAverage(id, data) {
     let studentAverage = this.state.studentAverages;
-    console.log('studentAverage: ',studentAverage);
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
     let average = 0;
@@ -80,14 +79,12 @@ export default class Assignment extends React.Component {
           }
           totalPointsScored += grade.score;
           totalPointsPossible += grade.totalpoints;
-          console.log('totalPointsScored: ',totalPointsScored);
-          console.log('totalPointsPossible: ',totalPointsPossible);
         }
       )
     }
 
     if (totalPointsPossible !== 0) {
-      average = parseFloat((totalPointsScored / totalPointsPossible * 100).toFixed(2));
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
     } else {
       average = 'N/A';
     }
@@ -101,10 +98,10 @@ export default class Assignment extends React.Component {
     var classAverage = 0;
     var averageIndex = 0;
 
-    this.state.students.forEach(
-      student => {
-        if (this.state.studentAverages[student.id] !== 'N/A') {
-          classAverage += parseFloat(this.state.studentAverages[student.id]);
+    this.state.studentAverages.forEach(
+      average => {
+        if (average !== 'N/A') {
+          classAverage += parseFloat(average);
           ++averageIndex;
         }
       }
