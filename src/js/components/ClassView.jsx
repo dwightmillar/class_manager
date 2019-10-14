@@ -153,6 +153,9 @@ export default class ClassView extends React.Component {
     if (data.length > 0) {
       data.forEach(
         grade => {
+          if (parseInt(grade.score)) {
+            grade.score = parseInt(grade.score);
+          }
           if (isNaN(grade.score)) {
             grade.score = 0;
           }
@@ -170,7 +173,7 @@ export default class ClassView extends React.Component {
 
     studentAverage[id] = average;
 
-    this.setState({ studentAverages: studentAverage })
+    this.setState({ studentAverages: studentAverage });
     this.handleClassAverage();
   }
 
@@ -178,16 +181,14 @@ export default class ClassView extends React.Component {
     var classAverage = 0;
     var averageIndex = 0;
 
-    this.state.students.forEach(
-      student => {
-        if (this.state.studentAverages[student.id] !== 'N/A') {
-          classAverage += parseFloat(this.state.studentAverages[student.id]);
-          ++averageIndex;
-        }
+    for(let studentAverage in this.state.studentAverages) {
+      if (studentAverage !== 'N/A') {
+        classAverage += parseFloat(studentAverage);
+        ++averageIndex;
       }
-    )
+    }
 
-    if(!averageIndex) {
+    if (!averageIndex) {
       classAverage = 'N/A';
     } else if (isNaN(classAverage / averageIndex)) {
       return false;

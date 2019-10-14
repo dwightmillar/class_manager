@@ -98,22 +98,20 @@ export default class Assignment extends React.Component {
 
     this.state.studentAverages.forEach(
       average => {
-        console.log('average: ',average);
         if (average !== 'N/A') {
           classAverage += parseFloat(average);
           ++averageIndex;
         }
       }
     )
-    console.log('averageIndex: ',averageIndex);
 
     if (!averageIndex) {
       classAverage = 'N/A';
+    } else if (isNaN(classAverage / averageIndex)) {
+      return false;
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
-
-    console.log('classAverage: ',classAverage);
 
     this.setState({classAverage: classAverage});
   }
