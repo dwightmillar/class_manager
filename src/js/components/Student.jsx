@@ -37,41 +37,38 @@ export default class Student extends React.Component {
   getAssignments() {
     const student_id = this.props.match.params.studentID;
 
-    fetch("/class_manager/api/assignments?student_id=" + student_id, {
+    fetch("/class_manager/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(assignments => {
-        console.log('assignments.data: ',assignments.data[0]);
+        console.log('assignments: ', assignments.data[0]);
         this.setState({ 'assignments': assignments.data });
+        console.log('assignments: ', assignments.data[0]);
         this.handleStudentGradeAverage(student_id, assignments.data);
+        console.log('assignments: ', assignments.data[0]);
         let studentScores = this.state.studentScores;
         assignments.data.map(
           assignment => {
-            console.log('assignment: ',assignment);
+            console.log('assignment: ', assignment);
             studentScores[assignment.id] = assignment.score;
             console.log(assignment.score);
           }
         )
-        console.log('studentScores: ',studentScores);
+        console.log('studentScores: ', studentScores);
         this.setState({ studentScores: studentScores });
       });
   }
 
   handleStudentGradeAverage(id, data) {
-    let studentAverage = 0;
+    console.log('data: ',data);
+    let studentAverage = this.state.studentAverage;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
-
-    console.log('data: ',data);
 
     if (data.length > 0) {
       data.forEach(
         grade => {
-          console.log('grade: ',grade);
-          if (parseInt(grade.score)) {
-            grade.score = parseInt(grade.score);
-          }
           if (isNaN(grade.score)) {
             grade.score = 0;
           }
