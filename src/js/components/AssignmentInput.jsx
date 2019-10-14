@@ -273,8 +273,10 @@ export default class Assignment extends React.Component {
           </div>
           <div className="row">
             <div className="col-12">
-              <label for="maxPointsInput">Total possible points:</label>
-              <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "center points error" : "center points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+              <div style={{'position': 'relative','left': '50%', 'right': '50%'}}>
+                <label for="maxPointsInput">Total possible points:&nbsp;&nbsp;&nbsp;</label>
+                <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+              </div>
             </div>
           </div>
         </header>
