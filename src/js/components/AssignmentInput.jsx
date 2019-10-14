@@ -214,16 +214,17 @@ export default class Assignment extends React.Component {
     })
       .then(response => response.json())
       .then(data => console.log('postassignment response:', data))
+      .then(()=> {
+        var newScores = {};
+
+        for (let studentID in this.state.scores) {
+          newScores[studentID] = '';
+        }
+
+        this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
+        this.getStudents();
+      })
       .catch(error => console.error('postassignment error: ',error))
-
-    var newScores = {};
-
-    for (let studentID in this.state.scores) {
-      newScores[studentID] = '';
-    }
-
-    this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
-    this.getStudents();
   }
 
 
