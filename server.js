@@ -146,30 +146,31 @@ server.delete('/api/classes', function (request, response, next) {
 });
 
 server.post('/api/assignments', function (request, response, next) {
-    let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
+  let params = [];
+  let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
 
-    const assignments = request.body.scores.split(',');
+  params = request.body.scores.split(',');
 
-    for(let assignmentsIndex = 0; assignmentsIndex < assignments.length; assignmentsIndex++){
+  for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
-      if ((assignmentsIndex % 5 - 4) === 0) {
-        query += ' ?), (';
-      } else {
-        query += ' ?,';
-      }
+    if ((assignmentsIndex % 5 - 4) === 0) {
+      query += ' ?), (';
+    } else {
+      query += ' ?,';
     }
-    query = query.slice(0, query.length - 3);
+  }
+  query = query.slice(0, query.length - 3);
 
-    query = mysql.format(query, assignments);
+  // query = mysql.format(query, assignments);
 
 
-    db.query(query, function (error, data, fields) {
-      if (error) return next(error);
-        response.send({
-          success: true,
-          data
-        });
-    });
+  db.query(query, params, function (error, data, fields) {
+    if (error) return next(error);
+      response.send({
+        success: true,
+        data
+      });
+  });
 });
 
 server.post('/api/classes', function (request, response, next) {
