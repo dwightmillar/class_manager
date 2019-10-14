@@ -173,7 +173,6 @@ export default class Assignment extends React.Component {
         } else {
           this.setState({ inputerror: true });
           errorCheck = true;
-          alert('You need to fill out the highlighted fields');
           return false;
         }
       }
@@ -201,6 +200,7 @@ export default class Assignment extends React.Component {
       this.setState({inputerror: false});
     }
 
+    console.log('scores: ', scores);
 
     fetch("/class_manager/api/assignments", {
       headers: {
