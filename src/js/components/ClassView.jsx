@@ -43,7 +43,7 @@ export default class ClassView extends React.Component {
         students.data.map(
           student => this.getAssignments(student.id)
         );
-        if (students.data) {
+        if (students.data.length) {
           this.setState({ 'students': students.data });
         } else {
           this.setState({'classAverage': 'N/A'})
