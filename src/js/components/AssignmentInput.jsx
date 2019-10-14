@@ -44,10 +44,7 @@ export default class Assignment extends React.Component {
             this.getAssignments(student.id);
           }
         )
-      })
-      .then(
-        this.handleClassAverage()
-      );
+      });
   }
 
   getAssignments(id) {
@@ -92,6 +89,7 @@ export default class Assignment extends React.Component {
     studentAverage.push(average);
 
     this.setState({ studentAverages: studentAverage });
+    this.handleClassAverage();
   }
 
   handleClassAverage() {
