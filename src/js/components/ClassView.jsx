@@ -70,7 +70,9 @@ export default class ClassView extends React.Component {
         }
         else {
           let studentAverages = this.state.studentAverages;
+          console.log('studentAverages before delete: ', studentAverages);
           delete studentAverages.id;
+          console.log('studentAverages after delete: ', studentAverages);
 
           this.setState({
             students: this.state.students.filter(
