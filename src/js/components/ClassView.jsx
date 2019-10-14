@@ -344,7 +344,7 @@ export default class ClassView extends React.Component {
             </div>
             <div className="col-6">
               <div className="text-center">
-                <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
+                <button className="btn btn-danger" onClick={this.showDeleteClass}>
                   Delete Class
               </button>
               </div>

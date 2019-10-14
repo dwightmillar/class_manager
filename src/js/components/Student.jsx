@@ -58,9 +58,12 @@ export default class Student extends React.Component {
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
 
+    console.log('data: ',data);
+
     if (data.length > 0) {
       data.forEach(
         grade => {
+          console.log('grade: ',grade);
           if (parseInt(grade.score)) {
             grade.score = parseInt(grade.score);
           }
@@ -78,7 +81,7 @@ export default class Student extends React.Component {
     } else {
       studentAverage = 'N/A';
     }
-
+    console.log('studentAverage: ',studentAverage);
     this.setState({ studentAverage: studentAverage })
   }
 
