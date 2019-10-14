@@ -86,20 +86,19 @@ export default class Student extends React.Component {
   }
 
   handleUpdateScore(event) {
-    console.log('target: ',event.target.value);
+    console.log('event: ',event);
 
     const studentID = event.target.id;
     let student = this.state.studentScores;
     let studentScore = 0;
     const valueCheck = /[\dM{1}]/;
 
-    if (!valueCheck.test(event.target.value) && event.target.value !== '') {
+    if(!valueCheck.test(event.target.value) && event.target.value !== '') {
       return false;
     }
-    if (event.target.value.length === 0) {
-      studentScore = event.target.value;
-    } else {
-      studentScore = parseInt(event.target.value);
+    studentScore = event.target.value;
+    if (!isNaN(studentScore)) {
+      studentScore = parseInt(studentScore);
     }
     student[studentID] = studentScore;
 
