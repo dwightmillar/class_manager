@@ -124,7 +124,6 @@ export default class Student extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
