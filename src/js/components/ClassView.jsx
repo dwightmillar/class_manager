@@ -43,7 +43,11 @@ export default class ClassView extends React.Component {
         students.data.map(
           student => this.getAssignments(student.id)
         );
-        this.setState({ 'students': students.data });
+        if (students.data) {
+          this.setState({ 'students': students.data });
+        } else {
+          this.setState({'classAverage': 'N/A'})
+        }
       })
   }
 
@@ -167,11 +171,7 @@ export default class ClassView extends React.Component {
 
     console.log('totalPointsPossible: ',totalPointsPossible);
 
-    if (totalPointsPossible !== 0) {
-      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
-    } else {
-      average = 'N/A';
-    }
+    average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
 
     studentAverage[id] = average;
 
