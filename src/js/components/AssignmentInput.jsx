@@ -258,6 +258,7 @@ export default class Assignment extends React.Component {
           <h2 className="text-center">
             Class Average: {this.state.classAverage}
           </h2>
+
           <div className="text-center">
             <div style={{ 'display': 'inline-block' }}>
               <Link to={previousPageURL}>
@@ -266,9 +267,6 @@ export default class Assignment extends React.Component {
               </button>
               </Link>
             </div>
-          </div>
-
-          <div className="text-center">
             <div style={{ 'display': 'inline-block' }}>
               <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
             </div>
