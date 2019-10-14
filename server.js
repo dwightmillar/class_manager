@@ -168,7 +168,8 @@ server.post('/api/assignments', function (request, response, next) {
     if (error) return next(error);
       response.send({
         success: true,
-        data
+        data,
+        params
       });
   });
 });
