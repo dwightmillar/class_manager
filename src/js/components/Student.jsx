@@ -58,15 +58,25 @@ export default class Student extends React.Component {
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
 
-    data.forEach(
-      grade => {
-        totalPointsScored += grade.score;
-        totalPointsPossible += grade.totalpoints;
-      }
-    )
+    if (data.length > 0) {
+      data.forEach(
+        grade => {
+          if (parseInt(grade.score)) {
+            grade.score = parseInt(grade.score);
+          }
+          if (isNaN(grade.score)) {
+            grade.score = 0;
+          }
+          totalPointsScored += grade.score;
+          totalPointsPossible += grade.totalpoints;
+        }
+      )
+    }
 
     if (totalPointsPossible !== 0) {
       studentAverage = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      studentAverage = 'N/A';
     }
 
     this.setState({ studentAverage: studentAverage })
