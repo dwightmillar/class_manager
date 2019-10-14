@@ -39,7 +39,10 @@ export default class Student extends React.Component {
     fetch("/class_manager/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
-      .then(data => data.json())
+      .then(data => {
+        console.log('data: ',data);
+        data.json();
+      })
       .then(assignments => {
         console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
