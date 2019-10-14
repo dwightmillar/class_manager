@@ -188,7 +188,7 @@ export default class ClassView extends React.Component {
 
     for(let studentAverage in this.state.studentAverages) {
       if (this.state.studentAverages['studentAverage'] !== 'N/A') {
-        classAverage += parseFloat(studentAverage);
+        classAverage += parseFloat(this.state.studentAverages['studentAverage']);
         ++averageIndex;
       }
     }
