@@ -45,8 +45,10 @@ export default class Student extends React.Component {
         this.handleStudentGradeAverage(student_id, assignments.data);
         assignments.data.map(
           assignment => {
+            console.log('assignment: ',assignment);
             let studentScores = this.state.studentScores;
             studentScores[assignment.id] = assignment.score;
+            console.log(assignment.score);
             this.setState({ studentScores: studentScores });
           }
         )
