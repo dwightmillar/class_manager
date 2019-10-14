@@ -186,17 +186,12 @@ export default class ClassView extends React.Component {
     var classAverage = 0;
     var averageIndex = 0;
 
-    console.log('this.state.studentAverages: ',this.state.studentAverages);
-    console.log('averageIndex before loop: ',averageIndex);
-
     for(let studentAverage in this.state.studentAverages) {
       if (this.state.studentAverages[studentAverage] !== 'N/A') {
         classAverage += parseFloat(this.state.studentAverages[studentAverage]);
         ++averageIndex;
       }
     }
-
-    console.log('averageIndex after loop: ', averageIndex);
 
     if (!averageIndex) {
       classAverage = 'N/A';
@@ -262,7 +257,7 @@ export default class ClassView extends React.Component {
 
     const allStudents = this.state.students.map(
       student => {
-        if(this.state.studentAverages[student.id] !== 'N/A') {
+        if(!isNaN(this.state.studentAverages[student.id])) {
           return (
             <tr key={student.id} id={student.id} className="d-flex">
               <td className="col-2"></td>
