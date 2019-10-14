@@ -26,6 +26,7 @@ export default class ClassView extends React.Component {
     this.hideDeleteStudent = this.hideDeleteStudent.bind(this);
     this.hideDeleteClass = this.hideDeleteClass.bind(this);
     this.renderModal = this.renderModal.bind(this);
+    this.handleClassAverage = this.handleClassAverage.bind(this);
   }
 
   componentDidMount() {
@@ -44,9 +45,6 @@ export default class ClassView extends React.Component {
         );
         this.setState({ 'students': students.data });
       })
-      .then(
-        this.handleClassAverage()
-      );
   }
 
   deleteStudent(event) {
@@ -150,6 +148,8 @@ export default class ClassView extends React.Component {
     let totalPointsPossible = 0;
     let average = 0;
 
+    console.log('data: ',data);
+
     if (data.length > 0) {
       data.forEach(
         grade => {
@@ -164,6 +164,8 @@ export default class ClassView extends React.Component {
         }
       )
     }
+
+    console.log('totalPointsPossible: ',totalPointsPossible);
 
     if (totalPointsPossible !== 0) {
       average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
@@ -181,12 +183,17 @@ export default class ClassView extends React.Component {
     var classAverage = 0;
     var averageIndex = 0;
 
+    console.log('this.state.studentAverages: ',this.state.studentAverages);
+    console.log('averageIndex before loop: ',averageIndex);
+
     for(let studentAverage in this.state.studentAverages) {
       if (studentAverage !== 'N/A') {
         classAverage += parseFloat(studentAverage);
         ++averageIndex;
       }
     }
+
+    console.log('averageIndex after loop: ', averageIndex);
 
     if (!averageIndex) {
       classAverage = 'N/A';
@@ -195,6 +202,8 @@ export default class ClassView extends React.Component {
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
+
+    console.log('classAverage: ',classAverage);
 
     this.setState({classAverage: classAverage});
   }
