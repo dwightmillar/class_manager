@@ -258,20 +258,30 @@ export default class Assignment extends React.Component {
           <h2 className="text-center">
             Class Average: {this.state.classAverage}
           </h2>
-          <div style={{ 'position': 'relative', 'margin': '0 auto' }}>
-            <Link to={previousPageURL}>
-              <button className="btn btn-secondary">
-                Back
+          <div className="text-center">
+            <div style={{ 'display': 'inline-block' }}>
+              <Link to={previousPageURL}>
+                <button className="btn btn-secondary">
+                  Back
               </button>
-            </Link>
+              </Link>
+            </div>
           </div>
-          <div style={{ 'position': 'relative', 'margin': '0 auto' }}>
-            <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+
+          <div className="text-center">
+            <div style={{ 'display': 'inline-block' }}>
+              <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+            </div>
           </div>
-          <div style={{ 'position': 'relative', 'margin': '0 auto' }}>
-            <label for="maxPointsInput">Total possible points:&nbsp;&nbsp;&nbsp;</label>
-            <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+
+          <div className="text-center">
+            <div style={{ 'display': 'inline-block' }}>
+              <label for="maxPointsInput">Total possible points:&nbsp;&nbsp;&nbsp;</label>
+              <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            </div>
           </div>
+
+
         </header>
         <div>
           <div className="container-fluid">
