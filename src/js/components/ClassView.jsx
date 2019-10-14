@@ -65,18 +65,23 @@ export default class ClassView extends React.Component {
     })
       .then(data => data.json())
       .then(response => {
-        if(response.success) {
+        if(!response.success) {
+          console.error('FAILED TO DELETE: ', response)
+        }
+        else {
+          let studentAverages = this.state.studentAverages;
+          delete studentAverages.id;
+
           this.setState({
             students: this.state.students.filter(
               student => {
                 if (student.id !== id) return student
               }
             ),
+            studentAverages: studentAverages,
             displayDeleteStudent: false
           });
           this.handleClassAverage();
-        } else {
-          console.error('FAILED TO DELETE: ',response)
         }
       });
   }
