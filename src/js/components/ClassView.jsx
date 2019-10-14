@@ -152,9 +152,13 @@ export default class ClassView extends React.Component {
     let totalPointsPossible = 0;
     let average = 0;
 
-    console.log('data: ',data);
+    if (data.length === 0) {
+      average = 'N/A'
 
-    if (data.length > 0) {
+      studentAverage[id] = average;
+
+      this.setState({ studentAverages: studentAverage });
+    } else {
       data.forEach(
         grade => {
           if (parseInt(grade.score)) {
@@ -167,15 +171,14 @@ export default class ClassView extends React.Component {
           totalPointsPossible += grade.totalpoints;
         }
       )
+
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+
+      studentAverage[id] = average;
+
+      this.setState({ studentAverages: studentAverage });
     }
 
-    console.log('totalPointsPossible: ',totalPointsPossible);
-
-    average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
-
-    studentAverage[id] = average;
-
-    this.setState({ studentAverages: studentAverage });
     this.handleClassAverage();
   }
 
