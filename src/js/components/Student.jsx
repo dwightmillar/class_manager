@@ -36,6 +36,7 @@ export default class Student extends React.Component {
 
   getAssignments() {
     const student_id = this.props.match.params.studentID;
+
     fetch("/class_manager/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
@@ -44,15 +45,16 @@ export default class Student extends React.Component {
         console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(student_id, assignments.data);
+        let studentScores = this.state.studentScores;
         assignments.data.map(
           assignment => {
             console.log('assignment: ',assignment);
-            let studentScores = this.state.studentScores;
             studentScores[assignment.id] = assignment.score;
             console.log(assignment.score);
-            this.setState({ studentScores: studentScores });
           }
         )
+        console.log('studentScores: ',studentScores);
+        this.setState({ studentScores: studentScores });
       });
   }
 
