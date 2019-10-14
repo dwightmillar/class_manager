@@ -265,13 +265,17 @@ export default class Assignment extends React.Component {
                 Back
               </button>
             </Link>
-            <div className="col-2"></div>
-            <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
           </div>
           <div className="row">
-            <div className="col-7"></div>
-            <div>Total possible points:&nbsp;</div>
-            <input type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            <div className="col-12">
+              <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <label for="maxPointsInput">Total possible points:</label>
+              <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "center points error" : "center points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            </div>
           </div>
         </header>
         <div>
