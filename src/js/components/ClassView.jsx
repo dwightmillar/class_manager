@@ -337,11 +337,18 @@ export default class ClassView extends React.Component {
             Class Average: {this.state.classAverage}
           </h2>
           <div className="row">
-            <div className="col-8"></div>
-            {inputButton}
-            <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
-              Delete Class
-            </button>
+            <div className="col-6">
+              <div className="text-center">
+                {inputButton}
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="text-center">
+                <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
+                  Delete Class
+              </button>
+              </div>
+            </div>
           </div>
         </header>
         <Modal renderModal={this.renderModal}/>

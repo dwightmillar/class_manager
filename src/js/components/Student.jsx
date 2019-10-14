@@ -160,8 +160,7 @@ export default class Student extends React.Component {
           <h2 className="text-center">
             {this.state.studentAverage}%
           </h2>
-          <div className="row">
-            <div className="col-1"></div>
+          <div className="text-center">
             <Link to={previousPageURL}>
               <button className="btn btn-secondary" onClick={this.patchAssignmentScore}>
                 Back
