@@ -35,6 +35,7 @@ export default class Student extends React.Component {
   }
 
   getAssignments() {
+    // eslint-disable-next-line no-debugger
     debugger;
     const student_id = this.props.match.params.studentID;
 
@@ -142,13 +143,13 @@ export default class Student extends React.Component {
           <td className="col-2"></td>
           <td className="col-4">
             <input id={assignment.id} className="points" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
-              onBlur={() => {
-                if (event.target.value === '') {
-                  let student = this.state.studentScores;
-                  student[assignment.id] = assignment.score;
-                  this.setState({ studentScores : student })
-                }
-              }}
+              // onBlur={() => {
+              //   if (event.target.value === '') {
+              //     let student = this.state.studentScores;
+              //     student[assignment.id] = assignment.score;
+              //     this.setState({ studentScores : student })
+              //   }
+              // }}
               >
             </input>
             &nbsp;/&nbsp;{assignment.totalpoints}
