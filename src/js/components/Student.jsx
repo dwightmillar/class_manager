@@ -37,7 +37,7 @@ export default class Student extends React.Component {
   getAssignments() {
     const student_id = this.props.match.params.studentID;
 
-    fetch("/class_manager/api/assignments?student_id=" + id, {
+    fetch("/class_manager/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
