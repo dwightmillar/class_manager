@@ -5,10 +5,24 @@ const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql');
 const creds = require('./mysql_credentials.js');
+const session = require('express-session');
 
 const db = mysql.createConnection(creds);
 
+server.set('trust proxy', 1);
+server.use(session({
+  secret: 'MS9HFVqKfMXovcVBMsrfzW2ppXr7qdos',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: "auto",
+    maxAge: 30000,
+   }
+}));
 
+app.get('/', function(req, res, next) {
+  console.log(req.session);
+})
 
 server.use(BodyParser.json())
 
