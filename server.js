@@ -22,7 +22,9 @@ server.use(staticMiddlewareFunction);
 
 
 server.get('/', function (req, res, next) {
-  console.log(req.session);
+  res.send({
+    req: req
+  })
 })
 
 server.get('/api/classes', function (request, response, next) {
