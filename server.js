@@ -161,15 +161,12 @@ server.post('/api/assignments', function (request, response, next) {
   }
   query = query.slice(0, query.length - 3);
 
-  // query = mysql.format(query, assignments);
-
 
   db.query(query, params, function (error, data, fields) {
     if (error) return next(error);
       response.send({
         success: true,
-        data,
-        params
+        data
       });
   });
 });

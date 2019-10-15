@@ -94,6 +94,7 @@ export default class ClassView extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
+        console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
@@ -159,32 +160,26 @@ export default class ClassView extends React.Component {
     let totalPointsPossible = 0;
     let average = 0;
 
-    if (data.length === 0) {
-      average = 'N/A'
-
-      studentAverage[id] = average;
-
-      this.setState({ studentAverages: studentAverage });
-    } else {
+    if (data.length > 0) {
       data.forEach(
         grade => {
-          if (parseInt(grade.score)) {
-            grade.score = parseInt(grade.score);
+          if (!isNaN(grade.score)) {
+            totalPointsScored += parseInt(grade.score);
           }
-          if (isNaN(grade.score)) {
-            grade.score = 0;
-          }
-          totalPointsScored += grade.score;
           totalPointsPossible += grade.totalpoints;
         }
       )
-
-      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
-
-      studentAverage[id] = average;
-
-      this.setState({ studentAverages: studentAverage });
     }
+
+    if (totalPointsPossible !== 0) {
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      average = 'N/A';
+    }
+
+    studentAverage[id] = average;
+
+    this.setState({ studentAverages: studentAverage });
 
     this.handleClassAverage();
   }
@@ -207,8 +202,6 @@ export default class ClassView extends React.Component {
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
-
-    console.log('classAverage: ',classAverage);
 
     this.setState({classAverage: classAverage});
   }

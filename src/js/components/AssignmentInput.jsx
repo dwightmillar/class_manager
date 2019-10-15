@@ -34,13 +34,12 @@ export default class Assignment extends React.Component {
     })
       .then(data => data.json())
       .then(students => {
-        console.log('students: ',students);
         this.setState({ 'students': students.data });
         students.data.map(
           student => {
             let studentScores = this.state.scores;
             studentScores[student.id] = '';
-            this.setState({ studentScores: studentScores });
+            this.setState({ scores: studentScores });
             this.getAssignments(student.id);
           }
         )
@@ -53,26 +52,24 @@ export default class Assignment extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
-        console.log('assignments: ',assignments);
-        this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
   }
 
-  handleStudentGradeAverage(id, data) {
+  handleStudentGradeAverage(id, assignments) {
+    console.log('assignments: ', assignments);
     let studentAverage = this.state.studentAverages;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
     let average = 0;
 
-    if (data.length > 0) {
-      data.forEach(
-        grade => {
-          if (isNaN(grade.score)) {
-            grade.score = 0;
+    if (assignments.length > 0) {
+      assignments.forEach(
+        assignment => {
+          if (!isNaN(assignment.score)) {
+            totalPointsScored += parseInt(assignment.score);
           }
-          totalPointsScored += grade.score;
-          totalPointsPossible += grade.totalpoints;
+          totalPointsPossible += assignment.totalpoints;
         }
       )
     }
@@ -86,18 +83,20 @@ export default class Assignment extends React.Component {
     studentAverage.push(average);
 
     this.setState({ studentAverages: studentAverage });
+
     this.handleClassAverage();
   }
 
   handleClassAverage() {
     var classAverage = 0;
     var averageIndex = 0;
+    var studentAverages = this.state.studentAverages;
 
-    this.state.studentAverages.forEach(
+    studentAverages.forEach(
       average => {
+        ++averageIndex;
         if (average !== 'N/A') {
           classAverage += parseFloat(average);
-          ++averageIndex;
         }
       }
     )
@@ -178,8 +177,6 @@ export default class Assignment extends React.Component {
       }
     )
 
-    console.log('scores: ',scores);
-
     for (var score in scores) {
       if (score === '') {
         console.log('invalid score');
@@ -200,8 +197,6 @@ export default class Assignment extends React.Component {
       this.setState({inputerror: false});
     }
 
-    console.log('scores: ', scores);
-
     fetch("/class_manager/api/assignments", {
       headers: {
         'Accept': 'application/json',
@@ -221,7 +216,7 @@ export default class Assignment extends React.Component {
           newScores[studentID] = '';
         }
 
-        this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
+        this.setState({ newAssignment: '', maxPoints: '', studentAverages: [], scores: newScores });
         this.getStudents();
       })
       .catch(error => console.error('postassignment error: ',error))
