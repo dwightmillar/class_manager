@@ -6,6 +6,7 @@ const fs = require('fs');
 const mysql = require('mysql');
 const creds = require('./mysql_credentials.js');
 const session = require('express-session');
+const parseurl = require('parseurl');
 
 const db = mysql.createConnection(creds);
 
