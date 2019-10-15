@@ -9,27 +9,21 @@ const session = require('express-session');
 
 const db = mysql.createConnection(creds);
 
-server.set('trust proxy', 1);
-server.use(session({
-  secret: 'MS9HFVqKfMXovcVBMsrfzW2ppXr7qdos',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: "auto",
-    maxAge: 30000,
-   }
-}));
-
-app.get('/', function(req, res, next) {
-  console.log(req.session);
-})
-
-server.use(BodyParser.json())
-
-const htmlDirectory = path.join(__dirname , 'dist');
+const htmlDirectory = path.join(__dirname, 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);
 
+server.set('trust proxy', 1);
+
+
+
+server.use(BodyParser.json())
+server.use(session({ secret: 'MS9HFVqKfMXovcVBMsrfzW2ppXr7qdos', cookie: { maxAge: 30000 } }));
 server.use(staticMiddlewareFunction);
+
+
+server.get('/', function (req, res, next) {
+  console.log(req.session);
+})
 
 server.get('/api/classes', function (request, response, next) {
   let params = [];
