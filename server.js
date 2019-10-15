@@ -17,14 +17,28 @@ server.set('trust proxy', 1);
 
 
 server.use(BodyParser.json())
-server.use(session({ secret: 'MS9HFVqKfMXovcVBMsrfzW2ppXr7qdos', cookie: { maxAge: 30000 } }));
+server.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
 server.use(staticMiddlewareFunction);
+server.use(function (req, res, next) {
+  if (!req.session.views) {
+    req.session.views = {}
+  }
 
+  // get the url pathname
+  var pathname = parseurl(req).pathname
 
-server.get('/', function (req, res, next) {
-  res.send({
-    req: req
-  })
+  // count the views
+  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1
+
+  next()
+})
+
+server.get('/foo', function (req, res, next) {
+  res.send('you viewed this page ' + req.session.views['/foo'] + ' times')
 })
 
 server.get('/api/classes', function (request, response, next) {
