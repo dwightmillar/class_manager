@@ -47,7 +47,7 @@ server.get('/api/classes', function (request, response, next) {
     response.send({
         success: true,
         data,
-        session: req.session
+        session: request.session
     });
   });
 });
