@@ -13,34 +13,23 @@ const db = mysql.createConnection(creds);
 const htmlDirectory = path.join(__dirname, 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);
 
+const sessionMiddleWare = session({
+  secret: 'fP4nfWsjK39fbdIo9an4sFoJ3vYe8L12qPjce',
+  saveUninitialized: true,
+  resave: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: true
+  }
+});
+
 server.set('trust proxy', 1);
 
 
 
 server.use(BodyParser.json())
-server.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true
-}))
+server.use(sessionMiddleWare);
 server.use(staticMiddlewareFunction);
-server.use(function (req, res, next) {
-  if (!req.session.views) {
-    req.session.views = {}
-  }
-
-  // get the url pathname
-  var pathname = parseurl(req).pathname
-
-  // count the views
-  req.session.views[pathname] = (req.session.views[pathname] || 0) + 1
-
-  next()
-})
-
-server.get('/foo', function (req, res, next) {
-  res.send('you viewed this page ' + req.session.views['/foo'] + ' times')
-})
 
 server.get('/api/classes', function (request, response, next) {
   let params = [];
@@ -57,7 +46,8 @@ server.get('/api/classes', function (request, response, next) {
     if (error) return next(error);
     response.send({
         success: true,
-        data
+        data,
+        session: req.session
     });
   });
 });
