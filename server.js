@@ -209,29 +209,26 @@ server.post('/api/assignments', function (request, response, next) {
     var userid = request.session.userid;
   }
   let params = [];
-  let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES (";
+  let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES ";
 
   params = request.body.scores.split(',');
-  params.unshift(userid);
 
   for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
-    if ((assignmentsIndex % 6 - 5) === 0) {
-      query += ' ?), (';
-    } else {
-      query += ' ?,';
+    if ((assignmentsIndex % 6) === 0) {
+      params.push(userid);
+      query += '( ?, ?, ?, ?, ?, ?),'
     }
   }
-  query = query.slice(0, query.length - 3);
+  query = query.slice(0, query.length - 1);
 
 
   db.query(query, params, function (error, data, fields) {
-    // if (error) return next(error);
+    if (error) return next(error);
       response.send({
-        // success: true,
-        // data,
-        query,
-        params
+        success: true,
+        data,
+        query
       });
   });
 });
