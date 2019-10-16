@@ -295,7 +295,5 @@ app.use((error, req, res, next) => {
   });
 })
 
-// http.createServer(app).listen(80);
-https.createServer(app).listen(3001);
 
-// app.listen(3001, function () { console.log('app is listening on port 3001') });
+app.listen(3001, function () { console.log('app is listening on port 3001') });
