@@ -168,7 +168,7 @@ export default class Assignment extends React.Component {
     let scores = this.state.students.map(
       student => {
         if (studentScores[student.id]) {
-          return `${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
+          return `user,${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
         } else {
           this.setState({ inputerror: true });
           errorCheck = true;

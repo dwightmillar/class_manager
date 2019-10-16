@@ -216,7 +216,11 @@ server.post('/api/assignments', function (request, response, next) {
   for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
     if ((assignmentsIndex % 6) === 0) {
-      params.push(userid);
+      let userIndex = params.findIndex(element => {
+        return element === 'user';
+      })
+      params[userIndex] = userid;
+
       query += '( ?, ?, ?, ?, ?, ?),'
     }
   }
