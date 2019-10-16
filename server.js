@@ -23,6 +23,7 @@ const sessionMiddleWare = session({
   }
 });
 
+
 function makeid(length) {
   var result = '';
   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -43,6 +44,8 @@ server.use(staticMiddlewareFunction);
 server.get('/api/classes', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
   }
 
   let params = [];
@@ -50,7 +53,8 @@ server.get('/api/classes', function (request, response, next) {
 
   if (id){
     params.push(id);
-    var query = `SELECT * FROM classes WHERE id = ?`;
+    params.push(userid);
+    var query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
 
   } else {
     query = `SELECT * FROM classes`;
@@ -60,23 +64,28 @@ server.get('/api/classes', function (request, response, next) {
     response.send({
         success: true,
         data,
-        session: request.session
     });
   });
 });
 
 
 server.get('/api/students', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
+  }
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
   const id = request.url.split('=')[1];
 
   params.push(id);
+  params.push(userid);
 
 
   if (queryType === 'class_id') {
-    var query = `SELECT * FROM students WHERE class_id=?`;
+    var query = `SELECT * FROM students WHERE class_id=? AND user=?`;
   } else {
     query = `SELECT * FROM students WHERE id=?`;
   }
@@ -94,13 +103,19 @@ server.get('/api/students', function (request, response, next) {
 });
 
 server.get('/api/assignments', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
+  }
     let params = [];
 
     const student_id = request.url.split('=')[1];
 
     params.push(student_id);
+    params.push(userid);
 
-    const query = `SELECT * FROM assignments WHERE student_id=?`;
+    const query = `SELECT * FROM assignments WHERE student_id=? AND user=?`;
 
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
@@ -112,15 +127,21 @@ server.get('/api/assignments', function (request, response, next) {
 });
 
 server.post('/api/students', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
+  }
     let params = [];
 
     const student_name = request.body.name;
     const class_id = request.body['class_id'];
 
+    params.push(userid);
     params.push(student_name);
     params.push(class_id);
 
-    const query = `INSERT INTO students (name, class_id) VALUES (?,?)`;
+    const query = `INSERT INTO students (user, name, class_id) VALUES (?,?,?)`;
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
@@ -174,14 +195,20 @@ server.delete('/api/classes', function (request, response, next) {
 });
 
 server.post('/api/assignments', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
+  }
   let params = [];
-  let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
+  let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES (";
 
-  params = request.body.scores.split(',');
+  params.push(userid);
+  params.concat(request.body.scores.split(','));
 
   for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
-    if ((assignmentsIndex % 5 - 4) === 0) {
+    if ((assignmentsIndex % 6 - 5) === 0) {
       query += ' ?), (';
     } else {
       query += ' ?,';
@@ -200,11 +227,17 @@ server.post('/api/assignments', function (request, response, next) {
 });
 
 server.post('/api/classes', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  } else {
+    var userid = request.session.userid;
+  }
     let params = [];
 
+    params.push(userid);
     params.push(request.body.name);
 
-    const query = `INSERT INTO classes(title) VALUES (?)`;
+    const query = `INSERT INTO classes(user, title) VALUES (?,?)`;
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
