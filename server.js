@@ -18,6 +18,7 @@ const sessionMiddleWare = session({
   saveUninitialized: true,
   resave: true,
   cookie: {
+    expires: 300000,
     secure: process.env.NODE_ENV === 'production', //run NODE_ENV = production pm2 start index.js when going live
     sameSite: true
   }
@@ -87,7 +88,7 @@ server.get('/api/students', function (request, response, next) {
   if (queryType === 'class_id') {
     var query = `SELECT * FROM students WHERE class_id=? AND user=?`;
   } else {
-    query = `SELECT * FROM students WHERE id=?`;
+    query = `SELECT * FROM students WHERE id=? AND user=?`;
   }
 
 
