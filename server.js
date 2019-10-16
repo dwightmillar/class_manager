@@ -1,6 +1,8 @@
 const express = require('express');
 const BodyParser = require('body-parser')
-const server = express();
+const app = express();
+const http = require('http');
+const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql');
@@ -36,13 +38,13 @@ function makeid(length) {
 }
 
 
-server.set('trust proxy', 1);
-server.use(BodyParser.json())
-server.use(sessionMiddleWare);
-server.use(staticMiddlewareFunction);
+app.set('trust proxy', 1);
+app.use(BodyParser.json())
+app.use(sessionMiddleWare);
+app.use(staticMiddlewareFunction);
 
 
-server.get('/api/classes', function (request, response, next) {
+app.get('/api/classes', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -70,7 +72,7 @@ server.get('/api/classes', function (request, response, next) {
 });
 
 
-server.get('/api/students', function (request, response, next) {
+app.get('/api/students', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -104,7 +106,7 @@ server.get('/api/students', function (request, response, next) {
   });
 });
 
-server.get('/api/assignments', function (request, response, next) {
+app.get('/api/assignments', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -128,7 +130,7 @@ server.get('/api/assignments', function (request, response, next) {
     });
 });
 
-server.post('/api/students', function (request, response, next) {
+app.post('/api/students', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -153,7 +155,7 @@ server.post('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/students', function (request, response, next) {
+app.delete('/api/students', function (request, response, next) {
     let params = [];
 
     const student_id = request.body.id;
@@ -174,7 +176,7 @@ server.delete('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/classes', function (request, response, next) {
+app.delete('/api/classes', function (request, response, next) {
     let params = [];
 
     const id = request.body.id;
@@ -196,7 +198,7 @@ server.delete('/api/classes', function (request, response, next) {
     });
 });
 
-server.post('/api/assignments', function (request, response, next) {
+app.post('/api/assignments', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -230,7 +232,7 @@ server.post('/api/assignments', function (request, response, next) {
   });
 });
 
-server.post('/api/classes', function (request, response, next) {
+app.post('/api/classes', function (request, response, next) {
   if (!request.session.userid) {
     request.session.userid = makeid(9);
   } else {
@@ -253,7 +255,7 @@ server.post('/api/classes', function (request, response, next) {
 
 
 
-server.patch('/api/assignments', function (request, response, next) {
+app.patch('/api/assignments', function (request, response, next) {
     const scores = request.body.scores;
     let params = [];
     let query = "UPDATE assignments SET score = CASE id ";
@@ -286,11 +288,14 @@ server.patch('/api/assignments', function (request, response, next) {
     })
 })
 
-server.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
   console.error(error);
   res.status(500).json({
     success: false
   });
 })
 
-server.listen(3001, function () { console.log('server is listening on port 3001') });
+// http.createServer(app).listen(80);
+https.createServer(app).listen(3001);
+
+// app.listen(3001, function () { console.log('app is listening on port 3001') });
