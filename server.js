@@ -51,12 +51,12 @@ server.get('/api/classes', function (request, response, next) {
   let params = [];
   const id = request.url.split('=')[1];
 
-  if (id){
-    params.push(id);
-    params.push(userid);
-    var query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
+  params.push(userid);
+  if (!id){
+    var query = `SELECT * FROM classes WHERE user = ?`;
   } else {
-    query = `SELECT * FROM classes`;
+    params.push(id);
+    query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
   }
   db.query(query, params, function (error, data, fields) {
     if (error) return next(error);
