@@ -19,7 +19,7 @@ const sessionMiddleWare = session({
   resave: true,
   cookie: {
     expires: 300000,
-    secure: process.env.NODE_ENV === 'production', //run NODE_ENV = production pm2 start index.js when going live
+    secure: true,
     sameSite: true
   }
 });
