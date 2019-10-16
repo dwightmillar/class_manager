@@ -55,7 +55,6 @@ server.get('/api/classes', function (request, response, next) {
     params.push(id);
     params.push(userid);
     var query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
-
   } else {
     query = `SELECT * FROM classes`;
   }
@@ -64,6 +63,7 @@ server.get('/api/classes', function (request, response, next) {
     response.send({
         success: true,
         data,
+        session: request.session.userid
     });
   });
 });
