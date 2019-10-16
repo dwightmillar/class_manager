@@ -1,8 +1,6 @@
 const express = require('express');
 const BodyParser = require('body-parser')
 const app = express();
-const http = require('http');
-const https = require('https');
 const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql');
@@ -19,6 +17,7 @@ const sessionMiddleWare = session({
   secret: 'fP4nfWsjK39fbdIo9an4sFoJ3vYe8L12qPjce',
   saveUninitialized: true,
   resave: true,
+  proxy: true,
   cookie: {
     expires: 300000,
     secure: true,
