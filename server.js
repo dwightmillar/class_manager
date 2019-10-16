@@ -224,11 +224,12 @@ server.post('/api/assignments', function (request, response, next) {
 
 
   db.query(query, params, function (error, data, fields) {
-    if (error) return next(error);
+    // if (error) return next(error);
       response.send({
-        success: true,
-        data,
-        query
+        // success: true,
+        // data,
+        query,
+        params
       });
   });
 });
