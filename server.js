@@ -209,8 +209,8 @@ server.post('/api/assignments', function (request, response, next) {
   let params = [];
   let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES (";
 
-  params.push(userid);
-  params.concat(request.body.scores.split(','));
+  params = request.body.scores.split(',');
+  params.unshift(userid);
 
   for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
