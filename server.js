@@ -51,10 +51,11 @@ server.get('/api/classes', function (request, response, next) {
 
   let params = [];
   const id = request.url.split('=')[1];
+  var query = '';
 
   params.push(userid);
   if (!id){
-    var query = `SELECT * FROM classes WHERE user = ?`;
+    query = `SELECT * FROM classes WHERE user = ?`;
   } else {
     params.push(id);
     query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
@@ -64,7 +65,7 @@ server.get('/api/classes', function (request, response, next) {
     response.send({
         success: true,
         data,
-        session: request.session.userid
+        query
     });
   });
 });
@@ -80,13 +81,14 @@ server.get('/api/students', function (request, response, next) {
 
   const queryType = request.url.split('=')[0].split('?')[1];
   const id = request.url.split('=')[1];
+  var query = '';
 
   params.push(id);
   params.push(userid);
 
 
   if (queryType === 'class_id') {
-    var query = `SELECT * FROM students WHERE class_id=? AND user=?`;
+    query = `SELECT * FROM students WHERE class_id=? AND user=?`;
   } else {
     query = `SELECT * FROM students WHERE id=? AND user=?`;
   }
@@ -99,7 +101,7 @@ server.get('/api/students', function (request, response, next) {
     response.send({
       success: true,
       data,
-      session: request.session.userid
+      query
     });
   });
 });
@@ -124,7 +126,7 @@ server.get('/api/assignments', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         });
     });
 });
@@ -150,7 +152,7 @@ server.post('/api/students', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         });
     });
 });
@@ -172,7 +174,7 @@ server.delete('/api/students', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         });
     });
 });
@@ -195,7 +197,7 @@ server.delete('/api/classes', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         });
     });
 });
@@ -228,7 +230,7 @@ server.post('/api/assignments', function (request, response, next) {
       response.send({
         success: true,
         data,
-        session: request.session.userid
+        query
       });
   });
 });
@@ -250,7 +252,7 @@ server.post('/api/classes', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         });
     });
 });
@@ -286,7 +288,7 @@ server.patch('/api/assignments', function (request, response, next) {
         response.send({
           success: true,
           data,
-          session: request.session.userid
+          query
         })
     })
 })
