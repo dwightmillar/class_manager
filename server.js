@@ -40,13 +40,16 @@ server.use(BodyParser.json())
 server.use(sessionMiddleWare);
 server.use(staticMiddlewareFunction);
 
+var userid = server.get('/api/classes', function(request, response, next) {
+  if (!request.session.userid) {
+    return makeid(9);
+  } else {
+    return request.session.id
+  }
+})
+
 
 server.get('/api/classes', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
 
   let params = [];
   const id = request.url.split('=')[1];
@@ -70,11 +73,7 @@ server.get('/api/classes', function (request, response, next) {
 
 
 server.get('/api/students', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
+
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
@@ -97,17 +96,14 @@ server.get('/api/students', function (request, response, next) {
   if (error) return next(error);
     response.send({
       success: true,
-      data
+      data,
+      session: request.session.userid
     });
   });
 });
 
 server.get('/api/assignments', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
+
     let params = [];
 
     const student_id = request.url.split('=')[1];
@@ -121,17 +117,14 @@ server.get('/api/assignments', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         });
     });
 });
 
 server.post('/api/students', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
+
     let params = [];
 
     const student_name = request.body.name;
@@ -146,7 +139,8 @@ server.post('/api/students', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         });
     });
 });
@@ -167,7 +161,8 @@ server.delete('/api/students', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         });
     });
 });
@@ -189,17 +184,14 @@ server.delete('/api/classes', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         });
     });
 });
 
 server.post('/api/assignments', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
+
   let params = [];
   let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES (";
 
@@ -221,17 +213,14 @@ server.post('/api/assignments', function (request, response, next) {
     if (error) return next(error);
       response.send({
         success: true,
-        data
+        data,
+        session: request.session.userid
       });
   });
 });
 
 server.post('/api/classes', function (request, response, next) {
-  if (!request.session.userid) {
-    request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
-  }
+
     let params = [];
 
     params.push(userid);
@@ -242,7 +231,8 @@ server.post('/api/classes', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         });
     });
 });
@@ -277,7 +267,8 @@ server.patch('/api/assignments', function (request, response, next) {
       if(error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          session: request.session.userid
         })
     })
 })
