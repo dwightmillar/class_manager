@@ -18,20 +18,33 @@ const sessionMiddleWare = session({
   saveUninitialized: true,
   resave: true,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', //run NODE_ENV = production pm2 start index.js when going live
     sameSite: true
   }
 });
 
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
 server.set('trust proxy', 1);
-
-
-
 server.use(BodyParser.json())
 server.use(sessionMiddleWare);
 server.use(staticMiddlewareFunction);
 
+
 server.get('/api/classes', function (request, response, next) {
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
   let params = [];
   const id = request.url.split('=')[1];
 
