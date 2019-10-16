@@ -64,8 +64,7 @@ server.get('/api/classes', function (request, response, next) {
     if (error) return next(error);
     response.send({
         success: true,
-        data,
-        query
+        data
     });
   });
 });
@@ -100,8 +99,7 @@ server.get('/api/students', function (request, response, next) {
   if (error) return next(error);
     response.send({
       success: true,
-      data,
-      query
+      data
     });
   });
 });
@@ -125,8 +123,7 @@ server.get('/api/assignments', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         });
     });
 });
@@ -151,8 +148,7 @@ server.post('/api/students', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         });
     });
 });
@@ -173,8 +169,7 @@ server.delete('/api/students', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         });
     });
 });
@@ -196,8 +191,7 @@ server.delete('/api/classes', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         });
     });
 });
@@ -231,8 +225,7 @@ server.post('/api/assignments', function (request, response, next) {
     if (error) return next(error);
       response.send({
         success: true,
-        data,
-        query
+        data
       });
   });
 });
@@ -253,8 +246,7 @@ server.post('/api/classes', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         });
     });
 });
@@ -289,8 +281,7 @@ server.patch('/api/assignments', function (request, response, next) {
       if(error) return next(error);
         response.send({
           success: true,
-          data,
-          query
+          data
         })
     })
 })
