@@ -261,7 +261,10 @@ app.post('/api/classes', function (request, response, next) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          query,
+          params,
+          session: request.session
         });
     });
 });
