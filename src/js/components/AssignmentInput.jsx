@@ -29,7 +29,7 @@ export default class Assignment extends React.Component {
 
   getStudents() {
     const class_id = this.props.match.params.classID;
-    fetch("/api/students?class_id=" + class_id, {
+    fetch("/class_manager/api/students?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -47,7 +47,7 @@ export default class Assignment extends React.Component {
   }
 
   getAssignments(id) {
-    fetch("/api/assignments?student_id=" + id, {
+    fetch("/class_manager/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -197,7 +197,7 @@ export default class Assignment extends React.Component {
       this.setState({inputerror: false});
     }
 
-    fetch("/api/assignments", {
+    fetch("/class_manager/api/assignments", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'

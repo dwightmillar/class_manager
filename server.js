@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql');
 const creds = require('./mysql_credentials.js');
+const cookie = require('./cookie.js');
 const session = require('express-session');
 const parseurl = require('parseurl');
 
@@ -13,17 +14,7 @@ const db = mysql.createConnection(creds);
 const htmlDirectory = path.join(__dirname, 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);
 
-const sessionMiddleWare = session({
-  secret: 'fP4nfWsjK39fbdIo9an4sFoJ3vYe8L12qPjce',
-  saveUninitialized: true,
-  resave: true,
-  proxy: true,
-  cookie: {
-    expires: 300000,
-    secure: true,
-    sameSite: true
-  }
-});
+const sessionMiddleWare = session(cookie);
 
 
 function makeid(length) {
