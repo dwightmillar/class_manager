@@ -112,7 +112,7 @@ class ClassList extends React.Component {
       Class => {
           return (
             <li className="nav-item" key={Class.id}>
-              <Link to={`/${Class.id}`} id={Class.id}
+              <Link to={`/class_manager/${Class.id}`} id={Class.id}
               className={this.props.match.params.classID == Class.id ? 'nav-link active' : 'nav-link'}>
                 {Class.title}
               </Link>
@@ -134,18 +134,18 @@ class ClassList extends React.Component {
         return (
           <React.Fragment>
             <Switch>
-              <Route path="/:classID/input" render={(props) => <AssignmentInput {...props} title={currentClassTitle}></AssignmentInput>} />
-              <Route path="/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
-              <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
+              <Route path="/class_manager/:classID/input" render={(props) => <AssignmentInput {...props} title={currentClassTitle}></AssignmentInput>} />
+              <Route path="/class_manager/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
+              <Route path="/class_manager/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
             </Switch>
 
           </React.Fragment>
         )
       } else {
           if (this.state.classes.length) {
-            history.replace('/' + this.state.classes[0].id);
+            history.replace('/class_manager/' + this.state.classes[0].id);
           } else {
-            history.replace('/welcome');
+            history.replace('/class_manager/welcome');
           }
            return null
       }
@@ -173,7 +173,7 @@ class ClassList extends React.Component {
         </ul >
 
         <Switch>
-          <Route exact path="/welcome" render={() => <Welcome />} />
+          <Route exact path="/class_manager/welcome" render={() => <Welcome />} />
           <Route path={this.props.match.url} render={() => <Display />} />
         </Switch>
       </React.Fragment>
