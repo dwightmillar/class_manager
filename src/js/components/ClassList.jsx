@@ -26,7 +26,7 @@ class ClassList extends React.Component {
   }
 
   getClasses() {
-    fetch("/class_manager/api/classes", {
+    fetch("/api/classes", {
       method: "GET"
     })
       .then(data => data.json())
@@ -42,7 +42,7 @@ class ClassList extends React.Component {
     }
     const title = event.target.children[0].value;
     event.target.children[0].value = '';
-    fetch("/class_manager/api/classes", {
+    fetch("/api/classes", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ class ClassList extends React.Component {
         this.setState({ 'classes': this.state.classes.concat(newClassObj) });
         return responseObj.data.insertId;
       })
-      .then(id => {history.push('/class_manager/' + id)});
+      .then(id => {history.push('/' + id)});
   }
 
   deleteClass() {
@@ -67,7 +67,7 @@ class ClassList extends React.Component {
       Class => Class.id == class_id
     );
 
-    fetch("/class_manager/api/classes", {
+    fetch("/api/classes", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -101,7 +101,7 @@ class ClassList extends React.Component {
         } else {
           new_class_id = 'welcome';
         }
-        history.replace('/class_manager/' + new_class_id);
+        history.replace('/' + new_class_id);
       });
   }
 
@@ -112,7 +112,7 @@ class ClassList extends React.Component {
       Class => {
           return (
             <li className="nav-item" key={Class.id}>
-              <Link to={`/class_manager/${Class.id}`} id={Class.id}
+              <Link to={`/${Class.id}`} id={Class.id}
               className={this.props.match.params.classID == Class.id ? 'nav-link active' : 'nav-link'}>
                 {Class.title}
               </Link>
@@ -134,18 +134,18 @@ class ClassList extends React.Component {
         return (
           <React.Fragment>
             <Switch>
-              <Route path="/class_manager/:classID/input" render={(props) => <AssignmentInput {...props} title={currentClassTitle}></AssignmentInput>} />
-              <Route path="/class_manager/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
-              <Route path="/class_manager/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
+              <Route path="/:classID/input" render={(props) => <AssignmentInput {...props} title={currentClassTitle}></AssignmentInput>} />
+              <Route path="/:classID/:studentID" render={(props) => <Student {...props}></Student>} />
+              <Route path="/:classID" render={(props) => <ClassView {...props} deleteClass={this.deleteClass} title={currentClassTitle}></ClassView>} />
             </Switch>
 
           </React.Fragment>
         )
       } else {
           if (this.state.classes.length) {
-            history.replace('/class_manager/' + this.state.classes[0].id);
+            history.replace('/' + this.state.classes[0].id);
           } else {
-            history.replace('/class_manager/welcome');
+            history.replace('/welcome');
           }
            return null
       }
@@ -173,7 +173,7 @@ class ClassList extends React.Component {
         </ul >
 
         <Switch>
-          <Route exact path="/class_manager/welcome" render={() => <Welcome />} />
+          <Route exact path="/welcome" render={() => <Welcome />} />
           <Route path={this.props.match.url} render={() => <Display />} />
         </Switch>
       </React.Fragment>
