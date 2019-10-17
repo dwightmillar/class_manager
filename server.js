@@ -35,11 +35,13 @@ app.use(staticMiddlewareFunction);
 
 
 app.get('/api/classes', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
+
+  userid = request.session.userid;
 
   let params = [];
   const id = request.url.split('=')[1];
@@ -63,11 +65,13 @@ app.get('/api/classes', function (request, response, next) {
 
 
 app.get('/api/students', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
+
+  userid = request.session.userid;
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
@@ -97,35 +101,40 @@ app.get('/api/students', function (request, response, next) {
 });
 
 app.get('/api/assignments', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
-    let params = [];
 
-    const student_id = request.url.split('=')[1];
+  userid = request.session.userid;
 
-    params.push(student_id);
-    params.push(userid);
+  let params = [];
 
-    const query = `SELECT * FROM assignments WHERE student_id=? AND user=?`;
+  const student_id = request.url.split('=')[1];
 
-    db.query(query, params, function (error, data, fields) {
-      if (error) return next(error);
-        response.send({
-          success: true,
-          data
-        });
-    });
+  params.push(student_id);
+  params.push(userid);
+
+  const query = `SELECT * FROM assignments WHERE student_id=? AND user=?`;
+
+  db.query(query, params, function (error, data, fields) {
+    if (error) return next(error);
+      response.send({
+        success: true,
+        data
+      });
+  });
 });
 
 app.post('/api/students', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
+
+  userid = request.session.userid;
     let params = [];
 
     const student_name = request.body.name;
@@ -189,11 +198,13 @@ app.delete('/api/classes', function (request, response, next) {
 });
 
 app.post('/api/assignments', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
+
+  userid = request.session.userid;
   let params = [];
   let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES ";
 
@@ -223,11 +234,13 @@ app.post('/api/assignments', function (request, response, next) {
 });
 
 app.post('/api/classes', function (request, response, next) {
+  var userid = '';
+
   if (!request.session.userid) {
     request.session.userid = makeid(9);
-  } else {
-    var userid = request.session.userid;
   }
+
+  userid = request.session.userid;
     let params = [];
 
     params.push(userid);

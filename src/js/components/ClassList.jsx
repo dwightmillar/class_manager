@@ -58,7 +58,7 @@ class ClassList extends React.Component {
         this.setState({ 'classes': this.state.classes.concat(newClassObj) });
         return responseObj.data.insertId;
       })
-      .then(id => {history.push('/' + id)});
+      .then(id => {history.push('/class_manager/' + id)});
   }
 
   deleteClass() {
@@ -101,7 +101,7 @@ class ClassList extends React.Component {
         } else {
           new_class_id = 'welcome';
         }
-        history.replace('/' + new_class_id);
+        history.replace('/class_manager/' + new_class_id);
       });
   }
 

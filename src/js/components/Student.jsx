@@ -122,7 +122,7 @@ export default class Student extends React.Component {
       return <NotFound />
     }
     if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
-      history.replace('/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
+      history.replace('/class_manager/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
     }
 
     var allAssignments = this.state.assignments.map(
