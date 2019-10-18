@@ -147,7 +147,7 @@ export default class Student extends React.Component {
         </tr>
     )
 
-    const previousPageURL = "/" + this.props.match.params.classID;
+    const previousPageURL = "/class_manager/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>
