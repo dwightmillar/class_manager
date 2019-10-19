@@ -316,7 +316,6 @@ export default class ClassView extends React.Component {
       <input type="text" autoFocus name="nameinput"
       placeholder={this.state.inputPlaceholder}
       value={this.state.newStudent} onChange={this.handleStudentInput}
-      onBlur={() => this.postStudent}
       disabled={this.state.disableForm}>
       </input>
 
@@ -361,7 +360,7 @@ export default class ClassView extends React.Component {
               <tr className="d-flex input">
                 <td className="col-2"></td>
                 <td className="col-4">
-                  <form onSubmit={this.postStudent}>
+                  <form onSubmit={this.postStudent} onFocusOut={this.postStudent}>
                     {input}
                   </form>
                 </td>
