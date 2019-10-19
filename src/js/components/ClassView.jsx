@@ -102,6 +102,7 @@ export default class ClassView extends React.Component {
 
   postStudent(event) {
     event.preventDefault();
+    console.log('posting student');
 
     this.setState({disableForm: true});
 
