@@ -315,7 +315,7 @@ export default class ClassView extends React.Component {
       <input type="text" autoFocus name="nameinput"
       placeholder={this.state.inputPlaceholder}
       value={this.state.newStudent} onChange={this.handleStudentInput}
-      onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
+      onBlur={() => this.postStudent}
       disabled={this.state.disableForm}>
       </input>
 
