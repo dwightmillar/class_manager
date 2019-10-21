@@ -137,7 +137,7 @@ export default class Assignment extends React.Component {
       studentScore = 0;
     } else if (!isNaN(event.target.value)){
       studentScore = parseInt(event.target.value);
-    } else if (event.target.value.length > 3) {
+    } else if (event.target.value > 999) {
         return false;
     }
 
