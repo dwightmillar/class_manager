@@ -119,6 +119,8 @@ export default class Assignment extends React.Component {
   handleMaxPointsInput(event) {
     if (isNaN(event.target.value)) {
       return false;
+    } else if (event.target.value > 999) {
+      return false;
     }
     this.setState({ 'maxPoints': event.target.value })
   }
@@ -137,7 +139,7 @@ export default class Assignment extends React.Component {
       studentScore = 0;
     } else if (!isNaN(event.target.value)){
       studentScore = parseInt(event.target.value);
-    } else if (event.target.value > 999) {
+    } else if (event.target.value.length > 3) {
         return false;
     }
 
