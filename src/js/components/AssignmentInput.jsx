@@ -137,7 +137,7 @@ export default class Assignment extends React.Component {
       studentScore = 0;
     } else if (!isNaN(event.target.value)){
       studentScore = parseInt(event.target.value);
-    } else if (event.target.value.length > 1) {
+    } else if (event.target.value.length > 3) {
         return false;
     }
 
@@ -268,7 +268,7 @@ export default class Assignment extends React.Component {
           <div className="text-center">
             <div style={{ 'display': 'inline-block' }}>
               <label for="maxPointsInput">Total possible points:&nbsp;&nbsp;&nbsp;</label>
-              <input id="maxPointsInput" type="number" min="1" msx="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+              <input id="maxPointsInput" type="number" min="1" max="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
             </div>
           </div>
 
