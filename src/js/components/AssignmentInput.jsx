@@ -8,6 +8,7 @@ export default class Assignment extends React.Component {
     this.state = {
       title: '',
       students: [],
+      classAverage: 'Calculating...',
       studentAverages: [],
       newAssignment: '',
       maxPoints: '',
@@ -16,6 +17,7 @@ export default class Assignment extends React.Component {
     }
     this.handleAssignmentInput = this.handleAssignmentInput.bind(this);
     this.handleMaxPointsInput = this.handleMaxPointsInput.bind(this);
+    this.handleClassAverage = this.handleClassAverage.bind(this);
     this.handleScoreInput = this.handleScoreInput.bind(this);
     this.postAssignment = this.postAssignment.bind(this);
   }
@@ -37,35 +39,37 @@ export default class Assignment extends React.Component {
           student => {
             let studentScores = this.state.scores;
             studentScores[student.id] = '';
-            this.setState({ studentScores: studentScores });
+            this.setState({ scores: studentScores });
             this.getAssignments(student.id);
           }
         )
-      })
+      });
   }
 
   getAssignments(id) {
-    fetch("/class_manager//apiassignments?student_id=" + id, {
+    fetch("/class_manager/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
       .then(assignments => {
-        this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
   }
 
-  handleStudentGradeAverage(id, data) {
+  handleStudentGradeAverage(id, assignments) {
+    console.log('assignments: ', assignments);
     let studentAverage = this.state.studentAverages;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
     let average = 0;
 
-    if (data.length > 0) {
-      data.forEach(
-        grade => {
-          totalPointsScored += grade.score;
-          totalPointsPossible += grade.totalpoints;
+    if (assignments.length > 0) {
+      assignments.forEach(
+        assignment => {
+          if (!isNaN(assignment.score)) {
+            totalPointsScored += parseInt(assignment.score);
+          }
+          totalPointsPossible += assignment.totalpoints;
         }
       )
     }
@@ -76,31 +80,36 @@ export default class Assignment extends React.Component {
       average = 'N/A';
     }
 
-    studentAverage[id] = average;
+    studentAverage.push(average);
 
-    this.setState({ studentAverages: studentAverage })
+    this.setState({ studentAverages: studentAverage });
+
+    this.handleClassAverage();
   }
 
   handleClassAverage() {
     var classAverage = 0;
     var averageIndex = 0;
+    var studentAverages = this.state.studentAverages;
 
-    this.state.students.forEach(
-      student => {
-        if (this.state.studentAverages[student.id] !== 'N/A') {
-          classAverage += parseFloat(this.state.studentAverages[student.id]);
-          ++averageIndex;
+    studentAverages.forEach(
+      average => {
+        ++averageIndex;
+        if (average !== 'N/A') {
+          classAverage += parseFloat(average);
         }
       }
     )
 
     if (!averageIndex) {
       classAverage = 'N/A';
+    } else if (isNaN(classAverage / averageIndex)) {
+      return false;
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    return classAverage;
+    this.setState({classAverage: classAverage});
   }
 
   handleAssignmentInput(event) {
@@ -110,6 +119,8 @@ export default class Assignment extends React.Component {
   handleMaxPointsInput(event) {
     if (isNaN(event.target.value)) {
       return false;
+    } else if (event.target.value > 999) {
+      return false;
     }
     this.setState({ 'maxPoints': event.target.value })
   }
@@ -118,15 +129,25 @@ export default class Assignment extends React.Component {
     let studentScore = 0;
     const studentID = event.target.id;
     let student = this.state.scores;
+    const valueCheck = /[\dM{1}]/;
 
-    if(isNaN(event.target.value)) {
+    if(!valueCheck.test(event.target.value) && event.target.value !== '') {
       return false;
     }
-    if (event.target.value.length === 0) {
-      studentScore = event.target.value;
-    } else {
-      studentScore = parseInt(event.target.value);
+
+    if(parseInt(event.target.value) > 999){
+      return false;
     }
+
+    if(event.target.value === '') {
+      studentScore = 0;
+    } else if (!isNaN(event.target.value)){
+      studentScore = parseInt(event.target.value);
+    } else if (event.target.value.length > 1) {
+        return false;
+    }
+
+    studentScore = event.target.value;
 
     student[studentID] = studentScore;
 
@@ -153,17 +174,14 @@ export default class Assignment extends React.Component {
     let scores = this.state.students.map(
       student => {
         if (studentScores[student.id]) {
-          return `${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
+          return `user,${title},${studentScores[student.id]},${totalpoints},${student.id},${classid}`
         } else {
           this.setState({ inputerror: true });
           errorCheck = true;
-          alert('You need to fill out the highlighted fields');
           return false;
         }
       }
     )
-
-    console.log('scores: ',scores);
 
     for (var score in scores) {
       if (score === '') {
@@ -185,7 +203,6 @@ export default class Assignment extends React.Component {
       this.setState({inputerror: false});
     }
 
-
     fetch("/class_manager/api/assignments", {
       headers: {
         'Accept': 'application/json',
@@ -198,16 +215,17 @@ export default class Assignment extends React.Component {
     })
       .then(response => response.json())
       .then(data => console.log('postassignment response:', data))
+      .then(()=> {
+        var newScores = {};
+
+        for (let studentID in this.state.scores) {
+          newScores[studentID] = '';
+        }
+
+        this.setState({ newAssignment: '', maxPoints: '', studentAverages: [], scores: newScores });
+        this.getStudents();
+      })
       .catch(error => console.error('postassignment error: ',error))
-
-    var newScores = {};
-
-    for (let studentID in this.state.scores) {
-      newScores[studentID] = '';
-    }
-
-    this.setState({ newAssignment: '', maxPoints: '', scores: newScores });
-    this.getStudents();
   }
 
 
@@ -237,23 +255,30 @@ export default class Assignment extends React.Component {
             {this.props.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {this.handleClassAverage()}
+            Class Average: {this.state.classAverage}
           </h2>
-          <div className="row">
-            <div className="col-1"></div>
-            <Link to={previousPageURL}>
-              <button className="btn btn-secondary">
-                Back
+
+          <div className="text-center">
+            <div style={{ 'display': 'inline-block' }}>
+              <Link to={previousPageURL}>
+                <button className="btn btn-secondary">
+                  Back
               </button>
-            </Link>
-            <div className="col-2"></div>
-            <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+              </Link>
+            </div>
+            <div style={{ 'display': 'inline-block' }}>
+              <input className={(this.state.inputerror && !this.state.newAssignment) ? "center assignment error" : "center assignment"} type="text" placeholder="Assignment Title" value={this.state.newAssignment} onChange={this.handleAssignmentInput} autoFocus></input>
+            </div>
           </div>
-          <div className="row">
-            <div className="col-7"></div>
-            <div>Total possible points:&nbsp;</div>
-            <input className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} type="text" value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+
+          <div className="text-center">
+            <div style={{ 'display': 'inline-block' }}>
+              <label for="maxPointsInput">Total possible points:&nbsp;&nbsp;&nbsp;</label>
+              <input id="maxPointsInput" type="number" min="1" max="999" className={(this.state.inputerror && !this.state.maxPoints) ? "points error" : "points"} value={this.state.maxPoints} onChange={this.handleMaxPointsInput} ></input>
+            </div>
           </div>
+
+
         </header>
         <div>
           <div className="container-fluid">

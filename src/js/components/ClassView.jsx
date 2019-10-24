@@ -7,7 +7,7 @@ export default class ClassView extends React.Component {
   constructor() {
     super();
     this.state = {
-      classAverage: '',
+      classAverage: 'Calculating...',
       newStudent: '',
       studentAverages: {},
       students: [],
@@ -26,6 +26,7 @@ export default class ClassView extends React.Component {
     this.hideDeleteStudent = this.hideDeleteStudent.bind(this);
     this.hideDeleteClass = this.hideDeleteClass.bind(this);
     this.renderModal = this.renderModal.bind(this);
+    this.handleClassAverage = this.handleClassAverage.bind(this);
   }
 
   componentDidMount() {
@@ -42,8 +43,12 @@ export default class ClassView extends React.Component {
         students.data.map(
           student => this.getAssignments(student.id)
         );
-        this.setState({ 'students': students.data })
-      });
+        if (students.data.length) {
+          this.setState({ 'students': students.data });
+        } else {
+          this.setState({'classAverage': 'N/A'})
+        }
+      })
   }
 
   deleteStudent(event) {
@@ -60,17 +65,25 @@ export default class ClassView extends React.Component {
     })
       .then(data => data.json())
       .then(response => {
-        if(response.success) {
+        if(!response.success) {
+          console.error('FAILED TO DELETE: ', response)
+        }
+        else {
+          let studentAverages = this.state.studentAverages;
+          console.log('studentAverages before delete: ', studentAverages);
+          delete studentAverages[id];
+          console.log('studentAverages after delete: ', studentAverages);
+
           this.setState({
             students: this.state.students.filter(
               student => {
                 if (student.id !== id) return student
               }
             ),
+            studentAverages: studentAverages,
             displayDeleteStudent: false
-          })
-        } else {
-          console.error('FAILED TO DELETE: ',response)
+          });
+          this.handleClassAverage();
         }
       });
   }
@@ -81,6 +94,7 @@ export default class ClassView extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
+        console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
@@ -88,19 +102,19 @@ export default class ClassView extends React.Component {
 
   postStudent(event) {
     event.preventDefault();
+    console.log('posting student');
 
     this.setState({disableForm: true});
 
     var studentName = this.state.newStudent;
-    var specCharCheck = /\W/;
-    var numberCheck = /\d/;
-    if (specCharCheck.test(studentName) || numberCheck.test(studentName)) {
+    var lettersOnlyCheck = /[^-A-Za-z\s]/;
+    if (lettersOnlyCheck.test(studentName)) {
       this.setState({ inputPlaceholder: 'Can only use letters',
                       newStudent: '' ,
                       disableForm: false });
       return false;
     } else if (this.state.newStudent.length < 2) {
-      this.setState({ inputPlaceholder: 'Must be longer than 2 letters',
+      this.setState({ inputPlaceholder: 'Too short',
                       newStudent: '' ,
                       disableForm: false });
       return false;
@@ -125,6 +139,7 @@ export default class ClassView extends React.Component {
         this.setState({
           'newStudentID': response.data.insertId
         });
+        this.handleClassAverage();
         this.addStudentDirect(class_id);
       } else {
         console.error('FAILED TO ADD: ', response);
@@ -149,7 +164,9 @@ export default class ClassView extends React.Component {
     if (data.length > 0) {
       data.forEach(
         grade => {
-          totalPointsScored += grade.score;
+          if (!isNaN(grade.score)) {
+            totalPointsScored += parseInt(grade.score);
+          }
           totalPointsPossible += grade.totalpoints;
         }
       )
@@ -163,29 +180,31 @@ export default class ClassView extends React.Component {
 
     studentAverage[id] = average;
 
-    this.setState({ studentAverages: studentAverage })
+    this.setState({ studentAverages: studentAverage });
+
+    this.handleClassAverage();
   }
 
   handleClassAverage() {
     var classAverage = 0;
     var averageIndex = 0;
 
-    this.state.students.forEach(
-      student => {
-        if (this.state.studentAverages[student.id] !== 'N/A') {
-          classAverage += parseFloat(this.state.studentAverages[student.id]);
-          ++averageIndex;
-        }
+    for(let studentAverage in this.state.studentAverages) {
+      if (this.state.studentAverages[studentAverage] !== 'N/A') {
+        classAverage += parseFloat(this.state.studentAverages[studentAverage]);
+        ++averageIndex;
       }
-    )
+    }
 
-    if(!averageIndex) {
+    if (!averageIndex) {
       classAverage = 'N/A';
+    } else if (isNaN(classAverage / averageIndex)) {
+      return false;
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
 
-    return classAverage;
+    this.setState({classAverage: classAverage});
   }
 
   handleStudentInput(event) {
@@ -239,7 +258,7 @@ export default class ClassView extends React.Component {
 
     const allStudents = this.state.students.map(
       student => {
-        if(this.state.studentAverages[student.id] !== 'N/A') {
+        if(!isNaN(this.state.studentAverages[student.id])) {
           return (
             <tr key={student.id} id={student.id} className="d-flex">
               <td className="col-2"></td>
@@ -254,7 +273,7 @@ export default class ClassView extends React.Component {
               </td>
               <td className="col-1 clickable">
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
-                  <span aria-hidden="true">&times;</span>
+                  <div>&times;</div>
                 </button>
               </td>
             </tr>
@@ -268,7 +287,7 @@ export default class ClassView extends React.Component {
               <td className="col-3">N/A</td>
               <td className="col-1">
                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={this.showDeleteStudent}>
-                  <span aria-hidden="true">&times;</span>
+                  <div>&times;</div>
                 </button>
               </td>
             </tr>
@@ -297,7 +316,6 @@ export default class ClassView extends React.Component {
       <input type="text" autoFocus name="nameinput"
       placeholder={this.state.inputPlaceholder}
       value={this.state.newStudent} onChange={this.handleStudentInput}
-      onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
       disabled={this.state.disableForm}>
       </input>
 
@@ -309,14 +327,21 @@ export default class ClassView extends React.Component {
             {this.props.title}
           </h1>
           <h2 className="text-center">
-            Class Average: {this.handleClassAverage()}
+            Class Average: {this.state.classAverage}
           </h2>
           <div className="row">
-            <div className="col-8"></div>
-            {inputButton}
-            <button className="btn btn-danger hidecursor" onClick={this.showDeleteClass}>
-              Delete Class
-            </button>
+            <div className="col-6">
+              <div className="text-center">
+                {inputButton}
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="text-center">
+                <button className="btn btn-danger" onClick={this.showDeleteClass}>
+                  Delete Class
+              </button>
+              </div>
+            </div>
           </div>
         </header>
         <Modal renderModal={this.renderModal}/>
@@ -335,7 +360,7 @@ export default class ClassView extends React.Component {
               <tr className="d-flex input">
                 <td className="col-2"></td>
                 <td className="col-4">
-                  <form onSubmit={this.postStudent}>
+                  <form onSubmit={this.postStudent} onFocusOut={this.postStudent}>
                     {input}
                   </form>
                 </td>

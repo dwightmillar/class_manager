@@ -2,7 +2,6 @@ import React from 'react';
 
 class Modal extends React.Component {
   render() {
-    console.log(this.props.renderModal());
     return (
       <div className={this.props.renderModal().display} tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">

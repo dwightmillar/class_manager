@@ -35,6 +35,8 @@ export default class Student extends React.Component {
   }
 
   getAssignments() {
+    // eslint-disable-next-line no-debugger
+    debugger;
     const student_id = this.props.match.params.studentID;
     fetch("/class_manager/api/assignments?student_id=" + student_id, {
       method: "GET"
@@ -43,32 +45,37 @@ export default class Student extends React.Component {
       .then(assignments => {
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(student_id, assignments.data);
+        let studentScores = this.state.studentScores;
         assignments.data.map(
           assignment => {
-            let studentScores = this.state.studentScores;
             studentScores[assignment.id] = assignment.score;
-            this.setState({ studentScores: studentScores });
           }
         )
+        this.setState({ studentScores: studentScores });
       });
   }
 
   handleStudentGradeAverage(id, data) {
-    let studentAverage = 0;
+    let studentAverage = this.state.studentAverage;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
 
-    data.forEach(
-      grade => {
-        totalPointsScored += grade.score;
-        totalPointsPossible += grade.totalpoints;
-      }
-    )
+    if (data.length > 0) {
+      data.forEach(
+        grade => {
+          if (!isNaN(grade.score)) {
+            totalPointsScored += parseInt(grade.score);
+          }
+          totalPointsPossible += grade.totalpoints;
+        }
+      )
+    }
 
     if (totalPointsPossible !== 0) {
       studentAverage = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      studentAverage = 'N/A';
     }
-
     this.setState({ studentAverage: studentAverage })
   }
 
@@ -77,13 +84,14 @@ export default class Student extends React.Component {
     const studentID = event.target.id;
     let student = this.state.studentScores;
     let studentScore = 0;
-    if (isNaN(event.target.value)) {
+    const valueCheck = /[\dM{1}]/;
+
+    if(!valueCheck.test(event.target.value) && event.target.value !== '') {
       return false;
     }
-    if (event.target.value.length === 0) {
-      studentScore = event.target.value;
-    } else {
-      studentScore = parseInt(event.target.value);
+    studentScore = event.target.value;
+    if (!isNaN(studentScore)) {
+      studentScore = parseInt(studentScore);
     }
     student[studentID] = studentScore;
 
@@ -109,7 +117,6 @@ export default class Student extends React.Component {
   }
 
   render() {
-    console.log(this.props);
     if(!this.state.assignments[0]) {
       return <NotFound />
     }
@@ -125,13 +132,13 @@ export default class Student extends React.Component {
           <td className="col-2"></td>
           <td className="col-4">
             <input id={assignment.id} className="points" type="text" value={this.state.studentScores[assignment.id]} onChange={this.handleUpdateScore} placeholder={assignment.score}
-              onBlur={() => {
-                if (event.target.value === '') {
-                  let student = this.state.studentScores;
-                  student[assignment.id] = assignment.score;
-                  this.setState({ studentScores : student })
-                }
-              }}
+              // onBlur={() => {
+              //   if (event.target.value === '') {
+              //     let student = this.state.studentScores;
+              //     student[assignment.id] = assignment.score;
+              //     this.setState({ studentScores : student })
+              //   }
+              // }}
               >
             </input>
             &nbsp;/&nbsp;{assignment.totalpoints}
@@ -150,8 +157,7 @@ export default class Student extends React.Component {
           <h2 className="text-center">
             {this.state.studentAverage}%
           </h2>
-          <div className="row">
-            <div className="col-1"></div>
+          <div className="text-center">
             <Link to={previousPageURL}>
               <button className="btn btn-secondary" onClick={this.patchAssignmentScore}>
                 Back
