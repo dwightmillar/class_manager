@@ -44,26 +44,19 @@ export default class Student extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
-        console.log('assignments: ', assignments.data[0]);
         this.setState({ 'assignments': assignments.data });
-        console.log('assignments: ', assignments.data[0]);
         this.handleStudentGradeAverage(student_id, assignments.data);
-        console.log('assignments: ', assignments.data[0]);
         let studentScores = this.state.studentScores;
         assignments.data.map(
           assignment => {
-            console.log('assignment: ', assignment);
             studentScores[assignment.id] = assignment.score;
-            console.log(assignment.score);
           }
         )
-        console.log('studentScores: ', studentScores);
         this.setState({ studentScores: studentScores });
       });
   }
 
   handleStudentGradeAverage(id, data) {
-    console.log('data: ',data);
     let studentAverage = this.state.studentAverage;
     let totalPointsScored = 0;
     let totalPointsPossible = 0;
@@ -71,10 +64,9 @@ export default class Student extends React.Component {
     if (data.length > 0) {
       data.forEach(
         grade => {
-          if (isNaN(grade.score)) {
-            grade.score = 0;
+          if (!isNaN(grade.score)) {
+            totalPointsScored += parseInt(grade.score);
           }
-          totalPointsScored += grade.score;
           totalPointsPossible += grade.totalpoints;
         }
       )
@@ -85,12 +77,10 @@ export default class Student extends React.Component {
     } else {
       studentAverage = 'N/A';
     }
-    console.log('studentAverage: ',studentAverage);
     this.setState({ studentAverage: studentAverage })
   }
 
   handleUpdateScore(event) {
-    console.log('event: ',event);
 
     const studentID = event.target.id;
     let student = this.state.studentScores;
@@ -132,7 +122,7 @@ export default class Student extends React.Component {
       return <NotFound />
     }
     if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
-      history.replace('/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
+      history.replace('/class_manager/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
     }
 
     var allAssignments = this.state.assignments.map(

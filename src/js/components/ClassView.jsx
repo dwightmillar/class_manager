@@ -94,6 +94,7 @@ export default class ClassView extends React.Component {
     })
       .then(data => data.json())
       .then(assignments => {
+        console.log('assignments: ',assignments);
         this.setState({ 'assignments': assignments.data });
         this.handleStudentGradeAverage(id, assignments.data);
       });
@@ -101,6 +102,7 @@ export default class ClassView extends React.Component {
 
   postStudent(event) {
     event.preventDefault();
+    console.log('posting student');
 
     this.setState({disableForm: true});
 
@@ -159,32 +161,26 @@ export default class ClassView extends React.Component {
     let totalPointsPossible = 0;
     let average = 0;
 
-    if (data.length === 0) {
-      average = 'N/A'
-
-      studentAverage[id] = average;
-
-      this.setState({ studentAverages: studentAverage });
-    } else {
+    if (data.length > 0) {
       data.forEach(
         grade => {
-          if (parseInt(grade.score)) {
-            grade.score = parseInt(grade.score);
+          if (!isNaN(grade.score)) {
+            totalPointsScored += parseInt(grade.score);
           }
-          if (isNaN(grade.score)) {
-            grade.score = 0;
-          }
-          totalPointsScored += grade.score;
           totalPointsPossible += grade.totalpoints;
         }
       )
-
-      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
-
-      studentAverage[id] = average;
-
-      this.setState({ studentAverages: studentAverage });
     }
+
+    if (totalPointsPossible !== 0) {
+      average = (totalPointsScored / totalPointsPossible * 100).toFixed(2);
+    } else {
+      average = 'N/A';
+    }
+
+    studentAverage[id] = average;
+
+    this.setState({ studentAverages: studentAverage });
 
     this.handleClassAverage();
   }
@@ -207,8 +203,6 @@ export default class ClassView extends React.Component {
     } else {
       classAverage = (classAverage / averageIndex).toFixed(2) + '%';
     }
-
-    console.log('classAverage: ',classAverage);
 
     this.setState({classAverage: classAverage});
   }
@@ -322,7 +316,6 @@ export default class ClassView extends React.Component {
       <input type="text" autoFocus name="nameinput"
       placeholder={this.state.inputPlaceholder}
       value={this.state.newStudent} onChange={this.handleStudentInput}
-      onBlur={() => this.setState({ inputPlaceholder: "Enter Student" })}
       disabled={this.state.disableForm}>
       </input>
 
@@ -367,7 +360,7 @@ export default class ClassView extends React.Component {
               <tr className="d-flex input">
                 <td className="col-2"></td>
                 <td className="col-4">
-                  <form onSubmit={this.postStudent}>
+                  <form onSubmit={this.postStudent} onFocusOut={this.postStudent}>
                     {input}
                   </form>
                 </td>

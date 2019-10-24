@@ -1,32 +1,68 @@
 const express = require('express');
 const BodyParser = require('body-parser')
-const server = express();
+const app = express();
 const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql');
 const creds = require('./mysql_credentials.js');
+// const cookie = require('./cookie.js');
+const session = require('express-session');
+const parseurl = require('parseurl');
 
 const db = mysql.createConnection(creds);
 
-
-
-server.use(BodyParser.json())
-
-const htmlDirectory = path.join(__dirname , 'dist');
+const htmlDirectory = path.join(__dirname, 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);
 
-server.use(staticMiddlewareFunction);
+const sessionMiddleWare = session({
+  secret: 'fP4nfWsjK39fbdIo9an4sFoJ3vYe8L12qPjce',
+  saveUninitialized: true,
+  resave: true,
+  proxy: true,
+  cookie: {
+    expires: 600000,
+    secure: false,
+    sameSite: true
+  }
+});
 
-server.get('/api/classes', function (request, response, next) {
+
+function makeid(length) {
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
+app.set('trust proxy', 1);
+app.use(BodyParser.json())
+app.use(sessionMiddleWare);
+app.use(staticMiddlewareFunction);
+
+
+app.get('/api/classes', function (request, response, next) {
+  var userid = '';
+
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
+  userid = request.session.userid;
+
   let params = [];
   const id = request.url.split('=')[1];
+  var query = '';
 
-  if (id){
-    params.push(id);
-    var query = `SELECT * FROM classes WHERE id = ?`;
-
+  params.push(userid);
+  if (!id){
+    query = `SELECT * FROM classes WHERE user = ?`;
   } else {
-    query = `SELECT * FROM classes`;
+    params.push(id);
+    query = `SELECT * FROM classes WHERE id = ? AND user = ?`;
   }
   db.query(query, params, function (error, data, fields) {
     if (error) return next(error);
@@ -38,19 +74,28 @@ server.get('/api/classes', function (request, response, next) {
 });
 
 
-server.get('/api/students', function (request, response, next) {
+app.get('/api/students', function (request, response, next) {
+  var userid = '';
+
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
+  userid = request.session.userid;
   let params = [];
 
   const queryType = request.url.split('=')[0].split('?')[1];
   const id = request.url.split('=')[1];
+  var query = '';
 
   params.push(id);
+  params.push(userid);
 
 
   if (queryType === 'class_id') {
-    var query = `SELECT * FROM students WHERE class_id=?`;
+    query = `SELECT * FROM students WHERE class_id=? AND user=?`;
   } else {
-    query = `SELECT * FROM students WHERE id=?`;
+    query = `SELECT * FROM students WHERE id=? AND user=?`;
   }
 
 
@@ -65,34 +110,51 @@ server.get('/api/students', function (request, response, next) {
   });
 });
 
-server.get('/api/assignments', function (request, response, next) {
-    let params = [];
+app.get('/api/assignments', function (request, response, next) {
+  var userid = '';
 
-    const student_id = request.url.split('=')[1];
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
 
-    params.push(student_id);
+  userid = request.session.userid;
 
-    const query = `SELECT * FROM assignments WHERE student_id=?`;
+  let params = [];
 
-    db.query(query, params, function (error, data, fields) {
-      if (error) return next(error);
-        response.send({
-          success: true,
-          data
-        });
-    });
+  const student_id = request.url.split('=')[1];
+
+  params.push(student_id);
+  params.push(userid);
+
+  const query = `SELECT * FROM assignments WHERE student_id=? AND user=?`;
+
+  db.query(query, params, function (error, data, fields) {
+    if (error) return next(error);
+      response.send({
+        success: true,
+        data
+      });
+  });
 });
 
-server.post('/api/students', function (request, response, next) {
+app.post('/api/students', function (request, response, next) {
+  var userid = '';
+
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
+  userid = request.session.userid;
     let params = [];
 
     const student_name = request.body.name;
     const class_id = request.body['class_id'];
 
+    params.push(userid);
     params.push(student_name);
     params.push(class_id);
 
-    const query = `INSERT INTO students (name, class_id) VALUES (?,?)`;
+    const query = `INSERT INTO students (user, name, class_id) VALUES (?,?,?)`;
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
@@ -102,7 +164,7 @@ server.post('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/students', function (request, response, next) {
+app.delete('/api/students', function (request, response, next) {
     let params = [];
 
     const student_id = request.body.id;
@@ -123,7 +185,7 @@ server.delete('/api/students', function (request, response, next) {
     });
 });
 
-server.delete('/api/classes', function (request, response, next) {
+app.delete('/api/classes', function (request, response, next) {
     let params = [];
 
     const id = request.body.id;
@@ -145,53 +207,71 @@ server.delete('/api/classes', function (request, response, next) {
     });
 });
 
-server.post('/api/assignments', function (request, response, next) {
+app.post('/api/assignments', function (request, response, next) {
+  var userid = '';
+
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
+  userid = request.session.userid;
   let params = [];
-  let query = "INSERT INTO assignments(title, score, totalpoints, student_id, class_id) VALUES (";
+  let query = "INSERT INTO assignments(user, title, score, totalpoints, student_id, class_id) VALUES ";
 
   params = request.body.scores.split(',');
 
   for(let assignmentsIndex = 0; assignmentsIndex < params.length; assignmentsIndex++){
 
-    if ((assignmentsIndex % 5 - 4) === 0) {
-      query += ' ?), (';
-    } else {
-      query += ' ?,';
+    if ((assignmentsIndex % 6) === 0) {
+      let userIndex = params.findIndex(element => {
+        return element === 'user';
+      })
+      params[userIndex] = userid;
+
+      query += '( ?, ?, ?, ?, ?, ?),'
     }
   }
-  query = query.slice(0, query.length - 3);
-
-  // query = mysql.format(query, assignments);
+  query = query.slice(0, query.length - 1);
 
 
   db.query(query, params, function (error, data, fields) {
     if (error) return next(error);
       response.send({
         success: true,
-        data,
-        params
+        data
       });
   });
 });
 
-server.post('/api/classes', function (request, response, next) {
+app.post('/api/classes', function (request, response, next) {
+  var userid = '';
+
+  if (!request.session.userid) {
+    request.session.userid = makeid(9);
+  }
+
+  userid = request.session.userid;
     let params = [];
 
+    params.push(userid);
     params.push(request.body.name);
 
-    const query = `INSERT INTO classes(title) VALUES (?)`;
+    const query = `INSERT INTO classes(user, title) VALUES (?,?)`;
     db.query(query, params, function (error, data, fields) {
       if (error) return next(error);
         response.send({
           success: true,
-          data
+          data,
+          query,
+          params,
+          session: request.session
         });
     });
 });
 
 
 
-server.patch('/api/assignments', function (request, response, next) {
+app.patch('/api/assignments', function (request, response, next) {
     const scores = request.body.scores;
     let params = [];
     let query = "UPDATE assignments SET score = CASE id ";
@@ -224,11 +304,12 @@ server.patch('/api/assignments', function (request, response, next) {
     })
 })
 
-server.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
   console.error(error);
   res.status(500).json({
     success: false
   });
 })
 
-server.listen(3001, function () { console.log('server is listening on port 3001') });
+
+app.listen(3001, function () { console.log('app is listening on port 3001') });
