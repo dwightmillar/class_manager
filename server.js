@@ -1,15 +1,12 @@
+require('dotenv').config()
+
 const express = require('express');
 const BodyParser = require('body-parser')
 const app = express();
 const path = require('path');
-const fs = require('fs');
-const mysql = require('mysql');
-const creds = require('./mysql_credentials.js');
-// const cookie = require('./cookie.js');
 const session = require('express-session');
-const parseurl = require('parseurl');
 
-const db = mysql.createConnection(creds);
+const db = require('./mysql/server.js');
 
 const htmlDirectory = path.join(__dirname, 'dist');
 const staticMiddlewareFunction = express.static(htmlDirectory);

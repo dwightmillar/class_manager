@@ -27,7 +27,7 @@ export default class Student extends React.Component {
 
   getClass() {
     const student_id = this.props.match.params.studentID;
-    fetch("/class_manager/api/students?id=" + student_id, {
+    fetch("/api/students?id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -38,7 +38,7 @@ export default class Student extends React.Component {
     // eslint-disable-next-line no-debugger
     debugger;
     const student_id = this.props.match.params.studentID;
-    fetch("/class_manager/api/assignments?student_id=" + student_id, {
+    fetch("/api/assignments?student_id=" + student_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -101,7 +101,7 @@ export default class Student extends React.Component {
   patchAssignmentScore() {
     const scores = this.state.studentScores;
     if (scores !== {}) {
-      fetch("/class_manager/api/assignments", {
+      fetch("/api/assignments", {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
@@ -121,7 +121,7 @@ export default class Student extends React.Component {
       return <NotFound />
     }
     if (!(this.props.match.params.classID == this.state.assignments[0].class_id)) {
-      history.replace('/class_manager/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
+      history.replace('/' + this.state.assignments[0].class_id + '/' + this.state.assignments[0].student_id)
     }
 
     var allAssignments = this.state.assignments.map(
@@ -146,7 +146,7 @@ export default class Student extends React.Component {
         </tr>
     )
 
-    const previousPageURL = "/class_manager/" + this.props.match.params.classID;
+    const previousPageURL = "/" + this.props.match.params.classID;
 
     return (
       <React.Fragment>

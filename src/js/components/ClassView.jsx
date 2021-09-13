@@ -35,7 +35,7 @@ export default class ClassView extends React.Component {
 
   getStudents() {
     const class_id = this.props.match.params.classID;
-    fetch("/class_manager/api/students?class_id=" + class_id, {
+    fetch("/api/students?class_id=" + class_id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -53,7 +53,7 @@ export default class ClassView extends React.Component {
 
   deleteStudent(event) {
     const id = parseInt(event.target.id);
-    fetch("/class_manager/api/students", {
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ export default class ClassView extends React.Component {
   }
 
   getAssignments(id) {
-    fetch("/class_manager/api/assignments?student_id=" + id, {
+    fetch("/api/assignments?student_id=" + id, {
       method: "GET"
     })
       .then(data => data.json())
@@ -122,7 +122,7 @@ export default class ClassView extends React.Component {
 
     const class_id = this.props.match.params.classID;
 
-    fetch("/class_manager/api/students", {
+    fetch("/api/students", {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
