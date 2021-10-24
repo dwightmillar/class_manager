@@ -1,23 +1,22 @@
 # Class Manager
 
-[Demo](http://dev.dwightmillar.com/class_manager)
+## 
+[Demo](https://dwightmillar.com/class_manager)
 
 ### Features
-- User can view classes
-- User can view students
-- User can view assignments
-- User can view grades
-- User can add classes
-- User can add students
-- User can add assignments
-- User can update grades
-- User can delete students
-- User can delete classes
+- User can create and delete classes
+- User can add and delete students
+- User can add and update assignments
+- User can view class, student, and assignment grade averages
+- User can see whether a student's grade is trending up or down
+- User can sort the student table, alphabetically or by grade
 
-### Planned Features
-- User can log in as unique user
-- User can track attendance
-- User can log in as student
-- User can send assignments for students to view
+### Technologies
+- React
+- React Router
+- Webpack
+- Express
+- MySQL
 
-This project is a revamped version of a previous one that only featured one view with student name, class name, and grade all in one table. Intuitively I thought that this should be split into different views where students are grouped by classes, and thus began this project. The most challenging part of this app was implenting React Router, which I decided to learn to give the user the ability to "go back" within the app, which I thought was a necessary part of the user experience. Implementing this on the live site was a whole other challenge because I decided to host this project within a subdirectory, which interfered with how Apache interpreted the URL. Regardless, I managed to get it working and became very familiar with how to work both React Router and Apache2's configuration files.
+
+This is a revamped version of my first full-stack project right after completion of web development bootcamp. I was inspired to revisit and retouch this app by the frustration that my students' schools' approaches to displaying grades left me in. After nearly 2 years worth of further coding knowledge to draw from, I was able to massively clean up the code. I accomplished this by logically separating code using MVC architecture, using JavaScript closures and callbacks purposefully to manipulate data, abstracting common functions, and more. I took special care to apply best practices from React, Webpack, and Express throughout, including code-splitting and lazy-loading components to increase loading speed on the front end, asynchronous coding on the back end, and exception handling throughout. Though feature-wise there are no significant changes, I consider this a big upgrade from the previous iteration on the basis of code readability and organization.

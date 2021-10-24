@@ -1,0 +1,17 @@
+button.btn {
+    font-weight: bolder;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+tr:hover {
+    font-weight: bolder;
+}
+
+table * {
+    text-align: center;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiNC5jc3MiLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxtQkFBbUI7QUFDdkI7O0FBRUE7SUFDSSxlQUFlO0FBQ25COztBQUVBO0lBQ0ksbUJBQW1CO0FBQ3ZCOztBQUVBO0lBQ0ksa0JBQWtCO0FBQ3RCLEMiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly9jbGFzcy1tYW5hZ2VyLy4vc3JjL3N0eWxlLmNzcyJdLCJzb3VyY2VzQ29udGVudCI6WyJidXR0b24uYnRuIHtcbiAgICBmb250LXdlaWdodDogYm9sZGVyO1xufVxuXG4uY2xpY2thYmxlIHtcbiAgICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbnRyOmhvdmVyIHtcbiAgICBmb250LXdlaWdodDogYm9sZGVyO1xufVxuXG50YWJsZSAqIHtcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG59Il0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9*/

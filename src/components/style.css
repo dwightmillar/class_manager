@@ -1,0 +1,13 @@
+input.addtab::placeholder {
+    font-size: 1.3em;
+    font-weight: bolder;
+}
+
+input.nav-link::placeholder {
+    font-size: 1em;
+    font-weight: normal;
+}
+
+input#add-class {
+    width: fit-content;
+}
