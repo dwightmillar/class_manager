@@ -1,0 +1,15 @@
+button.btn {
+    font-weight: bolder;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+tr:hover {
+    font-weight: bolder;
+}
+
+table * {
+    text-align: center;
+}

@@ -1,0 +1,9 @@
+input.error {
+    background-color: #ffaaaa;
+}
+
+input[type="number"] {
+    width: 60px;
+}
+
+/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiNTg0LmNzcyIsIm1hcHBpbmdzIjoiQUFBQTtJQUNJLHlCQUF5QjtBQUM3Qjs7QUFFQTtJQUNJLFdBQVc7QUFDZixDIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vY2xhc3MtbWFuYWdlci8uL3NyYy92aWV3cy9hc3NpZ25tZW50L3N0eWxlLmNzcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbnB1dC5lcnJvciB7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogI2ZmYWFhYTtcbn1cblxuaW5wdXRbdHlwZT1cIm51bWJlclwiXSB7XG4gICAgd2lkdGg6IDYwcHg7XG59Il0sIm5hbWVzIjpbXSwic291cmNlUm9vdCI6IiJ9*/

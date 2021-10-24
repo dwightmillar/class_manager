@@ -1,0 +1,7 @@
+input.error {
+    background-color: #ffaaaa;
+}
+
+input[type="number"] {
+    width: 60px;
+}
