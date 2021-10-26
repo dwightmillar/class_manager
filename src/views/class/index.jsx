@@ -38,7 +38,7 @@ export default function(props)
     if (state.students.length) {
       loadAssignments()
     }
-  }, [state.students])
+  }, [state.students.length])
 
   useEffect( () => {
     if (state.assignments.length) calculateStudentAverages()
@@ -157,11 +157,13 @@ export default function(props)
     let students = [...state.students]
     
     let beforeSort = JSON.stringify({students})
-    students.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase())
+    students.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
     let afterSort = JSON.stringify({students})
+    
     if (beforeSort === afterSort)
-    students.sort((a,b) => a.name.toLowerCase() < b.name.toLowerCase())
-
+    {
+      students.sort((a,b) => a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1)
+    }
     setState({...state, students})
   }
 
@@ -173,7 +175,7 @@ export default function(props)
     students.sort((a,b) => {
       if (isNaN(parseFloat(state.studentAverages[a.id]))) return false
       if (isNaN(parseFloat(state.studentAverages[b.id]))) return true
-      return parseFloat(state.studentAverages[a.id]) > parseFloat(state.studentAverages[b.id])
+      return parseFloat(state.studentAverages[a.id]) > parseFloat(state.studentAverages[b.id]) ? 1 : -1
     })
     let afterSort = JSON.stringify({students})
 
@@ -181,7 +183,7 @@ export default function(props)
     students.sort((a,b) => {
       if (isNaN(parseFloat(state.studentAverages[b.id]))) return false
       if (isNaN(parseFloat(state.studentAverages[a.id]))) return true
-      return parseFloat(state.studentAverages[a.id]) < parseFloat(state.studentAverages[b.id])
+      return parseFloat(state.studentAverages[a.id]) < parseFloat(state.studentAverages[b.id]) ? 1 : -1
     })
     setState({...state, students})
   }
@@ -190,7 +192,6 @@ export default function(props)
   {
     if (state.view === 'assignments') return setState({...state, view:'students'})
     setState({...state, view:'assignments'})
-    
   }
 
   function deleteStudentCallback(studentId)
