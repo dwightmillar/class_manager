@@ -46,7 +46,7 @@
 		"@types/mysql": "^2.15.21",
 		"@types/react-dom": "^18.0.6",
 		"@types/react-router-dom": "^5.3.3",
-		"@webpack-cli/generators": "^2.4.1",
+		"@webpack-cli/generators": "^2.5.0",
 		"babel-loader": "^8.2.2",
 		"css-loader": "^6.4.0",
 		"html-loader": "^2.1.2",
